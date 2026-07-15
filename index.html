@@ -578,12 +578,12 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.95);
             z-index: 9998;
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
         }
 
-        #admin-login.hidden {
+        #admin-login.visible {
             display: none;
         }
 
@@ -1146,7 +1146,7 @@
             const password = document.getElementById('adminPassword').value;
             // Cambia "admin123" por tu contraseña
             if (password === 'admin123') {
-                document.getElementById('admin-login').classList.add('hidden');
+                document.getElementById('admin-login').classList.remove('hidden');
                 document.getElementById('admin-panel').classList.add('active');
                 renderAllAdmin();
                 document.getElementById('adminPassword').value = '';
@@ -1162,19 +1162,24 @@
 
         // Atajo de teclado para abrir admin
         document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.shiftKey && e.key === 'A') {
-                e.preventDefault();
-                document.getElementById('admin-login').classList.remove('hidden');
-            }
-            if (e.key === 'Escape') {
-                closeAdmin();
-            }
-        });
+    if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+        e.preventDefault();
+        document.getElementById('admin-login').classList.add('visible');
+    }
+    if (e.key === 'Escape') {
+        if (document.getElementById('admin-panel').classList.contains('active')) {
+            closeAdmin();
+        }
+        if (document.getElementById('admin-login').classList.contains('visible')) {
+            document.getElementById('admin-login').classList.remove('visible');
+        }
+    }
+});
 
         // También se puede acceder con ?admin en la URL
         if (window.location.search === '?admin') {
-            document.getElementById('admin-login').classList.remove('hidden');
-        }
+    document.getElementById('admin-login').classList.add('visible');
+}
 
         // ============ INICIO ============
         loadData();
