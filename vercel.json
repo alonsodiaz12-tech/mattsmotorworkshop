@@ -3,3 +3,10 @@
     { "source": "/admin", "destination": "/admin.html" }
   ]
 }
+
+{
+  "rewrites": [
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/home", "destination": "/index.html" }
+  ]
+}
