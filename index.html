@@ -3,21 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taller Mecánico - Mecánica Rápida y General</title>
+    <title>Matts Motor Workshop | Mecánica de Precisión</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --negro: #1a1a1a;
-            --negro-claro: #2d2d2d;
-            --rojo: #cc0000;
-            --rojo-hover: #a30000;
-            --gris-oscuro: #333333;
-            --gris-medio: #666666;
-            --gris-claro: #f5f5f5;
-            --blanco: #ffffff;
-            --sombra: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --sombra-hover: 0 8px 15px rgba(0, 0, 0, 0.2);
-            --transicion: all 0.3s ease;
-            --borde-radius: 8px;
+            --bg-dark: #0a0a0a;
+            --bg-card: #111111;
+            --bg-elevated: #1a1a1a;
+            --red: #dc2626;
+            --red-light: #ef4444;
+            --red-dark: #991b1b;
+            --gold: #c9a84c;
+            --gold-light: #e2c970;
+            --text-primary: #ffffff;
+            --text-secondary: #a3a3a3;
+            --text-muted: #737373;
+            --border: #262626;
+            --border-light: #333333;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.5);
+            --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.6);
+            --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.7);
+            --radius-sm: 8px;
+            --radius: 12px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
@@ -26,400 +42,894 @@
             box-sizing: border-box;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: var(--gris-oscuro);
-            background-color: var(--blanco);
+        html {
+            scroll-behavior: smooth;
         }
 
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--red-dark);
+            border-radius: 3px;
+        }
+
+        /* Selection */
+        ::selection {
+            background: var(--red);
+            color: white;
+        }
+
+        /* ============ HEADER ============ */
         header {
-            background-color: var(--negro);
-            padding: 1rem 2rem;
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
+            right: 0;
             z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            padding: 0 2rem;
+            transition: var(--transition);
+            background: transparent;
+        }
+
+        header.scrolled {
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-lg);
         }
 
         nav {
-            max-width: 1200px;
+            max-width: 1300px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
+            height: 80px;
         }
 
         .logo-container {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 14px;
         }
 
         .logo-img {
-            height: 50px;
+            height: 44px;
             width: auto;
-            background-color: var(--blanco);
-            padding: 5px;
-            border-radius: 5px;
+            border-radius: 6px;
+            filter: brightness(1.1);
+            transition: var(--transition);
+        }
+
+        .logo-container:hover .logo-img {
+            filter: brightness(1.3);
         }
 
         .logo-text {
-            color: var(--blanco);
-            font-size: 1.5rem;
-            font-weight: bold;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 1.25rem;
+            letter-spacing: -0.5px;
+            color: var(--text-primary);
+            line-height: 1.2;
         }
 
         .logo-text span {
-            color: var(--rojo);
+            display: block;
+            font-size: 0.7rem;
+            letter-spacing: 4px;
+            color: var(--red-light);
+            font-weight: 600;
         }
 
         .nav-links {
             display: flex;
             list-style: none;
-            gap: 2rem;
-            flex-wrap: wrap;
+            gap: 2.5rem;
+            align-items: center;
         }
 
         .nav-links a {
-            color: var(--blanco);
+            color: var(--text-secondary);
             text-decoration: none;
+            font-size: 0.9rem;
             font-weight: 500;
-            transition: var(--transicion);
+            letter-spacing: 0.3px;
+            transition: var(--transition);
+            position: relative;
             padding: 0.5rem 0;
-            border-bottom: 2px solid transparent;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--red);
+            transition: var(--transition);
+            border-radius: 1px;
         }
 
         .nav-links a:hover {
-            color: var(--rojo);
-            border-bottom: 2px solid var(--rojo);
+            color: var(--text-primary);
+        }
+        .nav-links a:hover::after {
+            width: 100%;
         }
 
-        .btn-whatsapp {
-            background-color: #25d366;
+        .btn-nav {
+            background: var(--red);
             color: white !important;
-            padding: 0.5rem 1rem !important;
-            border-radius: 25px;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border-bottom: none !important;
+            padding: 0.6rem 1.4rem !important;
+            border-radius: 50px;
+            font-weight: 600 !important;
+            font-size: 0.85rem !important;
+            letter-spacing: 0.5px;
+            transition: var(--transition) !important;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
         }
 
-        .btn-whatsapp:hover {
-            background-color: #128c7e;
-            color: white !important;
+        .btn-nav::after {
+            display: none !important;
         }
 
+        .btn-nav:hover {
+            background: var(--red-light) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4);
+        }
+
+        /* Mobile menu button */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 1001;
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--text-primary);
+            margin: 5px 0;
+            transition: var(--transition);
+            border-radius: 1px;
+        }
+
+        /* ============ HERO ============ */
         .hero {
-            background: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(204, 0, 0, 0.7) 100%),
-                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23333" width="1200" height="600"/><circle cx="400" cy="300" r="200" fill="%23444"/><rect x="700" y="200" width="300" height="200" fill="%23555"/></svg>');
-            background-size: cover;
-            background-position: center;
-            height: 90vh;
+            position: relative;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            text-align: center;
-            color: var(--blanco);
-            position: relative;
+            overflow: hidden;
+            background: var(--bg-dark);
         }
 
-        .hero-content {
-            max-width: 800px;
-            padding: 2rem;
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 30% 50%, rgba(220, 38, 38, 0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 20%, rgba(201, 168, 76, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(220, 38, 38, 0.08) 0%, transparent 50%);
             z-index: 1;
         }
 
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        .hero-particles {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            opacity: 0.3;
         }
 
-        .hero h1 span {
-            color: #ff4444;
+        .hero-pattern {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: 0;
+            mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 900px;
+            padding: 2rem;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease-out 0.1s both;
+        }
+
+        .hero-badge .dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 12px rgba(34, 197, 94, 0);
+            }
+        }
+
+        .hero h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(3rem, 6vw, 5.5rem);
+            font-weight: 900;
+            line-height: 1.05;
+            letter-spacing: -2px;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .hero h1 .gold {
+            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 40%, #a8882e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero h1 .red-accent {
+            color: var(--red-light);
+            position: relative;
         }
 
         .hero p {
             font-size: 1.2rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+            font-weight: 400;
+            line-height: 1.8;
+            animation: fadeInUp 1s ease-out 0.3s both;
         }
 
-        .btn-cta {
-            display: inline-block;
-            background-color: var(--rojo);
-            color: var(--blanco);
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--red);
+            color: white;
             padding: 1rem 2rem;
             border-radius: 50px;
             text-decoration: none;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: var(--transicion);
-            border: 2px solid var(--rojo);
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            transition: var(--transition);
+            box-shadow: 0 8px 30px rgba(220, 38, 38, 0.35);
+            border: none;
+            cursor: pointer;
         }
 
-        .btn-cta:hover {
-            background-color: transparent;
-            border: 2px solid var(--blanco);
+        .btn-primary:hover {
+            background: var(--red-light);
             transform: translateY(-3px);
-            box-shadow: var(--sombra-hover);
+            box-shadow: 0 12px 40px rgba(220, 38, 38, 0.5);
         }
 
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            color: var(--text-primary);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            transition: var(--transition);
+            border: 1px solid var(--border-light);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text-secondary);
+            background: var(--glass);
+            transform: translateY(-3px);
+        }
+
+        .hero-scroll {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            animation: bounce 2s infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes bounce {
+            0%,
+            100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            50% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+        }
+
+        .hero-scroll span {
+            display: block;
+            width: 30px;
+            height: 50px;
+            border: 2px solid var(--text-muted);
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .hero-scroll span::after {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 8px;
+            background: var(--text-muted);
+            border-radius: 2px;
+            animation: scrollDown 1.5s infinite;
+        }
+
+        @keyframes scrollDown {
+            0% {
+                opacity: 1;
+                top: 8px;
+            }
+            100% {
+                opacity: 0;
+                top: 28px;
+            }
+        }
+
+        /* ============ TRUST BAR ============ */
         .trust-bar {
-            background-color: var(--negro-claro);
-            padding: 2rem;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 3rem 2rem;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 2rem;
+            max-width: 1300px;
+            margin: 0 auto;
             text-align: center;
         }
 
         .trust-item {
-            color: var(--blanco);
+            padding: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .trust-item:hover {
+            transform: translateY(-5px);
         }
 
         .trust-icon {
             font-size: 2.5rem;
-            color: var(--rojo);
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            display: block;
+            filter: grayscale(0);
+        }
+
+        .trust-item .trust-number {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--red-light), var(--red-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
         }
 
         .trust-item p {
-            color: #aaa;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 0.25rem;
         }
 
+        /* ============ SECTIONS ============ */
         section {
-            padding: 5rem 2rem;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 3rem;
-            color: var(--negro);
+            padding: 7rem 2rem;
             position: relative;
         }
 
-        .section-title::after {
-            content: '';
-            display: block;
-            width: 80px;
-            height: 4px;
-            background-color: var(--rojo);
-            margin: 1rem auto;
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
         }
 
+        .section-label {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--red-light);
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(2.2rem, 4vw, 3.2rem);
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            line-height: 1.7;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header .section-subtitle {
+            margin: 0 auto;
+        }
+
+        /* ============ SERVICES ============ */
         .services-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 1.5rem;
         }
 
         .service-card {
-            background: var(--blanco);
-            border-radius: var(--borde-radius);
-            padding: 2rem;
-            text-align: center;
-            box-shadow: var(--sombra);
-            transition: var(--transicion);
-            border: 1px solid #e0e0e0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem 2rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
             cursor: pointer;
+            group: true;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--red), var(--red-dark));
+            transform: scaleX(0);
+            transition: var(--transition-slow);
+        }
+
+        .service-card:hover::before {
+            transform: scaleX(1);
         }
 
         .service-card:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--sombra-hover);
-            border-color: var(--rojo);
+            border-color: var(--border-light);
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+            background: var(--bg-elevated);
         }
 
-        .service-icon {
-            width: 80px;
-            height: 80px;
-            background-color: var(--rojo);
-            border-radius: 50%;
+        .service-icon-wrap {
+            width: 64px;
+            height: 64px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1.5rem;
-            font-size: 2rem;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .service-card:hover .service-icon-wrap {
+            background: rgba(220, 38, 38, 0.1);
+            border-color: var(--red-dark);
         }
 
         .service-card h3 {
-            color: var(--negro);
-            margin-bottom: 1rem;
-            font-size: 1.3rem;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.3px;
         }
 
         .service-card p {
-            color: var(--gris-medio);
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.7;
             margin-bottom: 1.5rem;
         }
 
-        .btn-service {
-            display: inline-block;
-            padding: 0.5rem 1.5rem;
-            border: 2px solid var(--rojo);
-            color: var(--rojo);
-            border-radius: 25px;
+        .service-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--red-light);
             text-decoration: none;
             font-weight: 600;
-            transition: var(--transicion);
+            font-size: 0.9rem;
+            transition: var(--transition);
         }
 
-        .btn-service:hover {
-            background-color: var(--rojo);
-            color: var(--blanco);
+        .service-link .arrow {
+            transition: var(--transition);
         }
 
+        .service-card:hover .service-link .arrow {
+            transform: translateX(4px);
+        }
+
+        /* ============ WHY US ============ */
         .why-us {
-            background-color: var(--gris-claro);
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
         }
 
         .why-us-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 4rem;
+            gap: 5rem;
             align-items: center;
         }
 
-        .why-us-image img {
+        .why-us-image-wrap {
+            position: relative;
+        }
+
+        .why-us-image {
             width: 100%;
-            border-radius: var(--borde-radius);
-            box-shadow: var(--sombra);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            position: relative;
+            z-index: 1;
+        }
+
+        .why-us-image-wrap::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: -20px;
+            bottom: -20px;
+            border: 2px solid var(--red-dark);
+            border-radius: var(--radius-xl);
+            z-index: 0;
+            opacity: 0.3;
         }
 
         .why-us-list {
             list-style: none;
+            display: grid;
+            gap: 1.5rem;
         }
 
         .why-us-list li {
-            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1.2rem;
+            padding: 1.2rem;
+            background: var(--bg-dark);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .why-us-list li:hover {
+            border-color: var(--border-light);
+            transform: translateX(5px);
+        }
+
+        .why-us-icon {
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+            background: rgba(220, 38, 38, 0.1);
+            border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
-            gap: 1rem;
-            font-size: 1.1rem;
+            justify-content: center;
+            font-size: 1.3rem;
         }
 
-        .check-icon {
-            color: var(--rojo);
-            font-size: 1.5rem;
-            font-weight: bold;
+        .why-us-text h4 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-size: 1rem;
         }
 
+        .why-us-text p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* ============ GALLERY ============ */
         .gallery-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1rem;
         }
 
         .gallery-item {
             position: relative;
+            border-radius: var(--radius);
             overflow: hidden;
-            border-radius: var(--borde-radius);
-            cursor: pointer;
             aspect-ratio: 4/3;
+            cursor: pointer;
+            group: true;
         }
 
         .gallery-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: var(--transicion);
+            transition: var(--transition-slow);
+            filter: brightness(0.8);
         }
 
         .gallery-item:hover img {
-            transform: scale(1.1);
+            transform: scale(1.08);
+            filter: brightness(1);
         }
 
+        .gallery-item::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, transparent 50%);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .gallery-item:hover::after {
+            opacity: 1;
+        }
+
+        .gallery-item .gallery-label {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            z-index: 2;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: var(--transition);
+        }
+
+        .gallery-item:hover .gallery-label {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ============ TESTIMONIALS ============ */
         .testimonials {
-            background-color: var(--negro);
-            color: var(--blanco);
-        }
-
-        .testimonials .section-title {
-            color: var(--blanco);
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
         }
 
         .testimonials-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
         }
 
         .testimonial-card {
-            background: var(--negro-claro);
-            padding: 2rem;
-            border-radius: var(--borde-radius);
-            text-align: center;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            transition: var(--transition);
         }
 
-        .stars {
-            color: #ffd700;
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
+        .testimonial-card:hover {
+            border-color: var(--border-light);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .testimonial-stars {
+            color: var(--gold);
+            font-size: 1rem;
+            letter-spacing: 2px;
+            margin-bottom: 1.5rem;
         }
 
         .testimonial-text {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
             font-style: italic;
-            margin-bottom: 1rem;
-            color: #ccc;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-left: 1.5rem;
+            border-left: 3px solid var(--red-dark);
         }
 
         .testimonial-author {
-            color: var(--rojo);
-            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
+        .testimonial-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--red-dark), var(--red));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: white;
+        }
+
+        .testimonial-info strong {
+            display: block;
+            font-weight: 600;
+        }
+
+        .testimonial-info span {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* ============ CTA ============ */
         .cta-section {
-            background-color: var(--rojo);
             text-align: center;
-            color: var(--blanco);
+            position: relative;
+            overflow: hidden;
         }
 
-        .cta-section h2 {
-            font-size: 2.5rem;
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, rgba(220, 38, 38, 0.15) 0%, transparent 70%);
+            z-index: 0;
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 1;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .cta-content h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            letter-spacing: -1px;
             margin-bottom: 1rem;
         }
 
-        .cta-section .btn-cta {
-            background-color: var(--negro);
-            border-color: var(--negro);
-            font-size: 1.2rem;
-            padding: 1rem 3rem;
+        .cta-content p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
         }
 
-        .cta-section .btn-cta:hover {
-            background-color: transparent;
-            border-color: var(--blanco);
-        }
-
+        /* ============ FOOTER ============ */
         footer {
-            background-color: var(--negro);
-            color: var(--blanco);
-            padding: 4rem 2rem 1rem;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            padding: 5rem 2rem 2rem;
         }
 
         .footer-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto 2rem;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 3rem;
+            max-width: 1300px;
+            margin: 0 auto 4rem;
         }
 
-        .footer-section h3 {
-            color: var(--rojo);
-            margin-bottom: 1rem;
+        .footer-brand p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-top: 1rem;
+        }
+
+        .footer-section h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
         }
 
         .footer-links {
@@ -427,191 +937,375 @@
         }
 
         .footer-links li {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
         }
 
         .footer-links a {
-            color: #aaa;
+            color: var(--text-secondary);
             text-decoration: none;
-            transition: var(--transicion);
+            font-size: 0.9rem;
+            transition: var(--transition);
         }
 
         .footer-links a:hover {
-            color: var(--rojo);
+            color: var(--red-light);
+        }
+
+        .footer-contact p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .footer-bottom {
-            text-align: center;
+            max-width: 1300px;
+            margin: 0 auto;
             padding-top: 2rem;
-            border-top: 1px solid #333;
-            color: #aaa;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 1024px) {
+            .why-us-grid {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .trust-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2rem;
-            }
-            .why-us-grid {
-                grid-template-columns: 1fr;
-            }
             .nav-links {
                 display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(10, 10, 10, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 2rem;
+                z-index: 999;
             }
-            .section-title {
-                font-size: 2rem;
+            .nav-links.active {
+                display: flex;
+            }
+            .nav-links a {
+                font-size: 1.2rem;
+            }
+            .menu-toggle {
+                display: block;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+            .trust-bar {
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+                padding: 2rem 1rem;
+            }
+            section {
+                padding: 4rem 1.5rem;
+            }
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .trust-bar {
+                grid-template-columns: 1fr;
             }
             .services-grid {
                 grid-template-columns: 1fr;
+            }
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
             }
         }
     </style>
 </head>
 <body>
 
-    <header>
+    <header id="header">
         <nav>
             <div class="logo-container">
-                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50'><rect fill='%23cc0000' width='100' height='50' rx='5'/><text fill='white' x='50' y='30' text-anchor='middle' font-size='14' font-weight='bold'>LOGO</text></svg>"
-                alt="Logo Taller" class="logo-img" id="logoImage">
-                <div class="logo-text">MECÁNICA <span>PRO</span></div>
+                <img src="logo.jpg" alt="Matts Motor Workshop" class="logo-img">
+                <div class="logo-text">
+                    MATTS MOTOR
+                    <span>WORKSHOP</span>
+                </div>
             </div>
-            <ul class="nav-links">
+            <button class="menu-toggle" id="menuToggle" aria-label="Menú">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
                 <li><a href="#inicio">Inicio</a></li>
                 <li><a href="#servicios">Servicios</a></li>
                 <li><a href="#galeria">Galería</a></li>
                 <li><a href="#testimonios">Testimonios</a></li>
-                <li><a href="#contacto" class="btn-whatsapp">📱 WhatsApp</a></li>
+                <li><a href="#contacto" class="btn-nav">Agendar Cita</a></li>
             </ul>
         </nav>
     </header>
 
+    <!-- Hero -->
     <section class="hero" id="inicio">
+        <div class="hero-bg">
+            <div class="hero-pattern"></div>
+        </div>
         <div class="hero-content">
-            <h1>Expertos en <span>Mecánica Rápida</span></h1>
-            <p id="heroText">Reparaciones rápidas y confiables para tu vehículo. Más de 10 años de experiencia nos respaldan.</p>
-            <a href="#contacto" class="btn-cta">AGENDAR CITA AHORA</a>
+            <div class="hero-badge">
+                <span class="dot"></span> Taller Abierto · Lunes a Sábado
+            </div>
+            <h1>
+                Ingeniería de<br>
+                <span class="gold">Precisión</span> para<br>
+                su Vehículo
+            </h1>
+            <p>
+                Combinamos tecnología de diagnóstico avanzada con artesanía mecánica experta.
+                Cada reparación ejecutada con los más altos estándares de calidad.
+            </p>
+            <div class="hero-buttons">
+                <a href="#contacto" class="btn-primary">
+                    Diagnóstico Gratuito
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+                <a href="#servicios" class="btn-secondary">
+                    Nuestros Servicios
+                </a>
+            </div>
+        </div>
+        <div class="hero-scroll">
+            <span></span>
         </div>
     </section>
 
+    <!-- Trust Bar -->
     <div class="trust-bar">
         <div class="trust-item">
-            <div class="trust-icon">🔧</div>
-            <strong>10+ Años</strong>
-            <p>de experiencia</p>
+            <span class="trust-number">15+</span>
+            <p>Años de Experiencia</p>
         </div>
         <div class="trust-item">
-            <div class="trust-icon">✅</div>
-            <strong>Garantía</strong>
-            <p>en reparaciones</p>
+            <span class="trust-number">3,500+</span>
+            <p>Vehículos Reparados</p>
         </div>
         <div class="trust-item">
-            <div class="trust-icon">👨‍🔧</div>
-            <strong>Técnicos</strong>
-            <p>certificados</p>
+            <span class="trust-number">100%</span>
+            <p>Garantía de Servicio</p>
         </div>
         <div class="trust-item">
-            <div class="trust-icon">💰</div>
-            <strong>Presupuesto</strong>
-            <p>sin costo</p>
+            <span class="trust-number">24/7</span>
+            <p>Soporte Técnico</p>
         </div>
     </div>
 
+    <!-- Servicios -->
     <section id="servicios">
         <div class="container">
-            <h2 class="section-title">Nuestros Servicios</h2>
+            <div class="section-header">
+                <span class="section-label">Nuestros Servicios</span>
+                <h2 class="section-title">Soluciones Mecánicas Integrales</h2>
+                <p class="section-subtitle">Desde mantenimiento preventivo hasta reparaciones complejas. Tecnología de punta al servicio de su vehículo.</p>
+            </div>
             <div class="services-grid" id="servicesContainer"></div>
         </div>
     </section>
 
+    <!-- Why Us -->
     <section class="why-us">
         <div class="container">
-            <h2 class="section-title">¿Por qué elegirnos?</h2>
             <div class="why-us-grid">
-                <div class="why-us-image">
-                    <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'><rect fill='%23333' width='600' height='400'/><circle cx='300' cy='200' r='150' fill='%23555'/><text fill='white' x='300' y='210' text-anchor='middle' font-size='20'>Taller</text></svg>"
-                    alt="Nuestro taller">
+                <div class="why-us-image-wrap">
+                    <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 500'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%231a1a1a'/><stop offset='100%25' style='stop-color:%230d0d0d'/></linearGradient></defs><rect fill='url(%23g)' width='600' height='500'/><rect fill='%23222' x='150' y='100' width='300' height='300' rx='20'/><text fill='%23dc2626' x='300' y='260' text-anchor='middle' font-size='60' font-weight='bold'>MMW</text></svg>"
+                    alt="Matts Motor Workshop" class="why-us-image">
                 </div>
-                <ul class="why-us-list">
-                    <li><span class="check-icon">✓</span> Diagnóstico computarizado gratuito</li>
-                    <li><span class="check-icon">✓</span> Repuestos de calidad garantizada</li>
-                    <li><span class="check-icon">✓</span> Atención personalizada</li>
-                    <li><span class="check-icon">✓</span> Entrega en tiempo récord</li>
-                    <li><span class="check-icon">✓</span> Precios competitivos</li>
-                </ul>
+                <div>
+                    <span class="section-label">¿Por Qué Elegirnos?</span>
+                    <h2 class="section-title" style="margin-bottom:2rem;">Excelencia que nos distingue</h2>
+                    <ul class="why-us-list">
+                        <li>
+                            <div class="why-us-icon">🔬</div>
+                            <div class="why-us-text">
+                                <h4>Diagnóstico Computarizado Avanzado</h4>
+                                <p>Equipos de última generación para un diagnóstico preciso y eficiente.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="why-us-icon">⭐</div>
+                            <div class="why-us-text">
+                                <h4>Repuestos de Calidad Premium</h4>
+                                <p>Trabajamos con las mejores marcas para garantizar durabilidad y rendimiento.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="why-us-icon">⚡</div>
+                            <div class="why-us-text">
+                                <h4>Entrega en Tiempo Récord</h4>
+                                <p>Optimizamos procesos sin comprometer la calidad. Su tiempo es valioso.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="why-us-icon">🛡️</div>
+                            <div class="why-us-text">
+                                <h4>Garantía por Escrito</h4>
+                                <p>Todos nuestros trabajos cuentan con garantía documentada para su tranquilidad.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </section>
 
+    <!-- Galería -->
     <section id="galeria">
         <div class="container">
-            <h2 class="section-title">Galería de Trabajos</h2>
+            <div class="section-header">
+                <span class="section-label">Galería</span>
+                <h2 class="section-title">Trabajos Realizados</h2>
+                <p class="section-subtitle">Conozca algunos de nuestros proyectos recientes. Calidad que habla por sí misma.</p>
+            </div>
             <div class="gallery-grid" id="galleryContainer"></div>
         </div>
     </section>
 
+    <!-- Testimonios -->
     <section class="testimonials" id="testimonios">
         <div class="container">
-            <h2 class="section-title">Lo que dicen nuestros clientes</h2>
+            <div class="section-header">
+                <span class="section-label">Testimonios</span>
+                <h2 class="section-title">Lo Que Dicen Nuestros Clientes</h2>
+                <p class="section-subtitle" style="margin:0 auto;">La satisfacción de nuestros clientes es nuestro mayor logro.</p>
+            </div>
             <div class="testimonials-grid" id="testimonialsContainer"></div>
         </div>
     </section>
 
+    <!-- CTA -->
     <section class="cta-section" id="contacto">
         <div class="container">
-            <h2>¿Listo para reparar tu vehículo?</h2>
-            <p style="margin-bottom:2rem; font-size:1.2rem;">Contáctanos ahora y obtén un diagnóstico gratuito</p>
-            <a href="https://wa.me/521234567890" class="btn-cta" target="_blank">📱 ENVIAR WHATSAPP</a>
+            <div class="cta-content">
+                <span class="section-label">Agende Su Cita</span>
+                <h2>¿Listo para devolverle la vida a su vehículo?</h2>
+                <p>Contáctenos hoy mismo. Diagnóstico inicial sin costo y presupuesto transparente en menos de 24 horas.</p>
+                <a href="https://wa.me/521234567890" class="btn-primary" target="_blank" style="font-size:1.1rem; padding:1.2rem 3rem;">
+                    📱 Contactar por WhatsApp
+                </a>
+            </div>
         </div>
     </section>
 
+    <!-- Footer -->
     <footer>
         <div class="footer-grid">
-            <div class="footer-section">
-                <h3>Mecánica Pro</h3>
-                <p>Expertos en mecánica rápida y general. Tu auto en las mejores manos.</p>
+            <div class="footer-brand">
+                <div class="logo-container" style="margin-bottom:0.5rem;">
+                    <img src="logo.jpg" alt="Matts Motor Workshop" class="logo-img">
+                    <div class="logo-text">
+                        MATTS MOTOR
+                        <span>WORKSHOP</span>
+                    </div>
+                </div>
+                <p>Ingeniería de precisión para su vehículo. Combinamos tecnología avanzada con experiencia artesanal para ofrecer el mejor servicio automotriz.</p>
             </div>
             <div class="footer-section">
-                <h3>Servicios</h3>
+                <h4>Servicios</h4>
                 <ul class="footer-links" id="footerServices"></ul>
             </div>
             <div class="footer-section">
-                <h3>Horario</h3>
-                <p>Lunes a Viernes: 8:00 - 18:00</p>
-                <p>Sábados: 8:00 - 14:00</p>
-                <p>Domingos: Cerrado</p>
+                <h4>Horario</h4>
+                <ul class="footer-links">
+                    <li>Lun - Vie: 8:00 - 18:00</li>
+                    <li>Sábados: 8:00 - 14:00</li>
+                    <li>Domingos: Cerrado</li>
+                </ul>
             </div>
             <div class="footer-section">
-                <h3>Contacto</h3>
-                <p>📍 Av. Principal #123</p>
-                <p>📞 (123) 456-7890</p>
-                <p>📧 info@mecanicapro.com</p>
+                <h4>Contacto</h4>
+                <div class="footer-contact">
+                    <p>📍 Av. Principal #123</p>
+                    <p>📞 (123) 456-7890</p>
+                    <p>✉️ info@mattsmotorworkshop.com</p>
+                </div>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2024 Mecánica Pro - Todos los derechos reservados</p>
+            <p>&copy; 2024 Matts Motor Workshop. Todos los derechos reservados.</p>
+            <p>Diseñado con precisión.</p>
         </div>
     </footer>
 
     <script>
+        // Header scroll effect
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // Data
         const defaultServices = [
-            { id: 1, title: 'Mecánica General', desc: 'Reparación completa de motor, transmisión y sistemas mecánicos.', icon: '🔧', order: 1 },
-            { id: 2, title: 'Electricidad Automotriz', desc: 'Diagnóstico y reparación de sistemas eléctricos y electrónicos.', icon: '⚡', order: 2 },
-            { id: 3, title: 'Scanner Computarizado', desc: 'Diagnóstico preciso con equipo de última generación.', icon: '🖥️', order: 3 },
-            { id: 4, title: 'Frenos y Suspensión', desc: 'Revisión y cambio de balatas, discos y amortiguadores.', icon: '🛑', order: 4 },
-            { id: 5, title: 'Aire Acondicionado', desc: 'Carga de gas, reparación y mantenimiento de A/C.', icon: '❄️', order: 5 },
-            { id: 6, title: 'Cambio de Aceite', desc: 'Aceite y filtros de la más alta calidad para tu motor.', icon: '🛢️', order: 6 },
+            { id: 1, title: 'Mecánica General', desc: 'Reparación completa de motor, transmisión y sistemas mecánicos con precisión experta.', icon: '🔧', order: 1 },
+            { id: 2, title: 'Diagnóstico Electrónico', desc: 'Análisis computarizado avanzado para identificar fallas con exactitud milimétrica.', icon: '⚡', order: 2 },
+            { id: 3, title: 'Scanner Automotriz', desc: 'Tecnología OBD-II de última generación para lecturas precisas del sistema.', icon: '🖥️', order: 3 },
+            { id: 4, title: 'Frenos de Alto Rendimiento', desc: 'Sistemas de frenado inspeccionados y reparados con componentes premium.', icon: '🛑', order: 4 },
+            { id: 5, title: 'Climatización', desc: 'Servicio completo de aire acondicionado con refrigerantes ecológicos.', icon: '❄️', order: 5 },
+            { id: 6, title: 'Lubricación Express', desc: 'Cambio de aceite sintético y filtros originales. Servicio rápido y eficiente.', icon: '🛢️', order: 6 },
         ];
 
         const defaultGallery = [
-            { id: 1, url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect fill="%23444" width="400" height="300"/><text fill="white" x="200" y="160" text-anchor="middle" font-size="24">Motor</text></svg>', alt: 'Reparación de motor' },
-            { id: 2, url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect fill="%23555" width="400" height="300"/><text fill="white" x="200" y="160" text-anchor="middle" font-size="24">Frenos</text></svg>', alt: 'Cambio de frenos' },
-            { id: 3, url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect fill="%23333" width="400" height="300"/><text fill="white" x="200" y="160" text-anchor="middle" font-size="24">Scanner</text></svg>', alt: 'Diagnóstico computarizado' },
+            { id: 1, url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect fill="%231a1a1a" width="400" height="300"/><rect fill="%23222" x="50" y="50" width="300" height="200" rx="10"/><text fill="%23dc2626" x="200" y="160" text-anchor="middle" font-size="20">Motor Repair</text></svg>', alt: 'Reparación de motor' },
+            { id: 2, url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect fill="%231a1a1a" width="400" height="300"/><rect fill="%23222" x="50" y="50" width="300" height="200" rx="10"/><text fill="%23dc2626" x="200" y="160" text-anchor="middle" font-size="20">Brake System</text></svg>', alt: 'Sistema de frenos' },
+            { id: 3, url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect fill="%231a1a1a" width="400" height="300"/><rect fill="%23222" x="50" y="50" width="300" height="200" rx="10"/><text fill="%23dc2626" x="200" y="160" text-anchor="middle" font-size="20">Diagnostics</text></svg>', alt: 'Diagnóstico computarizado' },
         ];
 
         const defaultTestimonials = [
-            { id: 1, name: 'Carlos M.', stars: 5, text: 'Excelente servicio, rápido y profesional. Mi auto quedó como nuevo.' },
-            { id: 2, name: 'Ana G.', stars: 5, text: 'Los mejores mecánicos de la ciudad. Precios justos y trabajo garantizado.' },
-            { id: 3, name: 'Roberto L.', stars: 4, text: 'Muy buen diagnóstico, me explicaron todo el proceso. Totalmente recomendado.' },
+            { id: 1, name: 'Carlos Mendoza', stars: 5, text: 'El nivel de profesionalismo es excepcional. Diagnosticaron el problema en minutos y la reparación fue impecable. Mi auto nunca había funcionado tan bien.' },
+            { id: 2, name: 'Ana Gabriela R.', stars: 5, text: 'Finalmente encontré un taller donde la transparencia y la calidad van de la mano. Presupuesto detallado, sin sorpresas y trabajo garantizado.' },
+            { id: 3, name: 'Roberto Linares', stars: 5, text: 'La tecnología que utilizan marca la diferencia. Detalles que otros talleres pasan por alto, ellos los detectan. Totalmente recomendado.' },
         ];
 
         function loadData() {
@@ -629,16 +1323,19 @@
             const services = getServices().sort((a, b) => a.order - b.order);
             container.innerHTML = services.map(s => `
                 <div class="service-card">
-                    <div class="service-icon">${s.icon}</div>
+                    <div class="service-icon-wrap">${s.icon}</div>
                     <h3>${s.title}</h3>
                     <p>${s.desc}</p>
-                    <a href="#contacto" class="btn-service">Más información</a>
+                    <a href="#contacto" class="service-link">
+                        Solicitar servicio
+                        <span class="arrow">→</span>
+                    </a>
                 </div>
             `).join('');
 
             const footerServices = document.getElementById('footerServices');
             if (footerServices) {
-                footerServices.innerHTML = services.slice(0, 4).map(s =>
+                footerServices.innerHTML = services.slice(0, 5).map(s =>
                     `<li><a href="#servicios">${s.title}</a></li>`
                 ).join('');
             }
@@ -650,6 +1347,7 @@
             container.innerHTML = gallery.map(g => `
                 <div class="gallery-item">
                     <img src="${g.url}" alt="${g.alt}" loading="lazy">
+                    <span class="gallery-label">${g.alt}</span>
                 </div>
             `).join('');
         }
@@ -659,9 +1357,15 @@
             const testimonials = getTestimonials();
             container.innerHTML = testimonials.map(t => `
                 <div class="testimonial-card">
-                    <div class="stars">${'★'.repeat(t.stars)}${'☆'.repeat(5-t.stars)}</div>
-                    <p class="testimonial-text">"${t.text}"</p>
-                    <p class="testimonial-author">- ${t.name}</p>
+                    <div class="testimonial-stars">${'★'.repeat(t.stars)}</div>
+                    <p class="testimonial-text">${t.text}</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">${t.name.charAt(0)}</div>
+                        <div class="testimonial-info">
+                            <strong>${t.name}</strong>
+                            <span>Cliente Verificado</span>
+                        </div>
+                    </div>
                 </div>
             `).join('');
         }
