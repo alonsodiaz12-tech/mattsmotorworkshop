@@ -1047,7 +1047,7 @@
                 <li><a href="#servicios">Servicios</a></li>
                 <li><a href="#galeria">Galería</a></li>
                 <li><a href="#testimonios">Testimonios</a></li>
-                <li><a href="#contacto" class="btn-nav">Agendar Cita</a></li>
+                <li><a href="/booking" class="btn-nav">Agendar Cita</a></li>
             </ul>
         </nav>
     </header>
@@ -1070,7 +1070,7 @@
                 Cada reparación ejecutada con los más altos estándares de calidad.
             </p>
             <div class="hero-buttons">
-                <a href="#contacto" class="btn-primary">
+                <a href="/booking" class="btn-primary">
                     Diagnóstico Gratuito
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </a>
@@ -1182,105 +1182,17 @@
     </section>
 
     <section class="cta-section" id="contacto">
-    <div class="container">
-        <div class="cta-content">
-            <span class="section-label">Agende Su Cita</span>
-            <h2>¿Listo para devolverle la vida a su vehículo?</h2>
-            <p>Complete el formulario y nos pondremos en contacto en menos de 24 horas con un diagnóstico inicial sin costo.</p>
-            <button class="btn-primary" onclick="openBookingModal()" style="font-size:1.1rem; padding:1.2rem 3rem; cursor:pointer;">
-                📅 Agendar Cita Ahora
-            </button>
+        <div class="container">
+            <div class="cta-content">
+                <span class="section-label">Agende Su Cita</span>
+                <h2>¿Listo para devolverle la vida a su vehículo?</h2>
+                <p>Complete el formulario y nos pondremos en contacto en menos de 24 horas con un diagnóstico inicial sin costo.</p>
+                <a href="/booking" class="btn-primary" style="font-size:1.1rem; padding:1.2rem 3rem;">
+                    📅 Agendar Cita Ahora
+                </a>
+            </div>
         </div>
-    </div>
-</section>
-
-<!-- Modal de Agendamiento -->
-<div id="bookingModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999; align-items:center; justify-content:center; padding:2rem;">
-    <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-xl); padding:3rem; max-width:600px; width:100%; max-height:90vh; overflow-y:auto; position:relative;">
-        <button onclick="closeBookingModal()" style="position:absolute; top:1rem; right:1.5rem; background:none; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer; transition:var(--transition);">&times;</button>
-        <span class="section-label">Formulario de Cita</span>
-        <h2 class="section-title" style="font-size:1.8rem; margin-bottom:2rem;">Agende su Visita</h2>
-        <form id="bookingForm" onsubmit="submitBooking(event)" style="display:grid; gap:1.2rem;">
-            <div>
-                <label style="display:block; margin-bottom:0.4rem; font-size:0.85rem; font-weight:600; color:var(--text-secondary);">Nombre Completo *</label>
-                <input type="text" id="bookingName" required placeholder="Ingrese su nombre"
-                    style="width:100%; padding:0.9rem 1.2rem; background:var(--bg-elevated); border:1px solid var(--border); border-radius:8px; color:var(--text-primary); font-size:1rem; font-family:inherit; outline:none; transition:var(--transition);">
-            </div>
-            <div>
-                <label style="display:block; margin-bottom:0.4rem; font-size:0.85rem; font-weight:600; color:var(--text-secondary);">Teléfono *</label>
-                <input type="tel" id="bookingPhone" required placeholder="(123) 456-7890"
-                    style="width:100%; padding:0.9rem 1.2rem; background:var(--bg-elevated); border:1px solid var(--border); border-radius:8px; color:var(--text-primary); font-size:1rem; font-family:inherit; outline:none; transition:var(--transition);">
-            </div>
-            <div>
-                <label style="display:block; margin-bottom:0.4rem; font-size:0.85rem; font-weight:600; color:var(--text-secondary);">Email</label>
-                <input type="email" id="bookingEmail" placeholder="correo@ejemplo.com"
-                    style="width:100%; padding:0.9rem 1.2rem; background:var(--bg-elevated); border:1px solid var(--border); border-radius:8px; color:var(--text-primary); font-size:1rem; font-family:inherit; outline:none; transition:var(--transition);">
-            </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
-                <div>
-                    <label style="display:block; margin-bottom:0.4rem; font-size:0.85rem; font-weight:600; color:var(--text-secondary);">Fecha Deseada *</label>
-                    <input type="date" id="bookingDate" required
-                        style="width:100%; padding:0.9rem 1.2rem; background:var(--bg-elevated); border:1px solid var(--border); border-radius:8px; color:var(--text-primary); font-size:1rem; font-family:inherit; outline:none; transition:var(--transition); color-scheme:dark;">
-                </div>
-                <div>
-                    <label style="display:block; margin-bottom:0.4rem; font-size:0.85rem; font-weight:600; color:var(--text-secondary);">Hora Preferida</label>
-                    <select id="bookingTime"
-                        style="width:100%; padding:0.9rem 1.2rem; background:var(--bg-elevated); border:1px solid var(--border); border-radius:8px; color:var(--text-primary); font-size:1rem; font-family:inherit; outline:none; transition:var(--transition);">
-                        <option value="">Seleccione horario</option>
-                        <option value="8:00 AM">8:00 AM</option>
-                        <option value="9:00 AM">9:00 AM</option>
-                        <option value="10:00 AM">10:00 AM</option>
-                        <option value="11:00 AM">11:00 AM</option>
-                        <option value="12:00 PM">12:00 PM</option>
-                        <option value="2:00 PM">2:00 PM</option>
-                        <option value="3:00 PM">3:00 PM</option>
-                        <option value="4:00 PM">4:00 PM</option>
-                    </select>
-                </div>
-            </div>
-            <div>
-                <label style="display:block; margin-bottom:0.4rem; font-size:0.85rem; font-weight:600; color:var(--text-secondary);">Vehículo *</label>
-                <input type="text" id="bookingVehicle" required placeholder="Marca, Modelo y Año"
-                    style="width:100%; padding:0.9rem 1.2rem; background:var(--bg-elevated); border:1px solid var(--border); border-radius:8px; color:var(--text-primary); font-size:1rem; font-family:inherit; outline:none; transition:var(--transition);">
-            </div>
-            <div>
-                <label style="display:block; margin-bottom:0.4rem; font-size:0.85rem; font-weight:600; color:var(--text-secondary);">Servicio Requerido *</label>
-                <select id="bookingService" required
-                    style="width:100%; padding:0.9rem 1.2rem; background:var(--bg-elevated); border:1px solid var(--border); border-radius:8px; color:var(--text-primary); font-size:1rem; font-family:inherit; outline:none; transition:var(--transition);">
-                    <option value="">Seleccione servicio</option>
-                </select>
-            </div>
-            <div>
-                <label style="display:block; margin-bottom:0.4rem; font-size:0.85rem; font-weight:600; color:var(--text-secondary);">Descripción del Problema</label>
-                <textarea id="bookingDesc" rows="3" placeholder="Describa brevemente el problema o servicio que necesita..."
-                    style="width:100%; padding:0.9rem 1.2rem; background:var(--bg-elevated); border:1px solid var(--border); border-radius:8px; color:var(--text-primary); font-size:1rem; font-family:inherit; outline:none; resize:vertical; transition:var(--transition);"></textarea>
-            </div>
-            <button type="submit" class="btn-primary" style="width:100%; justify-content:center; font-size:1rem; margin-top:0.5rem;">
-                ✅ Confirmar Cita
-            </button>
-        </form>
-        <div id="bookingSuccess" style="display:none; text-align:center; padding:2rem;">
-            <div style="font-size:4rem; margin-bottom:1rem;">✅</div>
-            <h3 style="font-family:'Montserrat',sans-serif; margin-bottom:0.5rem;">¡Cita Agendada Exitosamente!</h3>
-            <p style="color:var(--text-secondary);">Nos pondremos en contacto para confirmar los detalles. Gracias por confiar en nosotros.</p>
-            <button class="btn-primary" onclick="closeBookingModal()" style="margin-top:1.5rem;">Aceptar</button>
-        </div>
-    </div>
-</div>
-
-<style>
-    #bookingModal input:focus,
-    #bookingModal select:focus,
-    #bookingModal textarea:focus {
-        border-color: var(--red) !important;
-        box-shadow: 0 0 0 3px rgba(220,38,38,0.15) !important;
-    }
-    #bookingModal input:hover,
-    #bookingModal select:hover,
-    #bookingModal textarea:hover {
-        border-color: var(--border-light) !important;
-    }
-</style>
+    </section>
 
     <footer>
         <div class="footer-grid">
@@ -1363,74 +1275,6 @@
             { id: 3, name: 'Roberto Linares', stars: 5, text: 'La tecnología que utilizan marca la diferencia. Detalles que otros talleres pasan por alto, ellos los detectan. Totalmente recomendado.' },
         ];
 
-        // Booking Modal
-function openBookingModal() {
-    document.getElementById('bookingModal').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-    populateServiceSelect();
-    // Set minimum date to today
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('bookingDate').setAttribute('min', today);
-}
-
-function closeBookingModal() {
-    document.getElementById('bookingModal').style.display = 'none';
-    document.body.style.overflow = '';
-    document.getElementById('bookingForm').style.display = 'grid';
-    document.getElementById('bookingSuccess').style.display = 'none';
-    document.getElementById('bookingForm').reset();
-}
-
-function populateServiceSelect() {
-    const select = document.getElementById('bookingService');
-    const services = getServices().sort((a, b) => a.order - b.order);
-    select.innerHTML = '<option value="">Seleccione servicio</option>' +
-        services.map(s => `<option value="${s.title}">${s.icon} ${s.title}</option>`).join('');
-}
-
-function submitBooking(e) {
-    e.preventDefault();
-    
-    const booking = {
-        id: Date.now(),
-        name: document.getElementById('bookingName').value,
-        phone: document.getElementById('bookingPhone').value,
-        email: document.getElementById('bookingEmail').value,
-        date: document.getElementById('bookingDate').value,
-        time: document.getElementById('bookingTime').value,
-        vehicle: document.getElementById('bookingVehicle').value,
-        service: document.getElementById('bookingService').value,
-        description: document.getElementById('bookingDesc').value,
-        status: 'pending',
-        createdAt: new Date().toISOString()
-    };
-
-    const bookings = getBookings();
-    bookings.push(booking);
-    localStorage.setItem('bookings', JSON.stringify(bookings));
-
-    document.getElementById('bookingForm').style.display = 'none';
-    document.getElementById('bookingSuccess').style.display = 'block';
-}
-
-function getBookings() {
-    return JSON.parse(localStorage.getItem('bookings')) || [];
-}
-
-// Close modal on Escape
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && document.getElementById('bookingModal').style.display === 'flex') {
-        closeBookingModal();
-    }
-});
-
-// Close modal on background click
-document.getElementById('bookingModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeBookingModal();
-    }
-});
-
         function loadData() {
             if (!localStorage.getItem('services')) localStorage.setItem('services', JSON.stringify(defaultServices));
             if (!localStorage.getItem('gallery')) localStorage.setItem('gallery', JSON.stringify(defaultGallery));
@@ -1449,7 +1293,7 @@ document.getElementById('bookingModal').addEventListener('click', function(e) {
                     <div class="service-icon-wrap">${s.icon}</div>
                     <h3>${s.title}</h3>
                     <p>${s.desc}</p>
-                    <a href="#contacto" class="service-link">
+                    <a href="/booking" class="service-link">
                         Solicitar servicio
                         <span class="arrow">→</span>
                     </a>
