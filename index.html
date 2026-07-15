@@ -635,24 +635,6 @@
                 grid-template-columns: 1fr;
             }
         }
-
-        /* Tooltip para acceder al admin */
-        .admin-trigger-info {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            z-index: 100;
-            opacity: 0.5;
-            transition: opacity 0.3s;
-        }
-        .admin-trigger-info:hover {
-            opacity: 1;
-        }
     </style>
 </head>
 <body>
@@ -866,9 +848,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Indicador de acceso al admin -->
-    <div class="admin-trigger-info">Ctrl+Shift+A → Admin</div>
 
     <script>
         // ============ DATOS INICIALES ============
@@ -1141,38 +1120,53 @@
             }
         }
 
-        // ============ LOGIN Y ACCESO ADMIN ============
-        function loginAdmin() {
-            const password = document.getElementById('adminPassword').value;
-            // Cambia "admin123" por tu contraseña
-            if (password === 'admin123') {
-                document.getElementById('admin-login').classList.remove('hidden');
-                document.getElementById('admin-panel').classList.add('active');
-                renderAllAdmin();
-                document.getElementById('adminPassword').value = '';
-            } else {
-                document.getElementById('loginError').style.display = 'block';
-            }
-        }
-
-        function closeAdmin() {
-            document.getElementById('admin-panel').classList.remove('active');
-            document.getElementById('admin-login').classList.remove('hidden');
-        }
-
-        // Atajo de teclado para abrir admin
-        document.addEventListener('keydown', function(e) {
+        // ============ ACCESO AL ADMIN (PRIVADO) ============
+// Único método: combinación de teclas secreta
+document.addEventListener('keydown', function(e) {
     if (e.ctrlKey && e.shiftKey && e.key === 'A') {
         e.preventDefault();
-        document.getElementById('admin-login').classList.add('visible');
+        const loginDiv = document.getElementById('admin-login');
+        const panelDiv = document.getElementById('admin-panel');
+        
+        if (panelDiv.classList.contains('active')) {
+            panelDiv.classList.remove('active');
+            return;
+        }
+        
+        loginDiv.classList.add('visible');
+        document.getElementById('adminPassword').focus();
+        document.getElementById('loginError').style.display = 'none';
     }
+    
     if (e.key === 'Escape') {
-        if (document.getElementById('admin-panel').classList.contains('active')) {
-            closeAdmin();
-        }
-        if (document.getElementById('admin-login').classList.contains('visible')) {
-            document.getElementById('admin-login').classList.remove('visible');
-        }
+        document.getElementById('admin-panel').classList.remove('active');
+        document.getElementById('admin-login').classList.remove('visible');
+    }
+});
+
+function loginAdmin() {
+    const password = document.getElementById('adminPassword').value;
+    if (password === 'admin123') {
+        document.getElementById('admin-login').classList.remove('visible');
+        document.getElementById('admin-panel').classList.add('active');
+        renderAllAdmin();
+        document.getElementById('adminPassword').value = '';
+        document.getElementById('loginError').style.display = 'none';
+    } else {
+        document.getElementById('loginError').style.display = 'block';
+        document.getElementById('adminPassword').value = '';
+        document.getElementById('adminPassword').focus();
+    }
+}
+
+function closeAdmin() {
+    document.getElementById('admin-panel').classList.remove('active');
+}
+
+// Permitir Enter para login
+document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        loginAdmin();
     }
 });
 
