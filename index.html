@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matts Motor Workshop | Mecánica de Precisión</title>
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
@@ -56,7 +57,6 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -68,13 +68,11 @@
             border-radius: 3px;
         }
 
-        /* Selection */
         ::selection {
             background: var(--red);
             color: white;
         }
 
-        /* ============ HEADER ============ */
         header {
             position: fixed;
             top: 0;
@@ -103,10 +101,21 @@
             height: 80px;
         }
 
-        .logo-container {
+        a.logo-container {
             display: flex;
             align-items: center;
             gap: 14px;
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+        }
+
+        a.logo-container:hover {
+            opacity: 0.85;
+        }
+
+        a.logo-container:hover .logo-img {
+            filter: brightness(1.3);
         }
 
         .logo-img {
@@ -115,10 +124,6 @@
             border-radius: 6px;
             filter: brightness(1.1);
             transition: var(--transition);
-        }
-
-        .logo-container:hover .logo-img {
-            filter: brightness(1.3);
         }
 
         .logo-text {
@@ -197,7 +202,6 @@
             box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4);
         }
 
-        /* Mobile menu button */
         .menu-toggle {
             display: none;
             background: none;
@@ -217,7 +221,6 @@
             border-radius: 1px;
         }
 
-        /* ============ HERO ============ */
         .hero {
             position: relative;
             min-height: 100vh;
@@ -242,13 +245,6 @@
                 radial-gradient(ellipse at 70% 20%, rgba(201, 168, 76, 0.06) 0%, transparent 50%),
                 radial-gradient(ellipse at 50% 80%, rgba(220, 38, 38, 0.08) 0%, transparent 50%);
             z-index: 1;
-        }
-
-        .hero-particles {
-            position: absolute;
-            inset: 0;
-            z-index: 0;
-            opacity: 0.3;
         }
 
         .hero-pattern {
@@ -456,7 +452,6 @@
             }
         }
 
-        /* ============ TRUST BAR ============ */
         .trust-bar {
             background: var(--bg-card);
             border-top: 1px solid var(--border);
@@ -479,13 +474,6 @@
             transform: translateY(-5px);
         }
 
-        .trust-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            display: block;
-            filter: grayscale(0);
-        }
-
         .trust-item .trust-number {
             font-family: 'Montserrat', sans-serif;
             font-size: 2.5rem;
@@ -505,7 +493,6 @@
             margin-top: 0.25rem;
         }
 
-        /* ============ SECTIONS ============ */
         section {
             padding: 7rem 2rem;
             position: relative;
@@ -551,7 +538,6 @@
             margin: 0 auto;
         }
 
-        /* ============ SERVICES ============ */
         .services-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
@@ -567,7 +553,6 @@
             position: relative;
             overflow: hidden;
             cursor: pointer;
-            group: true;
         }
 
         .service-card::before {
@@ -646,7 +631,6 @@
             transform: translateX(4px);
         }
 
-        /* ============ WHY US ============ */
         .why-us {
             background: var(--bg-card);
             border-top: 1px solid var(--border);
@@ -730,7 +714,6 @@
             line-height: 1.6;
         }
 
-        /* ============ GALLERY ============ */
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -743,7 +726,6 @@
             overflow: hidden;
             aspect-ratio: 4/3;
             cursor: pointer;
-            group: true;
         }
 
         .gallery-item img {
@@ -790,7 +772,6 @@
             transform: translateY(0);
         }
 
-        /* ============ TESTIMONIALS ============ */
         .testimonials {
             background: var(--bg-card);
             border-top: 1px solid var(--border);
@@ -863,7 +844,6 @@
             font-size: 0.85rem;
         }
 
-        /* ============ CTA ============ */
         .cta-section {
             text-align: center;
             position: relative;
@@ -900,7 +880,6 @@
             line-height: 1.7;
         }
 
-        /* ============ FOOTER ============ */
         footer {
             background: var(--bg-card);
             border-top: 1px solid var(--border);
@@ -974,7 +953,6 @@
             font-size: 0.85rem;
         }
 
-        /* ============ RESPONSIVE ============ */
         @media (max-width: 1024px) {
             .why-us-grid {
                 grid-template-columns: 1fr;
@@ -1054,13 +1032,13 @@
 
     <header id="header">
         <nav>
-            <div class="logo-container">
+            <a href="#inicio" class="logo-container">
                 <img src="logo.jpg" alt="Matts Motor Workshop" class="logo-img">
                 <div class="logo-text">
                     MATTS MOTOR
                     <span>WORKSHOP</span>
                 </div>
-            </div>
+            </a>
             <button class="menu-toggle" id="menuToggle" aria-label="Menú">
                 <span></span><span></span><span></span>
             </button>
@@ -1074,7 +1052,6 @@
         </nav>
     </header>
 
-    <!-- Hero -->
     <section class="hero" id="inicio">
         <div class="hero-bg">
             <div class="hero-pattern"></div>
@@ -1107,7 +1084,6 @@
         </div>
     </section>
 
-    <!-- Trust Bar -->
     <div class="trust-bar">
         <div class="trust-item">
             <span class="trust-number">15+</span>
@@ -1127,7 +1103,6 @@
         </div>
     </div>
 
-    <!-- Servicios -->
     <section id="servicios">
         <div class="container">
             <div class="section-header">
@@ -1139,7 +1114,6 @@
         </div>
     </section>
 
-    <!-- Why Us -->
     <section class="why-us">
         <div class="container">
             <div class="why-us-grid">
@@ -1185,7 +1159,6 @@
         </div>
     </section>
 
-    <!-- Galería -->
     <section id="galeria">
         <div class="container">
             <div class="section-header">
@@ -1197,7 +1170,6 @@
         </div>
     </section>
 
-    <!-- Testimonios -->
     <section class="testimonials" id="testimonios">
         <div class="container">
             <div class="section-header">
@@ -1209,7 +1181,6 @@
         </div>
     </section>
 
-    <!-- CTA -->
     <section class="cta-section" id="contacto">
         <div class="container">
             <div class="cta-content">
@@ -1223,17 +1194,16 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer>
         <div class="footer-grid">
             <div class="footer-brand">
-                <div class="logo-container" style="margin-bottom:0.5rem;">
+                <a href="#inicio" class="logo-container" style="margin-bottom:0.5rem;">
                     <img src="logo.jpg" alt="Matts Motor Workshop" class="logo-img">
                     <div class="logo-text">
                         MATTS MOTOR
                         <span>WORKSHOP</span>
                     </div>
-                </div>
+                </a>
                 <p>Ingeniería de precisión para su vehículo. Combinamos tecnología avanzada con experiencia artesanal para ofrecer el mejor servicio automotriz.</p>
             </div>
             <div class="footer-section">
@@ -1264,7 +1234,6 @@
     </footer>
 
     <script>
-        // Header scroll effect
         const header = document.getElementById('header');
         window.addEventListener('scroll', () => {
             if (window.scrollY > 50) {
@@ -1274,7 +1243,6 @@
             }
         });
 
-        // Mobile menu
         const menuToggle = document.getElementById('menuToggle');
         const navLinks = document.getElementById('navLinks');
         menuToggle.addEventListener('click', () => {
@@ -1286,7 +1254,6 @@
             });
         });
 
-        // Data
         const defaultServices = [
             { id: 1, title: 'Mecánica General', desc: 'Reparación completa de motor, transmisión y sistemas mecánicos con precisión experta.', icon: '🔧', order: 1 },
             { id: 2, title: 'Diagnóstico Electrónico', desc: 'Análisis computarizado avanzado para identificar fallas con exactitud milimétrica.', icon: '⚡', order: 2 },
