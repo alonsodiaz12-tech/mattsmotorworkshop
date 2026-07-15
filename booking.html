@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendar Cita | Matts Motor Workshop</title>
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0a0a;
+            --bg-card: #111111;
+            --bg-elevated: #1a1a1a;
+            --red: #dc2626;
+            --red-light: #ef4444;
+            --red-dark: #991b1b;
+            --gold: #c9a84c;
+            --gold-light: #e2c970;
+            --text-primary: #ffffff;
+            --text-secondary: #a3a3a3;
+            --text-muted: #737373;
+            --border: #262626;
+            --border-light: #333333;
+            --radius: 12px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+            --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            -webkit-font-smoothing: antialiased;
+            background-image:
+                radial-gradient(ellipse at 20% 50%, rgba(220,38,38,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 50%, rgba(201,168,76,0.04) 0%, transparent 50%);
+        }
+
+        .booking-container {
+            width: 100%;
+            max-width: 700px;
+            display: grid;
+            gap: 2rem;
+        }
+
+        .booking-header {
+            text-align: center;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+            margin-bottom: 1.5rem;
+        }
+
+        .back-link:hover {
+            color: var(--red-light);
+        }
+
+        .booking-header .logo {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .booking-header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .booking-header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .booking-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem;
+        }
+
+        .booking-form {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: grid;
+            gap: 0.4rem;
+        }
+
+        .form-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+        }
+
+        .form-group label .required {
+            color: var(--red-light);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.9rem 1.2rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .form-group input:hover,
+        .form-group select:hover,
+        .form-group textarea:hover {
+            border-color: var(--border-light);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--red);
+            box-shadow: 0 0 0 3px rgba(220,38,38,0.12);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' stroke='%23a3a3a3' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+
+        .form-group input[type="date"] {
+            color-scheme: dark;
+            cursor: pointer;
+        }
+
+        .btn-submit {
+            background: var(--red);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 8px 30px rgba(220,38,38,0.3);
+            margin-top: 0.5rem;
+        }
+
+        .btn-submit:hover {
+            background: var(--red-light);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(220,38,38,0.45);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .success-screen {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .success-screen .icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            animation: popIn 0.5s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .success-screen h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .success-screen p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+
+        .success-screen .booking-details {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+
+        .success-screen .booking-details p {
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .success-screen .booking-details strong {
+            color: var(--text-primary);
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-light);
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .btn-back:hover {
+            border-color: var(--text-secondary);
+            background: rgba(255,255,255,0.02);
+        }
+
+        .error-input {
+            border-color: var(--red-light) !important;
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 1rem;
+                align-items: flex-start;
+                padding-top: 2rem;
+            }
+            .booking-card {
+                padding: 1.5rem;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="booking-container">
+        <div class="booking-header">
+            <a href="/home" class="back-link">← Volver al taller</a>
+            <div class="logo">🔧</div>
+            <h1>Agendar Cita</h1>
+            <p>Complete el formulario y nos pondremos en contacto para confirmar su cita.</p>
+        </div>
+
+        <div class="booking-card">
+            <!-- Formulario -->
+            <form class="booking-form" id="bookingForm" onsubmit="submitBooking(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre Completo <span class="required">*</span></label>
+                        <input type="text" id="bookingName" placeholder="Ingrese su nombre completo" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono <span class="required">*</span></label>
+                        <input type="tel" id="bookingPhone" placeholder="(123) 456-7890" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="bookingEmail" placeholder="correo@ejemplo.com">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fecha Deseada <span class="required">*</span></label>
+                        <input type="date" id="bookingDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Hora Preferida</label>
+                        <select id="bookingTime">
+                            <option value="">Seleccione horario</option>
+                            <option value="8:00 AM">8:00 AM</option>
+                            <option value="9:00 AM">9:00 AM</option>
+                            <option value="10:00 AM">10:00 AM</option>
+                            <option value="11:00 AM">11:00 AM</option>
+                            <option value="12:00 PM">12:00 PM</option>
+                            <option value="2:00 PM">2:00 PM</option>
+                            <option value="3:00 PM">3:00 PM</option>
+                            <option value="4:00 PM">4:00 PM</option>
+                            <option value="5:00 PM">5:00 PM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Vehículo <span class="required">*</span></label>
+                    <input type="text" id="bookingVehicle" placeholder="Marca, Modelo y Año" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Servicio Requerido <span class="required">*</span></label>
+                    <select id="bookingService" required>
+                        <option value="">Seleccione el servicio</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Descripción del Problema</label>
+                    <textarea id="bookingDesc" placeholder="Describa brevemente el problema o trabajo que necesita realizar..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit">✅ Confirmar y Agendar Cita</button>
+            </form>
+
+            <!-- Pantalla de éxito -->
+            <div class="success-screen" id="successScreen">
+                <div class="icon">✅</div>
+                <h2>¡Cita Agendada!</h2>
+                <p>Hemos recibido su solicitud exitosamente.</p>
+                <div class="booking-details" id="bookingDetails"></div>
+                <p style="color:var(--text-muted); font-size:0.9rem;">Nos pondremos en contacto en las próximas 24 horas para confirmar los detalles.</p>
+                <a href="/home" class="btn-back">← Volver al inicio</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getServices() {
+            return JSON.parse(localStorage.getItem('services')) || [];
+        }
+
+        function getBookings() {
+            return JSON.parse(localStorage.getItem('bookings')) || [];
+        }
+
+        function populateServiceSelect() {
+            const select = document.getElementById('bookingService');
+            const services = getServices().sort((a, b) => a.order - b.order);
+            select.innerHTML = '<option value="">Seleccione el servicio</option>' +
+                services.map(s => `<option value="${s.title}">${s.icon} ${s.title}</option>`).join('');
+        }
+
+        function submitBooking(e) {
+            e.preventDefault();
+
+            const booking = {
+                id: Date.now(),
+                name: document.getElementById('bookingName').value.trim(),
+                phone: document.getElementById('bookingPhone').value.trim(),
+                email: document.getElementById('bookingEmail').value.trim(),
+                date: document.getElementById('bookingDate').value,
+                time: document.getElementById('bookingTime').value,
+                vehicle: document.getElementById('bookingVehicle').value.trim(),
+                service: document.getElementById('bookingService').value,
+                description: document.getElementById('bookingDesc').value.trim(),
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            };
+
+            const bookings = getBookings();
+            bookings.push(booking);
+            localStorage.setItem('bookings', JSON.stringify(bookings));
+
+            // Show success
+            document.getElementById('bookingForm').style.display = 'none';
+            document.getElementById('successScreen').style.display = 'block';
+
+            const dateFormatted = new Date(booking.date + 'T00:00:00').toLocaleDateString('es-MX', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            document.getElementById('bookingDetails').innerHTML = `
+                <p><strong>Nombre:</strong> ${booking.name}</p>
+                <p><strong>Teléfono:</strong> ${booking.phone}</p>
+                ${booking.email ? `<p><strong>Email:</strong> ${booking.email}</p>` : ''}
+                <p><strong>Fecha:</strong> ${dateFormatted}</p>
+                ${booking.time ? `<p><strong>Hora:</strong> ${booking.time}</p>` : ''}
+                <p><strong>Vehículo:</strong> ${booking.vehicle}</p>
+                <p><strong>Servicio:</strong> ${booking.service}</p>
+            `;
+
+            document.getElementById('successScreen').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('bookingDate').setAttribute('min', today);
+
+        // Populate services on load
+        populateServiceSelect();
+    </script>
+</body>
+</html>
