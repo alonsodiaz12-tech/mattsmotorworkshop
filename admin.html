@@ -342,6 +342,13 @@
             color: var(--red-light);
         }
 
+        .booking-filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
         @media (max-width: 768px) {
             .panel-header {
                 flex-direction: column;
@@ -377,23 +384,10 @@
                 <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
             </div>
         </div>
-
-        <div class="admin-section">
-    <h3>📅 Citas Agendadas</h3>
-    <div class="booking-filters" style="display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap;">
-        <button class="btn-admin btn-edit" onclick="filterBookings('all')" id="filterAll" style="background:var(--red);">Todas</button>
-        <button class="btn-admin btn-edit" onclick="filterBookings('pending')" id="filterPending" style="background:#f59e0b;">Pendientes</button>
-        <button class="btn-admin btn-edit" onclick="filterBookings('confirmed')" id="filterConfirmed" style="background:#3b82f6;">Confirmadas</button>
-        <button class="btn-admin btn-edit" onclick="filterBookings('completed')" id="filterCompleted" style="background:#22c55e;">Completadas</button>
-        <button class="btn-admin btn-edit" onclick="filterBookings('cancelled')" id="filterCancelled" style="background:#ef4444;">Canceladas</button>
-    </div>
-    <div class="item-list" id="bookingsList"></div>
-</div>
-
-        
         <div class="panel-content">
             <div class="success-msg" id="successMsg">✅ Cambios guardados correctamente</div>
 
+            <!-- Servicios -->
             <div class="admin-section">
                 <h3>📋 Servicios</h3>
                 <div class="item-list" id="servicesList"></div>
@@ -421,6 +415,7 @@
                 </div>
             </div>
 
+            <!-- Galería -->
             <div class="admin-section">
                 <h3>🖼️ Galería de Trabajos</h3>
                 <div class="item-list" id="galleryList"></div>
@@ -431,6 +426,7 @@
                 </div>
             </div>
 
+            <!-- Testimonios -->
             <div class="admin-section">
                 <h3>💬 Testimonios de Clientes</h3>
                 <div class="item-list" id="testimonialsList"></div>
@@ -440,6 +436,20 @@
                     <textarea id="testimonialText" placeholder="Texto del testimonio"></textarea>
                     <button class="btn-add" onclick="addTestimonial()">+ Agregar Testimonio</button>
                 </div>
+            </div>
+
+            <!-- Citas -->
+            <div class="admin-section">
+                <h3>📅 Citas Agendadas</h3>
+                <div class="booking-filters">
+                    <button class="btn-admin btn-edit" onclick="filterBookings('all')" id="filterAll" style="background:var(--red);">Todas</button>
+                    <button class="btn-admin btn-edit" onclick="filterBookings('pending')" id="filterPending" style="background:#f59e0b;">Pendientes</button>
+                    <button class="btn-admin btn-edit" onclick="filterBookings('confirmed')" id="filterConfirmed" style="background:#3b82f6;">Confirmadas</button>
+                    <button class="btn-admin btn-edit" onclick="filterBookings('in_progress')" id="filterInProgress" style="background:#8b5cf6;">En Progreso</button>
+                    <button class="btn-admin btn-edit" onclick="filterBookings('completed')" id="filterCompleted" style="background:#22c55e;">Completadas</button>
+                    <button class="btn-admin btn-edit" onclick="filterBookings('cancelled')" id="filterCancelled" style="background:#ef4444;">Canceladas</button>
+                </div>
+                <div class="item-list" id="bookingsList"></div>
             </div>
         </div>
     </div>
@@ -468,92 +478,6 @@
             { id: 3, name: 'Roberto Linares', stars: 5, text: 'La tecnología que utilizan marca la diferencia. Mi auto nunca había funcionado tan bien.' },
         ];
 
-        let currentFilter = 'all';
-
-function getBookings() {
-    return JSON.parse(localStorage.getItem('bookings')) || [];
-}
-
-function renderBookings() {
-    const container = document.getElementById('bookingsList');
-    let bookings = getBookings();
-    
-    if (currentFilter !== 'all') {
-        bookings = bookings.filter(b => b.status === currentFilter);
-    }
-    
-    bookings.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    
-    if (bookings.length === 0) {
-        container.innerHTML = '<div class="item-row" style="justify-content:center; color:var(--text-muted);">No hay citas para mostrar</div>';
-        return;
-    }
-    
-    container.innerHTML = bookings.map(b => {
-        const statusColors = {
-            pending: { bg: '#f59e0b', text: 'Pendiente' },
-            confirmed: { bg: '#3b82f6', text: 'Confirmada' },
-            completed: { bg: '#22c55e', text: 'Completada' },
-            cancelled: { bg: '#ef4444', text: 'Cancelada' }
-        };
-        const status = statusColors[b.status] || statusColors.pending;
-        const date = new Date(b.date).toLocaleDateString('es-MX', { weekday:'short', year:'numeric', month:'short', day:'numeric' });
-        
-        return `
-            <div class="item-row" style="flex-direction:column; align-items:stretch; gap:0.75rem;">
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
-                    <span style="font-weight:700;">📅 ${date} ${b.time || ''}</span>
-                    <span style="background:${status.bg}; color:white; padding:0.25rem 0.75rem; border-radius:50px; font-size:0.75rem; font-weight:600;">${status.text}</span>
-                </div>
-                <div style="display:grid; gap:0.3rem; font-size:0.9rem; color:var(--text-secondary);">
-                    <div>👤 <strong style="color:var(--text-primary);">${b.name}</strong></div>
-                    <div>📞 ${b.phone} ${b.email ? '| ✉️ ' + b.email : ''}</div>
-                    <div>🚗 ${b.vehicle} | 🔧 ${b.service}</div>
-                    ${b.description ? `<div style="font-style:italic; padding:0.5rem; background:var(--bg-dark); border-radius:6px; margin-top:0.25rem;">"${b.description}"</div>` : ''}
-                </div>
-                <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
-                    <select onchange="updateBookingStatus(${b.id}, this.value)" style="padding:0.4rem 0.8rem; background:var(--bg-dark); border:1px solid var(--border); border-radius:6px; color:var(--text-primary); font-size:0.8rem; cursor:pointer;">
-                        <option value="pending" ${b.status==='pending'?'selected':''}>Pendiente</option>
-                        <option value="confirmed" ${b.status==='confirmed'?'selected':''}>Confirmar</option>
-                        <option value="completed" ${b.status==='completed'?'selected':''}>Completar</option>
-                        <option value="cancelled" ${b.status==='cancelled'?'selected':''}>Cancelar</option>
-                    </select>
-                    <button class="btn-admin btn-delete" onclick="deleteBooking(${b.id})">Eliminar</button>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-function updateBookingStatus(id, status) {
-    const bookings = getBookings();
-    const index = bookings.findIndex(b => b.id === id);
-    if (index !== -1) {
-        bookings[index].status = status;
-        localStorage.setItem('bookings', JSON.stringify(bookings));
-        renderBookings();
-        showSuccess();
-    }
-}
-
-function deleteBooking(id) {
-    if (confirm('¿Eliminar esta cita permanentemente?')) {
-        const bookings = getBookings().filter(b => b.id !== id);
-        localStorage.setItem('bookings', JSON.stringify(bookings));
-        renderBookings();
-        showSuccess();
-    }
-}
-
-function filterBookings(filter) {
-    currentFilter = filter;
-    ['all','pending','confirmed','completed','cancelled'].forEach(f => {
-        const btn = document.getElementById('filter' + f.charAt(0).toUpperCase() + f.slice(1));
-        if (btn) btn.style.opacity = filter === f ? '1' : '0.5';
-    });
-    renderBookings();
-}
-
         function initData() {
             if (!localStorage.getItem('services')) localStorage.setItem('services', JSON.stringify(defaultServices));
             if (!localStorage.getItem('gallery')) localStorage.setItem('gallery', JSON.stringify(defaultGallery));
@@ -563,6 +487,7 @@ function filterBookings(filter) {
         function getServices() { return JSON.parse(localStorage.getItem('services')) || []; }
         function getGallery() { return JSON.parse(localStorage.getItem('gallery')) || []; }
         function getTestimonials() { return JSON.parse(localStorage.getItem('testimonials')) || []; }
+        function getBookings() { return JSON.parse(localStorage.getItem('bookings')) || []; }
 
         function showSuccess() {
             const msg = document.getElementById('successMsg');
@@ -630,6 +555,160 @@ function filterBookings(filter) {
                     <button class="btn-admin btn-delete" onclick="deleteTestimonial(${t.id})">Eliminar</button>
                 </div>
             `).join('');
+        }
+
+        let currentFilter = 'all';
+
+        function renderBookings() {
+            const container = document.getElementById('bookingsList');
+            let bookings = getBookings();
+            
+            if (currentFilter !== 'all') {
+                bookings = bookings.filter(b => b.status === currentFilter);
+            }
+            
+            bookings.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            
+            if (bookings.length === 0) {
+                container.innerHTML = '<div class="item-row" style="justify-content:center; color:var(--text-muted);">No hay citas para mostrar</div>';
+                return;
+            }
+            
+            container.innerHTML = bookings.map(b => {
+                const statusColors = {
+                    pending: { bg: '#f59e0b', text: 'Pendiente' },
+                    confirmed: { bg: '#3b82f6', text: 'Confirmada' },
+                    in_progress: { bg: '#8b5cf6', text: 'En Progreso' },
+                    completed: { bg: '#22c55e', text: 'Completada' },
+                    cancelled: { bg: '#ef4444', text: 'Cancelada' }
+                };
+                const status = statusColors[b.status] || statusColors.pending;
+                const date = new Date(b.date).toLocaleDateString('es-MX', { weekday:'short', year:'numeric', month:'short', day:'numeric' });
+                const notes = b.notes || [];
+                
+                return `
+                    <div class="item-row" style="flex-direction:column; align-items:stretch; gap:0.75rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+                            <div>
+                                <span style="font-weight:700;">📅 ${date} ${b.time || ''}</span>
+                                ${b.plate ? `<span style="margin-left:1rem; background:var(--bg-dark); padding:0.2rem 0.6rem; border-radius:4px; font-family:monospace; font-weight:700; letter-spacing:1px;">🚗 ${b.plate}</span>` : '<span style="margin-left:0.5rem; color:var(--text-muted); font-size:0.8rem;">Sin placa</span>'}
+                            </div>
+                            <span style="background:${status.bg}; color:white; padding:0.25rem 0.75rem; border-radius:50px; font-size:0.75rem; font-weight:600;">${status.text}</span>
+                        </div>
+                        <div style="display:grid; gap:0.3rem; font-size:0.9rem; color:var(--text-secondary);">
+                            <div>👤 <strong style="color:var(--text-primary);">${b.name}</strong></div>
+                            <div>📞 ${b.phone} ${b.email ? '| ✉️ ' + b.email : ''}</div>
+                            <div>🚗 ${b.vehicle} | 🔧 ${b.service}</div>
+                            ${b.description ? `<div style="font-style:italic; padding:0.5rem; background:var(--bg-dark); border-radius:6px; margin-top:0.25rem;">"${b.description}"</div>` : ''}
+                        </div>
+                        
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+                            <div>
+                                <label style="font-size:0.7rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">Placa</label>
+                                <input type="text" value="${b.plate || ''}" onchange="updateBookingPlate(${b.id}, this.value)" placeholder="ABC-1234"
+                                    style="width:100%; padding:0.5rem 0.8rem; background:var(--bg-dark); border:1px solid var(--border); border-radius:6px; color:var(--text-primary); font-size:0.85rem; font-family:monospace; letter-spacing:1px; text-transform:uppercase; outline:none;">
+                            </div>
+                            <div>
+                                <label style="font-size:0.7rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">Entrega Estimada</label>
+                                <input type="date" value="${b.estimatedDelivery || ''}" onchange="updateBookingEstimate(${b.id}, this.value)"
+                                    style="width:100%; padding:0.5rem 0.8rem; background:var(--bg-dark); border:1px solid var(--border); border-radius:6px; color:var(--text-primary); font-size:0.85rem; color-scheme:dark; outline:none;">
+                            </div>
+                        </div>
+                        
+                        <div style="background:var(--bg-dark); border:1px solid var(--border); border-radius:8px; padding:1rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                                <span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">📝 Notas del Taller</span>
+                                <button class="btn-admin btn-edit" onclick="addBookingNote(${b.id})" style="font-size:0.7rem;">+ Nota</button>
+                            </div>
+                            ${notes.length === 0 ? '<p style="color:var(--text-muted); font-size:0.8rem; font-style:italic;">Sin notas</p>' : 
+                            `<ul style="list-style:none; display:grid; gap:0.3rem;">${notes.map(n => `
+                                <li style="font-size:0.8rem; color:var(--text-secondary); padding:0.4rem 0.6rem; background:var(--bg-elevated); border-radius:4px; display:flex; justify-content:space-between;">
+                                    <span>${n.text}</span>
+                                    <span style="color:var(--text-muted); font-size:0.7rem;">${new Date(n.time).toLocaleString('es-MX', {hour:'2-digit',minute:'2-digit'})}</span>
+                                </li>
+                            `).join('')}</ul>`}
+                        </div>
+                        
+                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+                            <select onchange="updateBookingStatus(${b.id}, this.value)" style="padding:0.4rem 0.8rem; background:var(--bg-dark); border:1px solid var(--border); border-radius:6px; color:var(--text-primary); font-size:0.8rem; cursor:pointer;">
+                                <option value="pending" ${b.status==='pending'?'selected':''}>Pendiente</option>
+                                <option value="confirmed" ${b.status==='confirmed'?'selected':''}>Confirmar</option>
+                                <option value="in_progress" ${b.status==='in_progress'?'selected':''}>En Progreso</option>
+                                <option value="completed" ${b.status==='completed'?'selected':''}>Completar</option>
+                                <option value="cancelled" ${b.status==='cancelled'?'selected':''}>Cancelar</option>
+                            </select>
+                            <button class="btn-admin btn-delete" onclick="deleteBooking(${b.id})">Eliminar</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateBookingPlate(id, plate) {
+            const bookings = getBookings();
+            const index = bookings.findIndex(b => b.id === id);
+            if (index !== -1) {
+                bookings[index].plate = plate.toUpperCase();
+                localStorage.setItem('bookings', JSON.stringify(bookings));
+            }
+        }
+
+        function updateBookingEstimate(id, date) {
+            const bookings = getBookings();
+            const index = bookings.findIndex(b => b.id === id);
+            if (index !== -1) {
+                bookings[index].estimatedDelivery = date;
+                localStorage.setItem('bookings', JSON.stringify(bookings));
+                showSuccess();
+            }
+        }
+
+        function addBookingNote(id) {
+            const note = prompt('Agregar nota para el cliente:');
+            if (note && note.trim()) {
+                const bookings = getBookings();
+                const index = bookings.findIndex(b => b.id === id);
+                if (index !== -1) {
+                    if (!bookings[index].notes) bookings[index].notes = [];
+                    bookings[index].notes.push({
+                        text: note.trim(),
+                        time: new Date().toISOString()
+                    });
+                    localStorage.setItem('bookings', JSON.stringify(bookings));
+                    renderBookings();
+                    showSuccess();
+                }
+            }
+        }
+
+        function updateBookingStatus(id, status) {
+            const bookings = getBookings();
+            const index = bookings.findIndex(b => b.id === id);
+            if (index !== -1) {
+                bookings[index].status = status;
+                localStorage.setItem('bookings', JSON.stringify(bookings));
+                renderBookings();
+                showSuccess();
+            }
+        }
+
+        function deleteBooking(id) {
+            if (confirm('¿Eliminar esta cita permanentemente?')) {
+                const bookings = getBookings().filter(b => b.id !== id);
+                localStorage.setItem('bookings', JSON.stringify(bookings));
+                renderBookings();
+                showSuccess();
+            }
+        }
+
+        function filterBookings(filter) {
+            currentFilter = filter;
+            const filters = ['all','pending','confirmed','in_progress','completed','cancelled'];
+            filters.forEach(f => {
+                const btn = document.getElementById('filter' + f.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(''));
+                if (btn) btn.style.opacity = filter === f ? '1' : '0.5';
+            });
+            renderBookings();
         }
 
         function renderAll() {
