@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Taller Mecánico</title>
+    <style>
+        :root {
+            --negro: #1a1a1a;
+            --negro-claro: #2d2d2d;
+            --rojo: #cc0000;
+            --gris-oscuro: #333333;
+            --gris-medio: #666666;
+            --gris-claro: #f5f5f5;
+            --blanco: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #111;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Login */
+        #loginScreen {
+            background: white;
+            padding: 3rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        #loginScreen h2 {
+            color: var(--negro);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        #loginScreen .logo {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        #loginScreen input {
+            display: block;
+            width: 100%;
+            padding: 0.8rem;
+            margin: 1rem 0;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        #loginScreen input:focus {
+            outline: none;
+            border-color: var(--rojo);
+        }
+
+        #loginScreen button {
+            background: var(--rojo);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        #loginScreen button:hover {
+            background: #a30000;
+        }
+
+        .error-msg {
+            color: red;
+            display: none;
+            margin-top: 0.5rem;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 1.5rem;
+            color: #999;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            color: var(--rojo);
+        }
+
+        /* Panel */
+        #panelScreen {
+            display: none;
+            width: 95%;
+            max-width: 1200px;
+            margin: 2rem auto;
+        }
+
+        .panel-header {
+            background: var(--negro);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .panel-header h1 {
+            font-size: 1.5rem;
+        }
+
+        .btn-logout {
+            background: var(--rojo);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-logout:hover {
+            background: #a30000;
+        }
+
+        .panel-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .admin-section {
+            background: var(--gris-claro);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .admin-section h3 {
+            color: var(--negro);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            border-bottom: 2px solid var(--rojo);
+            padding-bottom: 0.5rem;
+        }
+
+        .item-list {
+            display: grid;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .item-row {
+            background: white;
+            padding: 1rem;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--rojo);
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .btn-admin {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: white;
+        }
+
+        .btn-edit {
+            background: #4a90e2;
+        }
+        .btn-delete {
+            background: #e74c3c;
+        }
+        .btn-add {
+            background: var(--rojo);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .admin-form {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .admin-form input,
+        .admin-form textarea,
+        .admin-form select {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .admin-form textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-cancel {
+            background: #999;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .success-msg {
+            background: #27ae60;
+            color: white;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: none;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .panel-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .item-row {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Login -->
+    <div id="loginScreen">
+        <div class="logo">🔐</div>
+        <h2>Panel de Administración</h2>
+        <input type="password" id="adminPassword" placeholder="Contraseña" autofocus>
+        <p class="error-msg" id="loginError">Contraseña incorrecta</p>
+        <button onclick="login()">Ingresar</button>
+        <a href="index.html" class="back-link">← Volver al taller</a>
+    </div>
+
+    <!-- Panel -->
+    <div id="panelScreen">
+        <div class="panel-header">
+            <h1>⚙️ Administrar Taller Mecánico</h1>
+            <div>
+                <a href="index.html" style="color:white; text-decoration:none; margin-right:1rem;">← Ver página</a>
+                <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
+            </div>
+        </div>
+        <div class="panel-content">
+            <div class="success-msg" id="successMsg">✅ Cambios guardados correctamente</div>
+
+            <!-- Servicios -->
+            <div class="admin-section">
+                <h3>📋 Servicios</h3>
+                <div class="item-list" id="servicesList"></div>
+                <button class="btn-add" onclick="showServiceForm()">+ Agregar Servicio</button>
+                <div id="serviceForm" class="admin-form" style="display:none;">
+                    <input type="text" id="serviceTitle" placeholder="Título del servicio">
+                    <textarea id="serviceDesc" placeholder="Descripción"></textarea>
+                    <select id="serviceIcon">
+                        <option value="🔧">🔧 Mecánica</option>
+                        <option value="⚡">⚡ Electricidad</option>
+                        <option value="🖥️">🖥️ Scanner</option>
+                        <option value="🛑">🛑 Frenos</option>
+                        <option value="❄️">❄️ Aire Acond.</option>
+                        <option value="🛢️">🛢️ Aceite</option>
+                        <option value="🔩">🔩 General</option>
+                        <option value="🚗">🚗 Motor</option>
+                    </select>
+                    <input type="number" id="serviceOrder" placeholder="Orden (1,2,3...)" min="1" value="1">
+                    <input type="hidden" id="serviceEditId">
+                    <div class="form-buttons">
+                        <button class="btn-add" onclick="saveService()">💾 Guardar</button>
+                        <button class="btn-cancel" onclick="cancelServiceForm()">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Galería -->
+            <div class="admin-section">
+                <h3>🖼️ Galería</h3>
+                <div class="item-list" id="galleryList"></div>
+                <div class="admin-form">
+                    <input type="text" id="galleryUrl" placeholder="URL de la imagen">
+                    <input type="text" id="galleryAlt" placeholder="Descripción de la imagen">
+                    <button class="btn-add" onclick="addGalleryItem()">+ Agregar Imagen</button>
+                </div>
+            </div>
+
+            <!-- Testimonios -->
+            <div class="admin-section">
+                <h3>💬 Testimonios</h3>
+                <div class="item-list" id="testimonialsList"></div>
+                <div class="admin-form">
+                    <input type="text" id="testimonialName" placeholder="Nombre del cliente">
+                    <input type="number" id="testimonialStars" placeholder="Estrellas (1-5)" min="1" max="5" value="5">
+                    <textarea id="testimonialText" placeholder="Testimonio"></textarea>
+                    <button class="btn-add" onclick="addTestimonial()">+ Agregar Testimonio</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ADMIN_PASSWORD = 'admin123';
+
+        const defaultServices = [
+            { id: 1, title: 'Mecánica General', desc: 'Reparación completa de motor, transmisión y sistemas mecánicos.', icon: '🔧', order: 1 },
+            { id: 2, title: 'Electricidad Automotriz', desc: 'Diagnóstico y reparación de sistemas eléctricos y electrónicos.', icon: '⚡', order: 2 },
+            { id: 3, title: 'Scanner Computarizado', desc: 'Diagnóstico preciso con equipo de última generación.', icon: '🖥️', order: 3 },
+            { id: 4, title: 'Frenos y Suspensión', desc: 'Revisión y cambio de balatas, discos y amortiguadores.', icon: '🛑', order: 4 },
+            { id: 5, title: 'Aire Acondicionado', desc: 'Carga de gas, reparación y mantenimiento de A/C.', icon: '❄️', order: 5 },
+            { id: 6, title: 'Cambio de Aceite', desc: 'Aceite y filtros de la más alta calidad para tu motor.', icon: '🛢️', order: 6 },
+        ];
+
+        const defaultGallery = [
+            { id: 1, url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect fill="%23444" width="400" height="300"/><text fill="white" x="200" y="160" text-anchor="middle" font-size="24">Motor</text></svg>', alt: 'Reparación de motor' },
+            { id: 2, url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect fill="%23555" width="400" height="300"/><text fill="white" x="200" y="160" text-anchor="middle" font-size="24">Frenos</text></svg>', alt: 'Cambio de frenos' },
+            { id: 3, url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect fill="%23333" width="400" height="300"/><text fill="white" x="200" y="160" text-anchor="middle" font-size="24">Scanner</text></svg>', alt: 'Diagnóstico computarizado' },
+        ];
+
+        const defaultTestimonials = [
+            { id: 1, name: 'Carlos M.', stars: 5, text: 'Excelente servicio, rápido y profesional. Mi auto quedó como nuevo.' },
+            { id: 2, name: 'Ana G.', stars: 5, text: 'Los mejores mecánicos de la ciudad. Precios justos y trabajo garantizado.' },
+            { id: 3, name: 'Roberto L.', stars: 4, text: 'Muy buen diagnóstico, me explicaron todo el proceso. Totalmente recomendado.' },
+        ];
+
+        function initData() {
+            if (!localStorage.getItem('services')) localStorage.setItem('services', JSON.stringify(defaultServices));
+            if (!localStorage.getItem('gallery')) localStorage.setItem('gallery', JSON.stringify(defaultGallery));
+            if (!localStorage.getItem('testimonials')) localStorage.setItem('testimonials', JSON.stringify(defaultTestimonials));
+        }
+
+        function getServices() { return JSON.parse(localStorage.getItem('services')) || []; }
+        function getGallery() { return JSON.parse(localStorage.getItem('gallery')) || []; }
+        function getTestimonials() { return JSON.parse(localStorage.getItem('testimonials')) || []; }
+
+        function showSuccess() {
+            const msg = document.getElementById('successMsg');
+            msg.style.display = 'block';
+            setTimeout(() => { msg.style.display = 'none'; }, 2000);
+        }
+
+        // Login
+        function login() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === ADMIN_PASSWORD) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('panelScreen').style.display = 'block';
+                document.body.style.alignItems = 'flex-start';
+                renderAll();
+                document.getElementById('adminPassword').value = '';
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('adminPassword').focus();
+            }
+        }
+
+        function logout() {
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('panelScreen').style.display = 'none';
+            document.body.style.alignItems = 'center';
+            document.getElementById('loginError').style.display = 'none';
+        }
+
+        document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') login();
+        });
+
+        // Render lists
+        function renderServicesList() {
+            const container = document.getElementById('servicesList');
+            const services = getServices().sort((a, b) => a.order - b.order);
+            container.innerHTML = services.map(s => `
+                <div class="item-row">
+                    <span>${s.icon} <strong>${s.title}</strong> (Orden: ${s.order})</span>
+                    <div>
+                        <button class="btn-admin btn-edit" onclick="editService(${s.id})">Editar</button>
+                        <button class="btn-admin btn-delete" onclick="deleteService(${s.id})">Eliminar</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderGalleryList() {
+            const container = document.getElementById('galleryList');
+            const gallery = getGallery();
+            container.innerHTML = gallery.map(g => `
+                <div class="item-row">
+                    <span>🖼️ ${g.alt}</span>
+                    <button class="btn-admin btn-delete" onclick="deleteGalleryItem(${g.id})">Eliminar</button>
+                </div>
+            `).join('');
+        }
+
+        function renderTestimonialsList() {
+            const container = document.getElementById('testimonialsList');
+            const testimonials = getTestimonials();
+            container.innerHTML = testimonials.map(t => `
+                <div class="item-row">
+                    <span>💬 ${t.name} - ${'★'.repeat(t.stars)}</span>
+                    <button class="btn-admin btn-delete" onclick="deleteTestimonial(${t.id})">Eliminar</button>
+                </div>
+            `).join('');
+        }
+
+        function renderAll() {
+            renderServicesList();
+            renderGalleryList();
+            renderTestimonialsList();
+        }
+
+        // Servicios CRUD
+        function showServiceForm() {
+            document.getElementById('serviceForm').style.display = 'grid';
+            document.getElementById('serviceEditId').value = '';
+            document.getElementById('serviceTitle').value = '';
+            document.getElementById('serviceDesc').value = '';
+            document.getElementById('serviceOrder').value = '1';
+        }
+
+        function cancelServiceForm() {
+            document.getElementById('serviceForm').style.display = 'none';
+        }
+
+        function saveService() {
+            const services = getServices();
+            const editId = document.getElementById('serviceEditId').value;
+            const title = document.getElementById('serviceTitle').value;
+            const desc = document.getElementById('serviceDesc').value;
+            const icon = document.getElementById('serviceIcon').value;
+            const order = parseInt(document.getElementById('serviceOrder').value) || 1;
+
+            if (!title || !desc) {
+                alert('Por favor completa título y descripción');
+                return;
+            }
+
+            if (editId) {
+                const index = services.findIndex(s => s.id === parseInt(editId));
+                if (index !== -1) services[index] = { ...services[index], title, desc, icon, order };
+            } else {
+                const newId = services.length > 0 ? Math.max(...services.map(s => s.id)) + 1 : 1;
+                services.push({ id: newId, title, desc, icon, order });
+            }
+
+            localStorage.setItem('services', JSON.stringify(services));
+            cancelServiceForm();
+            renderAll();
+            showSuccess();
+        }
+
+        function editService(id) {
+            const service = getServices().find(s => s.id === id);
+            if (service) {
+                document.getElementById('serviceEditId').value = service.id;
+                document.getElementById('serviceTitle').value = service.title;
+                document.getElementById('serviceDesc').value = service.desc;
+                document.getElementById('serviceIcon').value = service.icon;
+                document.getElementById('serviceOrder').value = service.order;
+                document.getElementById('serviceForm').style.display = 'grid';
+                document.getElementById('serviceTitle').focus();
+            }
+        }
+
+        function deleteService(id) {
+            if (confirm('¿Eliminar este servicio?')) {
+                const services = getServices().filter(s => s.id !== id);
+                localStorage.setItem('services', JSON.stringify(services));
+                renderAll();
+                showSuccess();
+            }
+        }
+
+        // Galería CRUD
+        function addGalleryItem() {
+            const url = document.getElementById('galleryUrl').value;
+            const alt = document.getElementById('galleryAlt').value || 'Imagen del taller';
+
+            if (!url) {
+                alert('Ingresa la URL de la imagen');
+                return;
+            }
+
+            const gallery = getGallery();
+            const newId = gallery.length > 0 ? Math.max(...gallery.map(g => g.id)) + 1 : 1;
+            gallery.push({ id: newId, url, alt });
+            localStorage.setItem('gallery', JSON.stringify(gallery));
+            document.getElementById('galleryUrl').value = '';
+            document.getElementById('galleryAlt').value = '';
+            renderAll();
+            showSuccess();
+        }
+
+        function deleteGalleryItem(id) {
+            if (confirm('¿Eliminar esta imagen?')) {
+                const gallery = getGallery().filter(g => g.id !== id);
+                localStorage.setItem('gallery', JSON.stringify(gallery));
+                renderAll();
+                showSuccess();
+            }
+        }
+
+        // Testimonios CRUD
+        function addTestimonial() {
+            const name = document.getElementById('testimonialName').value;
+            const stars = parseInt(document.getElementById('testimonialStars').value) || 5;
+            const text = document.getElementById('testimonialText').value;
+
+            if (!name || !text) {
+                alert('Completa nombre y testimonio');
+                return;
+            }
+
+            const testimonials = getTestimonials();
+            const newId = testimonials.length > 0 ? Math.max(...testimonials.map(t => t.id)) + 1 : 1;
+            testimonials.push({ id: newId, name, stars: Math.min(5, Math.max(1, stars)), text });
+            localStorage.setItem('testimonials', JSON.stringify(testimonials));
+            document.getElementById('testimonialName').value = '';
+            document.getElementById('testimonialStars').value = '5';
+            document.getElementById('testimonialText').value = '';
+            renderAll();
+            showSuccess();
+        }
+
+        function deleteTestimonial(id) {
+            if (confirm('¿Eliminar este testimonio?')) {
+                const testimonials = getTestimonials().filter(t => t.id !== id);
+                localStorage.setItem('testimonials', JSON.stringify(testimonials));
+                renderAll();
+                showSuccess();
+            }
+        }
+
+        // Init
+        initData();
+    </script>
+</body>
+</html>
