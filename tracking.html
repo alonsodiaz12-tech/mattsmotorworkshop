@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estado del Vehículo | Matts Motor Workshop</title>
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0a0a;
+            --bg-card: #111111;
+            --bg-elevated: #1a1a1a;
+            --red: #dc2626;
+            --red-light: #ef4444;
+            --red-dark: #991b1b;
+            --gold: #c9a84c;
+            --gold-light: #e2c970;
+            --green: #22c55e;
+            --green-dark: #166534;
+            --blue: #3b82f6;
+            --orange: #f59e0b;
+            --text-primary: #ffffff;
+            --text-secondary: #a3a3a3;
+            --text-muted: #737373;
+            --border: #262626;
+            --border-light: #333333;
+            --radius: 12px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+            --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            -webkit-font-smoothing: antialiased;
+            background-image:
+                radial-gradient(ellipse at 30% 50%, rgba(220,38,38,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 50%, rgba(59,130,246,0.04) 0%, transparent 50%);
+        }
+
+        .tracking-container {
+            width: 100%;
+            max-width: 750px;
+        }
+
+        .tracking-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+            margin-bottom: 1.5rem;
+        }
+
+        .back-link:hover {
+            color: var(--red-light);
+        }
+
+        .tracking-header .icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .tracking-header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .tracking-header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .search-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem;
+        }
+
+        .search-form {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon input {
+            width: 100%;
+            padding: 1rem 1.2rem 1rem 3rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: var(--transition);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .input-with-icon input:hover {
+            border-color: var(--border-light);
+        }
+
+        .input-with-icon input:focus {
+            border-color: var(--red);
+            box-shadow: 0 0 0 3px rgba(220,38,38,0.12);
+        }
+
+        .input-with-icon .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            color: var(--text-muted);
+        }
+
+        .btn-search {
+            width: 100%;
+            padding: 1rem;
+            background: var(--red);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 8px 30px rgba(220,38,38,0.3);
+        }
+
+        .btn-search:hover {
+            background: var(--red-light);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(220,38,38,0.45);
+        }
+
+        .btn-search:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.3);
+            color: #fca5a5;
+            padding: 1rem;
+            border-radius: var(--radius);
+            text-align: center;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        /* Resultados */
+        .result-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem;
+            margin-top: 1.5rem;
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .result-vehicle h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .result-vehicle .plate {
+            display: inline-block;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-light);
+            padding: 0.3rem 1rem;
+            border-radius: 6px;
+            font-family: 'Montserrat', monospace;
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            color: var(--gold-light);
+        }
+
+        .status-badge {
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: rgba(245,158,11,0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245,158,11,0.3);
+        }
+        .status-confirmed {
+            background: rgba(59,130,246,0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59,130,246,0.3);
+        }
+        .status-in_progress {
+            background: rgba(139,92,246,0.15);
+            color: #a78bfa;
+            border: 1px solid rgba(139,92,246,0.3);
+        }
+        .status-completed {
+            background: rgba(34,197,94,0.15);
+            color: #4ade80;
+            border: 1px solid rgba(34,197,94,0.3);
+        }
+        .status-cancelled {
+            background: rgba(239,68,68,0.15);
+            color: #f87171;
+            border: 1px solid rgba(239,68,68,0.3);
+        }
+
+        .progress-tracker {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .progress-step {
+            text-align: center;
+            position: relative;
+        }
+
+        .progress-step .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+            background: var(--bg-elevated);
+            border: 2px solid var(--border-light);
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .progress-step.completed .step-circle {
+            background: var(--green-dark);
+            border-color: var(--green);
+            color: white;
+        }
+        .progress-step.active .step-circle {
+            background: var(--blue);
+            border-color: #60a5fa;
+            color: white;
+            animation: pulse-step 2s infinite;
+        }
+
+        @keyframes pulse-step {
+            0%,100% { box-shadow: 0 0 0 0 rgba(59,130,246,0.4); }
+            50% { box-shadow: 0 0 0 12px rgba(59,130,246,0); }
+        }
+
+        .progress-step .step-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .progress-step.completed .step-label,
+        .progress-step.active .step-label {
+            color: var(--text-secondary);
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-item {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+        }
+
+        .detail-item .detail-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-item .detail-value {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .notes-section {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.2rem;
+        }
+
+        .notes-section h3 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .notes-list {
+            list-style: none;
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .notes-list li {
+            display: flex;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: var(--bg-dark);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .notes-list li .note-time {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            white-space: nowrap;
+            min-width: 50px;
+        }
+
+        .no-notes {
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        .new-search-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-light);
+            padding: 0.7rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 1rem;
+        }
+
+        .new-search-btn:hover {
+            border-color: var(--text-secondary);
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 1rem;
+                align-items: flex-start;
+                padding-top: 2rem;
+            }
+            .search-card,
+            .result-card {
+                padding: 1.5rem;
+            }
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+            .progress-tracker {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            .result-header {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tracking-container">
+        <div class="tracking-header">
+            <a href="/home" class="back-link">← Volver al taller</a>
+            <div class="icon">🔍</div>
+            <h1>Estado del Vehículo</h1>
+            <p>Ingrese el número de placa de su vehículo para consultar el estado actual de su servicio.</p>
+        </div>
+
+        <!-- Búsqueda -->
+        <div class="search-card" id="searchCard">
+            <form class="search-form" onsubmit="searchVehicle(event)">
+                <div class="form-group">
+                    <label>Número de Placa</label>
+                    <div class="input-with-icon">
+                        <span class="input-icon">🚗</span>
+                        <input type="text" id="plateInput" placeholder="ABC-1234" maxlength="10" required autofocus>
+                    </div>
+                </div>
+                <div class="error-message" id="errorMessage">
+                    No se encontró ningún vehículo con esa placa. Verifique e intente nuevamente.
+                </div>
+                <button type="submit" class="btn-search">🔍 Consultar Estado</button>
+            </form>
+        </div>
+
+        <!-- Resultados -->
+        <div class="result-card" id="resultCard">
+            <div class="result-header">
+                <div class="result-vehicle">
+                    <h2 id="resultVehicle"></h2>
+                    <span class="plate" id="resultPlate"></span>
+                </div>
+                <span class="status-badge" id="resultStatus"></span>
+            </div>
+
+            <div class="progress-tracker" id="progressTracker"></div>
+
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label">Servicio Solicitado</div>
+                    <div class="detail-value" id="resultService"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Fecha de Ingreso</div>
+                    <div class="detail-value" id="resultDate"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Fecha Estimada de Entrega</div>
+                    <div class="detail-value" id="resultEstimate"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Cliente</div>
+                    <div class="detail-value" id="resultClient"></div>
+                </div>
+            </div>
+
+            <div class="notes-section">
+                <h3>📝 Notas del Taller</h3>
+                <div id="resultNotes"></div>
+            </div>
+
+            <button class="new-search-btn" onclick="newSearch()">← Nueva consulta</button>
+        </div>
+    </div>
+
+    <script>
+        function getBookings() {
+            return JSON.parse(localStorage.getItem('bookings')) || [];
+        }
+
+        function searchVehicle(e) {
+            e.preventDefault();
+
+            const plate = document.getElementById('plateInput').value.trim().toUpperCase();
+            const errorMsg = document.getElementById('errorMessage');
+            const resultCard = document.getElementById('resultCard');
+            const searchCard = document.getElementById('searchCard');
+
+            if (!plate) {
+                errorMsg.style.display = 'block';
+                errorMsg.textContent = 'Ingrese un número de placa válido.';
+                return;
+            }
+
+            const bookings = getBookings();
+            const booking = bookings.find(b => {
+                const bookingPlate = (b.plate || '').toUpperCase().replace(/[\s-]/g, '');
+                const searchPlate = plate.replace(/[\s-]/g, '');
+                return bookingPlate === searchPlate;
+            });
+
+            if (!booking) {
+                errorMsg.style.display = 'block';
+                errorMsg.textContent = 'No se encontró ningún vehículo con esa placa. Verifique e intente nuevamente.';
+                resultCard.style.display = 'none';
+                return;
+            }
+
+            errorMsg.style.display = 'none';
+            displayResult(booking);
+        }
+
+        function displayResult(booking) {
+            const resultCard = document.getElementById('resultCard');
+
+            // Vehicle info
+            document.getElementById('resultVehicle').textContent = booking.vehicle || 'No especificado';
+            document.getElementById('resultPlate').textContent = booking.plate || 'N/A';
+
+            // Status
+            const statusMap = {
+                'pending': { text: 'Pendiente', class: 'status-pending' },
+                'confirmed': { text: 'Confirmada', class: 'status-confirmed' },
+                'in_progress': { text: 'En Progreso', class: 'status-in_progress' },
+                'completed': { text: 'Completado', class: 'status-completed' },
+                'cancelled': { text: 'Cancelado', class: 'status-cancelled' }
+            };
+            const status = statusMap[booking.status] || statusMap.pending;
+            const statusBadge = document.getElementById('resultStatus');
+            statusBadge.textContent = status.text;
+            statusBadge.className = 'status-badge ' + status.class;
+
+            // Progress
+            const progressSteps = [
+                { id: 'confirmed', label: 'Confirmado', icon: '✓' },
+                { id: 'in_progress', label: 'En Progreso', icon: '⚙' },
+                { id: 'completed', label: 'Completado', icon: '✓' },
+                { id: 'delivered', label: 'Entregado', icon: '🎉' }
+            ];
+
+            const progressOrder = ['pending', 'confirmed', 'in_progress', 'completed'];
+            const currentIndex = progressOrder.indexOf(booking.status);
+
+            const tracker = document.getElementById('progressTracker');
+            tracker.innerHTML = progressSteps.map((step, i) => {
+                let stepClass = '';
+                if (i <= currentIndex - 1) stepClass = 'completed';
+                else if (i === currentIndex - 1 && booking.status !== 'pending') stepClass = 'active';
+                return `
+                    <div class="progress-step ${stepClass}">
+                        <div class="step-circle">${stepClass === 'completed' ? '✓' : step.icon}</div>
+                        <div class="step-label">${step.label}</div>
+                    </div>
+                `;
+            }).join('');
+
+            // Details
+            document.getElementById('resultService').textContent = booking.service || 'No especificado';
+            document.getElementById('resultDate').textContent = new Date(booking.createdAt).toLocaleDateString('es-MX', {
+                year: 'numeric', month: 'long', day: 'numeric'
+            });
+            document.getElementById('resultEstimate').textContent = booking.estimatedDelivery || 'Por definir';
+            document.getElementById('resultClient').textContent = booking.name || 'No especificado';
+
+            // Notes
+            const notes = booking.notes || [];
+            const notesContainer = document.getElementById('resultNotes');
+            if (notes.length === 0) {
+                notesContainer.innerHTML = '<p class="no-notes">Aún no hay notas del taller. Se agregarán conforme avance el servicio.</p>';
+            } else {
+                notesContainer.innerHTML = `<ul class="notes-list">${notes.map(n => `
+                    <li>
+                        <span class="note-time">${new Date(n.time).toLocaleString('es-MX', {hour:'2-digit',minute:'2-digit', day:'2-digit', month:'2-digit'})}</span>
+                        <span>${n.text}</span>
+                    </li>
+                `).join('')}</ul>`;
+            }
+
+            resultCard.style.display = 'block';
+            resultCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function newSearch() {
+            document.getElementById('resultCard').style.display = 'none';
+            document.getElementById('plateInput').value = '';
+            document.getElementById('plateInput').focus();
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('searchCard').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
