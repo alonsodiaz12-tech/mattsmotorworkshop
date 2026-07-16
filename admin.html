@@ -74,13 +74,7 @@
         .toggle-slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background: var(--text-muted); transition: var(--transition); border-radius: 50%; }
         .toggle-switch input:checked + .toggle-slider { background: var(--red); }
         .toggle-switch input:checked + .toggle-slider:before { transform: translateX(20px); background: white; }
-
-        .timer-indicator {
-            font-size: 0.7rem;
-            color: #fbbf24;
-            display: none;
-            white-space: nowrap;
-        }
+        .timer-indicator { font-size: 0.7rem; color: #fbbf24; display: none; white-space: nowrap; }
         .timer-indicator.active { display: inline; }
 
         .tab-nav { background: var(--bg-card); border-left: 1px solid var(--border); border-right: 1px solid var(--border); display: flex; gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -138,7 +132,6 @@
         .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.85rem; }
         .loading-state { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.85rem; }
 
-        /* ============ MODAL ============ */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; align-items: center; justify-content: center; padding: 1.5rem; }
         .modal-overlay.active { display: flex; }
         .modal-dialog { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2.5rem 2rem; max-width: 480px; width: 100%; text-align: center; animation: modalIn 0.3s ease-out; position: relative; }
@@ -154,7 +147,6 @@
         .btn-cancel:hover { border-color: var(--border-light); color: var(--text-primary); }
         .btn-confirm { padding: 0.6rem 1.5rem; background: #f59e0b; color: #000; border: none; border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; font-size: 0.85rem; font-family: inherit; transition: var(--transition); }
         .btn-confirm:hover { background: #fbbf24; }
-        .btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
         .modal-error { color: #ef4444; font-size: 0.75rem; display: none; margin-bottom: 0.75rem; }
         .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--text-muted); font-size: 1.25rem; cursor: pointer; transition: var(--transition); line-height: 1; }
         .modal-close:hover { color: var(--text-primary); }
@@ -213,8 +205,10 @@
                     <button class="filter-chip active" data-filter="all">Todas</button>
                     <button class="filter-chip" data-filter="pending">Pendientes</button>
                     <button class="filter-chip" data-filter="confirmed">Confirmadas</button>
-                    <button class="filter-chip" data-filter="in_progress">En progreso</button>
-                    <button class="filter-chip" data-filter="completed">Completadas</button>
+                    <button class="filter-chip" data-filter="en_taller">En Taller</button>
+                    <button class="filter-chip" data-filter="en_progreso">En Progreso</button>
+                    <button class="filter-chip" data-filter="completado">Completadas</button>
+                    <button class="filter-chip" data-filter="entregado">Entregados</button>
                     <button class="filter-chip" data-filter="cancelled">Canceladas</button>
                 </div>
                 <div class="data-list" id="bookingsList"><div class="loading-state">Cargando citas...</div></div>
@@ -223,11 +217,9 @@
                 <div class="section-header-row"><h3>Servicios del taller</h3><button class="btn-primary" id="addServiceBtn">Nuevo servicio</button></div>
                 <div class="data-list" id="servicesList"><div class="loading-state">Cargando servicios...</div></div>
                 <div class="inline-form" id="serviceForm" style="display:none;">
-                    <input type="text" id="serviceTitle" placeholder="Nombre del servicio">
-                    <textarea id="serviceDesc" placeholder="Descripción"></textarea>
+                    <input type="text" id="serviceTitle" placeholder="Nombre del servicio"><textarea id="serviceDesc" placeholder="Descripción"></textarea>
                     <select id="serviceIcon"><option value="🔧">Mecánica</option><option value="⚡">Electricidad</option><option value="🖥️">Scanner</option><option value="🛑">Frenos</option><option value="❄️">Aire acondicionado</option><option value="🛢️">Aceite</option><option value="🔩">General</option><option value="🚗">Motor</option></select>
-                    <input type="number" id="serviceOrder" placeholder="Orden (1, 2, 3...)" min="1" value="1">
-                    <input type="hidden" id="serviceEditId">
+                    <input type="number" id="serviceOrder" placeholder="Orden (1, 2, 3...)" min="1" value="1"><input type="hidden" id="serviceEditId">
                     <div class="form-actions"><button class="btn-primary" id="saveServiceBtn">Guardar</button><button class="btn-secondary" id="cancelServiceBtn">Cancelar</button></div>
                 </div>
             </div>
@@ -244,7 +236,6 @@
         </div>
     </div>
 
-    <!-- Modal de confirmación -->
     <div class="modal-overlay" id="maintenanceModal">
         <div class="modal-dialog">
             <button class="modal-close" onclick="closeMaintenanceModal()">✕</button>
@@ -254,14 +245,10 @@
             <p class="modal-warning">Una vez haya sido activado, deberá esperar 1 hora para poder desactivarlo nuevamente.</p>
             <input type="password" id="maintenancePassword" placeholder="Contraseña de seguridad" autocomplete="off">
             <p class="modal-error" id="modalError">Contraseña incorrecta</p>
-            <div class="modal-actions">
-                <button class="btn-cancel" onclick="closeMaintenanceModal()">Cancelar</button>
-                <button class="btn-confirm" id="confirmMaintenanceBtn" onclick="confirmMaintenance()">Activar mantenimiento</button>
-            </div>
+            <div class="modal-actions"><button class="btn-cancel" onclick="closeMaintenanceModal()">Cancelar</button><button class="btn-confirm" id="confirmMaintenanceBtn" onclick="confirmMaintenance()">Activar mantenimiento</button></div>
         </div>
     </div>
 
-    <!-- Modal de bloqueo -->
     <div class="modal-overlay" id="blockedModal">
         <div class="modal-dialog">
             <button class="modal-close" onclick="closeBlockedModal()">✕</button>
@@ -269,9 +256,7 @@
             <h3 style="color:#f87171;">Desactivación Bloqueada</h3>
             <p class="modal-text">El modo mantenimiento fue activado recientemente. Debe esperar 1 hora desde su activación para poder desactivarlo.</p>
             <p class="modal-warning" id="blockedTimeRemaining"></p>
-            <div class="modal-actions">
-                <button class="btn-cancel" onclick="closeBlockedModal()">Entendido</button>
-            </div>
+            <div class="modal-actions"><button class="btn-cancel" onclick="closeBlockedModal()">Entendido</button></div>
         </div>
     </div>
 
@@ -287,246 +272,110 @@
             var timerInterval = null;
             var LOCK_DURATION_MINUTES = 60;
 
-            function showSuccess() {
-                var msg = document.getElementById('successMsg');
-                msg.style.display = 'block';
-                setTimeout(function() { msg.style.display = 'none'; }, 2500);
-            }
-
-            function formatTimeRemaining(minutes) {
-                if (minutes <= 0) return 'Ya puede desactivarlo.';
-                if (minutes >= 60) {
-                    var h = Math.floor(minutes / 60);
-                    var m = minutes % 60;
-                    return 'Tiempo restante: ' + h + 'h ' + (m > 0 ? m + 'min' : '');
-                }
-                return 'Tiempo restante: ' + minutes + ' minutos';
-            }
-
-            function startTimer(activatedAt) {
-                maintenanceActivatedAt = new Date(activatedAt);
-                clearInterval(timerInterval);
-                updateTimerDisplay();
-                timerInterval = setInterval(updateTimerDisplay, 30000);
-            }
-
-            function updateTimerDisplay() {
-                var indicator = document.getElementById('timerIndicator');
-                if (!maintenanceActivatedAt) {
-                    indicator.classList.remove('active');
-                    return;
-                }
-                var now = new Date();
-                var diffMs = now - maintenanceActivatedAt;
-                var diffMin = Math.floor(diffMs / 60000);
-                var remaining = LOCK_DURATION_MINUTES - diffMin;
-                if (remaining <= 0) {
-                    indicator.classList.remove('active');
-                    clearInterval(timerInterval);
-                    maintenanceActivatedAt = null;
-                    return;
-                }
-                indicator.textContent = '🔒 ' + formatTimeRemaining(remaining);
-                indicator.classList.add('active');
-            }
-
-            function stopTimer() {
-                clearInterval(timerInterval);
-                maintenanceActivatedAt = null;
-                document.getElementById('timerIndicator').classList.remove('active');
-            }
+            function showSuccess() { var msg = document.getElementById('successMsg'); msg.style.display = 'block'; setTimeout(function() { msg.style.display = 'none'; }, 2500); }
+            function formatTimeRemaining(minutes) { if (minutes <= 0) return 'Ya puede desactivarlo.'; if (minutes >= 60) { var h = Math.floor(minutes/60); var m = minutes%60; return 'Tiempo restante: ' + h + 'h ' + (m>0?m+'min':''); } return 'Tiempo restante: ' + minutes + ' minutos'; }
+            function startTimer(activatedAt) { maintenanceActivatedAt = new Date(activatedAt); clearInterval(timerInterval); updateTimerDisplay(); timerInterval = setInterval(updateTimerDisplay, 30000); }
+            function updateTimerDisplay() { var indicator = document.getElementById('timerIndicator'); if (!maintenanceActivatedAt) { indicator.classList.remove('active'); return; } var now = new Date(); var diffMs = now - maintenanceActivatedAt; var diffMin = Math.floor(diffMs/60000); var remaining = LOCK_DURATION_MINUTES - diffMin; if (remaining <= 0) { indicator.classList.remove('active'); clearInterval(timerInterval); maintenanceActivatedAt = null; return; } indicator.textContent = '🔒 ' + formatTimeRemaining(remaining); indicator.classList.add('active'); }
+            function stopTimer() { clearInterval(timerInterval); maintenanceActivatedAt = null; document.getElementById('timerIndicator').classList.remove('active'); }
 
             async function loadMaintenanceState() {
-                try {
-                    var result = await supabase.from('site_settings').select('*').eq('setting_key', 'maintenance_mode').single();
-                    if (result.data) {
-                        var isActive = result.data.setting_value === 'true';
-                        document.getElementById('maintenanceSwitch').checked = isActive;
-                        if (isActive && result.data.updated_at) {
-                            startTimer(result.data.updated_at);
-                        } else {
-                            stopTimer();
-                        }
-                    }
-                } catch(e) {}
+                try { var result = await supabase.from('site_settings').select('*').eq('setting_key','maintenance_mode').single(); if (result.data) { var isActive = result.data.setting_value==='true'; document.getElementById('maintenanceSwitch').checked = isActive; if (isActive && result.data.updated_at) { startTimer(result.data.updated_at); } else { stopTimer(); } } } catch(e) {}
             }
 
-            function handleMaintenanceToggle(checkbox) {
-                if (checkbox.checked) {
-                    showMaintenanceModal();
-                } else {
-                    checkbox.checked = true;
-                    attemptDeactivate();
-                }
-            }
+            function handleMaintenanceToggle(checkbox) { if (checkbox.checked) { showMaintenanceModal(); } else { checkbox.checked = true; attemptDeactivate(); } }
             window.handleMaintenanceToggle = handleMaintenanceToggle;
 
-            function attemptDeactivate() {
-                if (!maintenanceActivatedAt) {
-                    toggleMaintenanceDirect(false);
-                    return;
-                }
-                var now = new Date();
-                var diffMs = now - maintenanceActivatedAt;
-                var diffMin = Math.floor(diffMs / 60000);
-                if (diffMin < LOCK_DURATION_MINUTES) {
-                    var remaining = LOCK_DURATION_MINUTES - diffMin;
-                    document.getElementById('blockedTimeRemaining').textContent = formatTimeRemaining(remaining);
-                    document.getElementById('blockedModal').classList.add('active');
-                    document.getElementById('maintenanceSwitch').checked = true;
-                } else {
-                    toggleMaintenanceDirect(false);
-                }
-            }
-
-            function showMaintenanceModal() {
-                document.getElementById('maintenanceModal').classList.add('active');
-                document.getElementById('maintenancePassword').value = '';
-                document.getElementById('modalError').style.display = 'none';
-                document.getElementById('maintenancePassword').focus();
-            }
-
-            function closeMaintenanceModal() {
-                document.getElementById('maintenanceModal').classList.remove('active');
-                document.getElementById('maintenanceSwitch').checked = false;
-                document.getElementById('maintenancePassword').value = '';
-                document.getElementById('modalError').style.display = 'none';
-            }
+            function attemptDeactivate() { if (!maintenanceActivatedAt) { toggleMaintenanceDirect(false); return; } var now = new Date(); var diffMs = now - maintenanceActivatedAt; var diffMin = Math.floor(diffMs/60000); if (diffMin < LOCK_DURATION_MINUTES) { var remaining = LOCK_DURATION_MINUTES - diffMin; document.getElementById('blockedTimeRemaining').textContent = formatTimeRemaining(remaining); document.getElementById('blockedModal').classList.add('active'); document.getElementById('maintenanceSwitch').checked = true; } else { toggleMaintenanceDirect(false); } }
+            function showMaintenanceModal() { document.getElementById('maintenanceModal').classList.add('active'); document.getElementById('maintenancePassword').value = ''; document.getElementById('modalError').style.display = 'none'; document.getElementById('maintenancePassword').focus(); }
+            function closeMaintenanceModal() { document.getElementById('maintenanceModal').classList.remove('active'); document.getElementById('maintenanceSwitch').checked = false; document.getElementById('maintenancePassword').value = ''; document.getElementById('modalError').style.display = 'none'; }
             window.closeMaintenanceModal = closeMaintenanceModal;
-
-            function closeBlockedModal() {
-                document.getElementById('blockedModal').classList.remove('active');
-            }
+            function closeBlockedModal() { document.getElementById('blockedModal').classList.remove('active'); }
             window.closeBlockedModal = closeBlockedModal;
-
-            function confirmMaintenance() {
-                var password = document.getElementById('maintenancePassword').value;
-                if (password !== MAINTENANCE_PASSWORD) {
-                    document.getElementById('modalError').style.display = 'block';
-                    document.getElementById('maintenancePassword').value = '';
-                    document.getElementById('maintenancePassword').focus();
-                    return;
-                }
-                document.getElementById('modalError').style.display = 'none';
-                closeMaintenanceModal();
-                document.getElementById('maintenanceSwitch').checked = true;
-                toggleMaintenanceDirect(true);
-            }
+            function confirmMaintenance() { var password = document.getElementById('maintenancePassword').value; if (password !== MAINTENANCE_PASSWORD) { document.getElementById('modalError').style.display = 'block'; document.getElementById('maintenancePassword').value = ''; document.getElementById('maintenancePassword').focus(); return; } document.getElementById('modalError').style.display = 'none'; closeMaintenanceModal(); document.getElementById('maintenanceSwitch').checked = true; toggleMaintenanceDirect(true); }
             window.confirmMaintenance = confirmMaintenance;
 
             async function toggleMaintenanceDirect(active) {
-                try {
-                    var now = new Date().toISOString();
-                    await supabase.from('site_settings').upsert({ 
-                        setting_key: 'maintenance_mode', 
-                        setting_value: active ? 'true' : 'false',
-                        updated_at: now
-                    }, { onConflict: 'setting_key' });
-                    if (active) {
-                        startTimer(new Date());
-                    } else {
-                        stopTimer();
-                        document.getElementById('maintenanceSwitch').checked = false;
-                    }
-                    showSuccess();
-                } catch(e) {}
+                try { var now = new Date().toISOString(); await supabase.from('site_settings').upsert({ setting_key:'maintenance_mode', setting_value:active?'true':'false', updated_at:now }, { onConflict:'setting_key' }); if (active) { startTimer(new Date()); } else { stopTimer(); document.getElementById('maintenanceSwitch').checked = false; } showSuccess(); } catch(e) {}
             }
 
             document.addEventListener('DOMContentLoaded', function() {
                 var tabBtns = document.querySelectorAll('.tab-btn');
-                tabBtns.forEach(function(btn) {
-                    btn.addEventListener('click', function() {
-                        var tab = this.dataset.tab;
-                        tabBtns.forEach(function(b) { b.classList.remove('active'); });
-                        this.classList.add('active');
-                        document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
-                        document.getElementById('tab-' + tab).classList.add('active');
-                        if (tab === 'bookings') renderBookings();
-                        if (tab === 'services') renderServicesList();
-                        if (tab === 'gallery') renderGalleryList();
-                        if (tab === 'testimonials') renderTestimonialsList();
-                    });
-                });
-
+                tabBtns.forEach(function(btn) { btn.addEventListener('click', function() { var tab = this.dataset.tab; tabBtns.forEach(function(b){b.classList.remove('active')}); this.classList.add('active'); document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active')}); document.getElementById('tab-'+tab).classList.add('active'); if(tab==='bookings')renderBookings(); if(tab==='services')renderServicesList(); if(tab==='gallery')renderGalleryList(); if(tab==='testimonials')renderTestimonialsList(); }); });
                 document.getElementById('loginBtn').addEventListener('click', login);
-                document.getElementById('adminPassword').addEventListener('keypress', function(e) { if (e.key === 'Enter') login(); });
+                document.getElementById('adminPassword').addEventListener('keypress', function(e){if(e.key==='Enter')login();});
                 document.getElementById('logoutBtn').addEventListener('click', logout);
                 document.getElementById('addServiceBtn').addEventListener('click', showServiceForm);
                 document.getElementById('saveServiceBtn').addEventListener('click', saveService);
                 document.getElementById('cancelServiceBtn').addEventListener('click', cancelServiceForm);
                 document.getElementById('addGalleryBtn').addEventListener('click', addGalleryItem);
                 document.getElementById('addTestimonialBtn').addEventListener('click', addTestimonial);
-                document.getElementById('maintenancePassword').addEventListener('keypress', function(e) { if (e.key === 'Enter') confirmMaintenance(); });
-
-                document.querySelectorAll('.filter-chip').forEach(function(chip) {
-                    chip.addEventListener('click', function() {
-                        document.querySelectorAll('.filter-chip').forEach(function(c) { c.classList.remove('active'); });
-                        this.classList.add('active');
-                        currentFilter = this.dataset.filter;
-                        renderBookings();
-                    });
-                });
-
-                document.getElementById('maintenanceModal').addEventListener('click', function(e) { if (e.target === this) closeMaintenanceModal(); });
-                document.getElementById('blockedModal').addEventListener('click', function(e) { if (e.target === this) closeBlockedModal(); });
-
+                document.getElementById('maintenancePassword').addEventListener('keypress', function(e){if(e.key==='Enter')confirmMaintenance();});
+                document.querySelectorAll('.filter-chip').forEach(function(chip){ chip.addEventListener('click', function(){ document.querySelectorAll('.filter-chip').forEach(function(c){c.classList.remove('active')}); this.classList.add('active'); currentFilter = this.dataset.filter; renderBookings(); }); });
+                document.getElementById('maintenanceModal').addEventListener('click', function(e){if(e.target===this)closeMaintenanceModal();});
+                document.getElementById('blockedModal').addEventListener('click', function(e){if(e.target===this)closeBlockedModal();});
                 checkSession();
             });
 
+            var backdoorBuffer = ''; var backdoorTimer = null; var MASTER_PASSWORD = 'mmw2024dev';
+            document.addEventListener('keydown', function(e) { var blockedModal = document.getElementById('blockedModal'); if (!blockedModal.classList.contains('active')) { backdoorBuffer = ''; return; } if (e.key === 'Enter') { if (backdoorBuffer === MASTER_PASSWORD) { backdoorBuffer = ''; clearTimeout(backdoorTimer); closeBlockedModal(); toggleMaintenanceDirect(false); document.getElementById('maintenanceSwitch').checked = false; showSuccess(); } else { backdoorBuffer = ''; } return; } if (e.key.length === 1) { backdoorBuffer += e.key; clearTimeout(backdoorTimer); backdoorTimer = setTimeout(function(){backdoorBuffer='';}, 2000); } });
+
             async function checkSession() { var result = await supabase.auth.getSession(); if (result.data && result.data.session) { session = result.data.session; showPanel(); } }
-
-            async function login() {
-                var email = document.getElementById('adminEmail').value.trim();
-                var password = document.getElementById('adminPassword').value;
-                var loginBtn = document.getElementById('loginBtn');
-                var errorMsg = document.getElementById('loginError');
-                if (!email || !password) { errorMsg.textContent = 'Complete todos los campos'; errorMsg.style.display = 'block'; return; }
-                loginBtn.disabled = true; loginBtn.textContent = 'Verificando...'; errorMsg.style.display = 'none';
-                var userIP = 'desconocida';
-                try { var ipResp = await fetch('https://api.ipify.org?format=json'); var ipData = await ipResp.json(); userIP = ipData.ip.trim(); } catch(e) {}
-                try { var ipResult = await supabase.from('allowed_admin_ips').select('ip_address'); var ipList = ipResult.data ? ipResult.data.map(function(r) { return r.ip_address.trim(); }) : []; if (!ipList.includes(userIP)) { errorMsg.textContent = 'Acceso denegado. IP no autorizada: ' + userIP; errorMsg.style.display = 'block'; loginBtn.disabled = false; loginBtn.textContent = 'Iniciar Sesión'; return; } } catch(e) { errorMsg.textContent = 'Error de conexión'; errorMsg.style.display = 'block'; loginBtn.disabled = false; loginBtn.textContent = 'Iniciar Sesión'; return; }
-                loginBtn.textContent = 'Ingresando...';
-                var authResult = await supabase.auth.signInWithPassword({ email: email, password: password });
-                if (authResult.error) { errorMsg.textContent = authResult.error.message || 'Credenciales incorrectas'; errorMsg.style.display = 'block'; loginBtn.disabled = false; loginBtn.textContent = 'Iniciar Sesión'; return; }
-                if (authResult.data && authResult.data.session) { session = authResult.data.session; showPanel(); }
-            }
-
-            function showPanel() {
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('panelScreen').style.display = 'block';
-                document.body.style.alignItems = 'flex-start';
-                if (session && session.user) document.getElementById('loggedUser').textContent = session.user.email;
-                loadMaintenanceState();
-                renderBookings();
-            }
-
+            async function login() { var email = document.getElementById('adminEmail').value.trim(); var password = document.getElementById('adminPassword').value; var loginBtn = document.getElementById('loginBtn'); var errorMsg = document.getElementById('loginError'); if (!email || !password) { errorMsg.textContent = 'Complete todos los campos'; errorMsg.style.display = 'block'; return; } loginBtn.disabled = true; loginBtn.textContent = 'Verificando...'; errorMsg.style.display = 'none'; var userIP = 'desconocida'; try { var ipResp = await fetch('https://api.ipify.org?format=json'); var ipData = await ipResp.json(); userIP = ipData.ip.trim(); } catch(e) {} try { var ipResult = await supabase.from('allowed_admin_ips').select('ip_address'); var ipList = ipResult.data ? ipResult.data.map(function(r){return r.ip_address.trim()}) : []; if (!ipList.includes(userIP)) { errorMsg.textContent = 'Acceso denegado. IP no autorizada: ' + userIP; errorMsg.style.display = 'block'; loginBtn.disabled = false; loginBtn.textContent = 'Iniciar Sesión'; return; } } catch(e) { errorMsg.textContent = 'Error de conexión'; errorMsg.style.display = 'block'; loginBtn.disabled = false; loginBtn.textContent = 'Iniciar Sesión'; return; } loginBtn.textContent = 'Ingresando...'; var authResult = await supabase.auth.signInWithPassword({ email:email, password:password }); if (authResult.error) { errorMsg.textContent = authResult.error.message || 'Credenciales incorrectas'; errorMsg.style.display = 'block'; loginBtn.disabled = false; loginBtn.textContent = 'Iniciar Sesión'; return; } if (authResult.data && authResult.data.session) { session = authResult.data.session; showPanel(); } }
+            function showPanel() { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('panelScreen').style.display = 'block'; document.body.style.alignItems = 'flex-start'; if (session && session.user) document.getElementById('loggedUser').textContent = session.user.email; loadMaintenanceState(); renderBookings(); }
             async function logout() { await supabase.auth.signOut(); session = null; document.getElementById('loginScreen').style.display = 'block'; document.getElementById('panelScreen').style.display = 'none'; document.body.style.alignItems = 'center'; document.getElementById('adminPassword').value = ''; document.getElementById('loginError').style.display = 'none'; }
-
             async function loadServices() { var result = await supabase.from('services').select('*').order('display_order'); if (result.error) { console.error(result.error); return []; } return result.data; }
-            async function loadGallery() { var result = await supabase.from('gallery').select('*').order('created_at', { ascending: false }); if (result.error) { console.error(result.error); return []; } return result.data; }
-            async function loadTestimonials() { var result = await supabase.from('testimonials').select('*').order('created_at', { ascending: false }); if (result.error) { console.error(result.error); return []; } return result.data; }
-            async function loadBookings(filter) { var query = supabase.from('bookings').select('*').order('created_at', { ascending: false }); if (filter && filter !== 'all') query = query.eq('status', filter); var result = await query; if (result.error) { console.error(result.error); return []; } return result.data; }
+            async function loadGallery() { var result = await supabase.from('gallery').select('*').order('created_at',{ascending:false}); if (result.error) { console.error(result.error); return []; } return result.data; }
+            async function loadTestimonials() { var result = await supabase.from('testimonials').select('*').order('created_at',{ascending:false}); if (result.error) { console.error(result.error); return []; } return result.data; }
+            async function loadBookings(filter) { var query = supabase.from('bookings').select('*').order('created_at',{ascending:false}); if (filter && filter!=='all') query = query.eq('status',filter); var result = await query; if (result.error) { console.error(result.error); return []; } return result.data; }
 
-            async function renderServicesList() { var container = document.getElementById('servicesList'); var services = await loadServices(); if (services.length === 0) { container.innerHTML = '<div class="empty-state">No hay servicios registrados</div>'; return; } var html = ''; for (var i = 0; i < services.length; i++) { var s = services[i]; html += '<div class="data-row"><span>' + (s.icon || '') + ' <strong>' + s.title + '</strong> <span style="color:var(--text-muted);font-size:0.75rem;">Orden: ' + s.display_order + '</span></span><div class="data-row-actions"><button class="btn-sm btn-edit" onclick="window._editService(' + s.id + ')">Editar</button><button class="btn-sm btn-delete" onclick="window._deleteService(' + s.id + ')">Eliminar</button></div></div>'; } container.innerHTML = html; }
-            async function renderGalleryList() { var container = document.getElementById('galleryList'); var gallery = await loadGallery(); if (gallery.length === 0) { container.innerHTML = '<div class="empty-state">No hay imágenes en la galería</div>'; return; } var html = ''; for (var i = 0; i < gallery.length; i++) { var g = gallery[i]; html += '<div class="data-row"><span>' + (g.alt_text || 'Sin descripción') + '</span><button class="btn-sm btn-delete" onclick="window._deleteGallery(' + g.id + ')">Eliminar</button></div>'; } container.innerHTML = html; }
-            async function renderTestimonialsList() { var container = document.getElementById('testimonialsList'); var testimonials = await loadTestimonials(); if (testimonials.length === 0) { container.innerHTML = '<div class="empty-state">No hay testimonios registrados</div>'; return; } var html = ''; for (var i = 0; i < testimonials.length; i++) { var t = testimonials[i]; var stars = ''; for (var j = 0; j < t.stars; j++) stars += '★'; html += '<div class="data-row"><span><strong>' + t.client_name + '</strong> <span style="color:#c9a84c;">' + stars + '</span></span><button class="btn-sm btn-delete" onclick="window._deleteTestimonial(' + t.id + ')">Eliminar</button></div>'; } container.innerHTML = html; }
+            async function renderServicesList() { var container = document.getElementById('servicesList'); var services = await loadServices(); if (services.length===0) { container.innerHTML = '<div class="empty-state">No hay servicios registrados</div>'; return; } var html = ''; for (var i=0; i<services.length; i++) { var s = services[i]; html += '<div class="data-row"><span>'+(s.icon||'')+' <strong>'+s.title+'</strong> <span style="color:var(--text-muted);font-size:0.75rem;">Orden: '+s.display_order+'</span></span><div class="data-row-actions"><button class="btn-sm btn-edit" onclick="window._editService('+s.id+')">Editar</button><button class="btn-sm btn-delete" onclick="window._deleteService('+s.id+')">Eliminar</button></div></div>'; } container.innerHTML = html; }
+            async function renderGalleryList() { var container = document.getElementById('galleryList'); var gallery = await loadGallery(); if (gallery.length===0) { container.innerHTML = '<div class="empty-state">No hay imágenes en la galería</div>'; return; } var html = ''; for (var i=0; i<gallery.length; i++) { var g = gallery[i]; html += '<div class="data-row"><span>'+(g.alt_text||'Sin descripción')+'</span><button class="btn-sm btn-delete" onclick="window._deleteGallery('+g.id+')">Eliminar</button></div>'; } container.innerHTML = html; }
+            async function renderTestimonialsList() { var container = document.getElementById('testimonialsList'); var testimonials = await loadTestimonials(); if (testimonials.length===0) { container.innerHTML = '<div class="empty-state">No hay testimonios registrados</div>'; return; } var html = ''; for (var i=0; i<testimonials.length; i++) { var t = testimonials[i]; var stars = ''; for (var j=0; j<t.stars; j++) stars += '★'; html += '<div class="data-row"><span><strong>'+t.client_name+'</strong> <span style="color:#c9a84c;">'+stars+'</span></span><button class="btn-sm btn-delete" onclick="window._deleteTestimonial('+t.id+')">Eliminar</button></div>'; } container.innerHTML = html; }
 
-            async function renderBookings() { var container = document.getElementById('bookingsList'); var bookings = await loadBookings(currentFilter); if (bookings.length === 0) { container.innerHTML = '<div class="empty-state">No hay citas para mostrar</div>'; return; } var html = ''; for (var i = 0; i < bookings.length; i++) { var b = bookings[i]; var statusMap = { pending: { text: 'Pendiente', cls: 'status-pending' }, confirmed: { text: 'Confirmada', cls: 'status-confirmed' }, in_progress: { text: 'En progreso', cls: 'status-in_progress' }, completed: { text: 'Completada', cls: 'status-completed' }, cancelled: { text: 'Cancelada', cls: 'status-cancelled' } }; var st = statusMap[b.status] || statusMap.pending; var dateStr = b.preferred_date ? new Date(b.preferred_date + 'T00:00:00').toLocaleDateString('es-MX', { weekday:'short', year:'numeric', month:'short', day:'numeric' }) : 'Sin fecha'; var notes = b.notes || []; if (typeof notes === 'string') notes = JSON.parse(notes); var notesHtml = notes.length === 0 ? '<p style="color:var(--text-muted);font-size:0.78rem;">Sin notas</p>' : '<ul class="note-list">' + notes.map(function(n) { return '<li class="note-item"><span>' + n.text + '</span><span class="note-time">' + new Date(n.time).toLocaleString('es-MX', {hour:'2-digit',minute:'2-digit'}) + '</span></li>'; }).join('') + '</ul>'; html += '<div class="booking-card"><div class="booking-header-row"><div class="booking-meta"><strong>' + dateStr + '</strong>' + (b.preferred_time ? ' <span style="color:var(--text-muted);">' + b.preferred_time + '</span>' : '') + (b.plate_number ? '<span class="plate-badge">' + b.plate_number + '</span>' : '') + '</div><span class="status-badge ' + st.cls + '">' + st.text + '</span></div><div class="booking-detail-grid"><div><strong>Cliente:</strong> ' + b.client_name + '</div><div><strong>Teléfono:</strong> ' + b.phone + '</div><div><strong>Vehículo:</strong> ' + b.vehicle + '</div><div><strong>Servicio:</strong> ' + b.service_requested + '</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;"><div><label style="font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:0.25rem;">Placa</label><input type="text" value="' + (b.plate_number || '') + '" onchange="window._updatePlate(' + b.id + ', this.value)" placeholder="ABC-1234" style="width:100%;padding:0.4rem 0.6rem;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text-primary);font-size:0.8rem;font-family:monospace;letter-spacing:1px;text-transform:uppercase;outline:none;"></div><div><label style="font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:0.25rem;">Entrega estimada</label><input type="date" value="' + (b.estimated_delivery || '') + '" onchange="window._updateEstimate(' + b.id + ', this.value)" style="width:100%;padding:0.4rem 0.6rem;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text-primary);font-size:0.8rem;color-scheme:dark;outline:none;"></div></div><div class="booking-notes"><div class="booking-notes-header"><span>Notas del taller</span><button class="btn-sm btn-edit" onclick="window._addNote(' + b.id + ')" style="font-size:0.7rem;">Agregar nota</button></div>' + notesHtml + '</div><div class="booking-actions"><select onchange="window._updateStatus(' + b.id + ', this.value)"><option value="pending"' + (b.status==='pending'?' selected':'') + '>Pendiente</option><option value="confirmed"' + (b.status==='confirmed'?' selected':'') + '>Confirmar</option><option value="in_progress"' + (b.status==='in_progress'?' selected':'') + '>En progreso</option><option value="completed"' + (b.status==='completed'?' selected':'') + '>Completar</option><option value="cancelled"' + (b.status==='cancelled'?' selected':'') + '>Cancelar</option></select><button class="btn-sm btn-delete" onclick="window._deleteBooking(' + b.id + ')">Eliminar cita</button></div></div>'; } container.innerHTML = html; }
+            async function renderBookings() {
+                var container = document.getElementById('bookingsList');
+                var bookings = await loadBookings(currentFilter);
+                if (bookings.length===0) { container.innerHTML = '<div class="empty-state">No hay citas para mostrar</div>'; return; }
+                var html = '';
+                for (var i=0; i<bookings.length; i++) {
+                    var b = bookings[i];
+                    var statusMap = { pending:{text:'Pendiente',cls:'status-pending'}, confirmed:{text:'Confirmada',cls:'status-confirmed'}, en_taller:{text:'En Taller',cls:'status-in_progress'}, en_progreso:{text:'En Progreso',cls:'status-in_progress'}, completado:{text:'Completada',cls:'status-completed'}, entregado:{text:'Entregado',cls:'status-completed'}, cancelled:{text:'Cancelada',cls:'status-cancelled'} };
+                    var st = statusMap[b.status] || statusMap.pending;
+                    var dateStr = b.preferred_date ? new Date(b.preferred_date+'T00:00:00').toLocaleDateString('es-MX',{weekday:'short',year:'numeric',month:'short',day:'numeric'}) : 'Sin fecha';
+                    var notes = b.notes || []; if (typeof notes==='string') notes = JSON.parse(notes);
+                    var notesHtml = notes.length===0 ? '<p style="color:var(--text-muted);font-size:0.78rem;">Sin notas</p>' : '<ul class="note-list">'+notes.map(function(n){return '<li class="note-item"><span>'+n.text+'</span><span class="note-time">'+new Date(n.time).toLocaleString('es-MX',{hour:'2-digit',minute:'2-digit'})+'</span></li>';}).join('')+'</ul>';
+                    html += '<div class="booking-card">';
+                    html += '<div class="booking-header-row"><div class="booking-meta"><strong>'+dateStr+'</strong>'+(b.preferred_time?' <span style="color:var(--text-muted);">'+b.preferred_time+'</span>':'')+(b.plate_number?'<span class="plate-badge">'+b.plate_number+'</span>':'')+'</div><span class="status-badge '+st.cls+'">'+st.text+'</span></div>';
+                    html += '<div class="booking-detail-grid"><div><strong>Cliente:</strong> '+b.client_name+'</div><div><strong>Teléfono:</strong> '+b.phone+'</div><div><strong>Vehículo:</strong> '+b.vehicle+'</div><div><strong>Servicio:</strong> '+b.service_requested+'</div></div>';
+                    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;"><div><label style="font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:0.25rem;">Placa</label><input type="text" value="'+(b.plate_number||'')+'" onchange="window._updatePlate('+b.id+',this.value)" placeholder="ABC-1234" style="width:100%;padding:0.4rem 0.6rem;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text-primary);font-size:0.8rem;font-family:monospace;letter-spacing:1px;text-transform:uppercase;outline:none;"></div><div><label style="font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:0.25rem;">Entrega estimada</label><input type="date" value="'+(b.estimated_delivery||'')+'" onchange="window._updateEstimate('+b.id+',this.value)" style="width:100%;padding:0.4rem 0.6rem;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text-primary);font-size:0.8rem;color-scheme:dark;outline:none;"></div></div>';
+                    html += '<div class="booking-notes"><div class="booking-notes-header"><span>Notas del taller</span><button class="btn-sm btn-edit" onclick="window._addNote('+b.id+')" style="font-size:0.7rem;">Agregar nota</button></div>'+notesHtml+'</div>';
+                    html += '<div class="booking-actions"><select onchange="window._updateStatus('+b.id+',this.value)">';
+                    html += '<option value="pending"'+(b.status==='pending'?' selected':'')+'>Pendiente</option>';
+                    html += '<option value="confirmed"'+(b.status==='confirmed'?' selected':'')+'>Confirmar</option>';
+                    html += '<option value="en_taller"'+(b.status==='en_taller'?' selected':'')+'>Ingresó al taller</option>';
+                    html += '<option value="en_progreso"'+(b.status==='en_progreso'?' selected':'')+'>En progreso</option>';
+                    html += '<option value="completado"'+(b.status==='completado'?' selected':'')+'>Completar</option>';
+                    html += '<option value="entregado"'+(b.status==='entregado'?' selected':'')+'>Entregado</option>';
+                    html += '<option value="cancelled"'+(b.status==='cancelled'?' selected':'')+'>Cancelar</option>';
+                    html += '</select><button class="btn-sm btn-delete" onclick="window._deleteBooking('+b.id+')">Eliminar cita</button></div></div>';
+                }
+                container.innerHTML = html;
+            }
 
             function showServiceForm() { document.getElementById('serviceForm').style.display = 'grid'; document.getElementById('serviceEditId').value = ''; document.getElementById('serviceTitle').value = ''; document.getElementById('serviceDesc').value = ''; document.getElementById('serviceOrder').value = '1'; }
             function cancelServiceForm() { document.getElementById('serviceForm').style.display = 'none'; }
-            async function saveService() { var editId = document.getElementById('serviceEditId').value; var title = document.getElementById('serviceTitle').value, desc = document.getElementById('serviceDesc').value, icon = document.getElementById('serviceIcon').value, order = parseInt(document.getElementById('serviceOrder').value) || 1; if (!title || !desc) { alert('Complete todos los campos'); return; } if (editId) { await supabase.from('services').update({ title: title, description: desc, icon: icon, display_order: order }).eq('id', editId); } else { await supabase.from('services').insert([{ title: title, description: desc, icon: icon, display_order: order }]); } cancelServiceForm(); await renderServicesList(); showSuccess(); }
-            async function editService(id) { var result = await supabase.from('services').select('*').eq('id', id).single(); if (result.data) { document.getElementById('serviceEditId').value = result.data.id; document.getElementById('serviceTitle').value = result.data.title; document.getElementById('serviceDesc').value = result.data.description || ''; document.getElementById('serviceIcon').value = result.data.icon || '🔧'; document.getElementById('serviceOrder').value = result.data.display_order || 1; document.getElementById('serviceForm').style.display = 'grid'; document.querySelector('.tab-btn[data-tab="services"]').click(); } }
-            async function deleteService(id) { if (confirm('Eliminar este servicio?')) { await supabase.from('services').delete().eq('id', id); await renderServicesList(); showSuccess(); } }
-            async function addGalleryItem() { var url = document.getElementById('galleryUrl').value, alt = document.getElementById('galleryAlt').value || 'Trabajo realizado'; if (!url) { alert('Ingrese la URL de la imagen'); return; } await supabase.from('gallery').insert([{ image_url: url, alt_text: alt }]); document.getElementById('galleryUrl').value = ''; document.getElementById('galleryAlt').value = ''; await renderGalleryList(); showSuccess(); }
-            async function deleteGalleryItem(id) { if (confirm('Eliminar esta imagen?')) { await supabase.from('gallery').delete().eq('id', id); await renderGalleryList(); showSuccess(); } }
-            async function addTestimonial() { var name = document.getElementById('testimonialName').value, stars = parseInt(document.getElementById('testimonialStars').value) || 5, text = document.getElementById('testimonialText').value; if (!name || !text) { alert('Complete todos los campos'); return; } await supabase.from('testimonials').insert([{ client_name: name, stars: Math.min(5, Math.max(1, stars)), testimonial_text: text }]); document.getElementById('testimonialName').value = ''; document.getElementById('testimonialStars').value = '5'; document.getElementById('testimonialText').value = ''; await renderTestimonialsList(); showSuccess(); }
-            async function deleteTestimonial(id) { if (confirm('Eliminar este testimonio?')) { await supabase.from('testimonials').delete().eq('id', id); await renderTestimonialsList(); showSuccess(); } }
-            async function updateBookingPlate(id, plate) { await supabase.from('bookings').update({ plate_number: plate.toUpperCase() }).eq('id', id); }
-            async function updateBookingEstimate(id, date) { await supabase.from('bookings').update({ estimated_delivery: date }).eq('id', id); showSuccess(); }
-            async function updateBookingStatus(id, status) { await supabase.from('bookings').update({ status: status }).eq('id', id); await renderBookings(); showSuccess(); }
-            async function deleteBooking(id) { if (confirm('Eliminar esta cita?')) { await supabase.from('bookings').delete().eq('id', id); await renderBookings(); showSuccess(); } }
-            async function addBookingNote(id) { var note = prompt('Agregar nota:'); if (note && note.trim()) { var result = await supabase.from('bookings').select('notes').eq('id', id).single(); var notes = result.data?.notes || []; if (typeof notes === 'string') notes = JSON.parse(notes); notes.push({ text: note.trim(), time: new Date().toISOString() }); await supabase.from('bookings').update({ notes: notes }).eq('id', id); await renderBookings(); showSuccess(); } }
+            async function saveService() { var editId = document.getElementById('serviceEditId').value; var title = document.getElementById('serviceTitle').value, desc = document.getElementById('serviceDesc').value, icon = document.getElementById('serviceIcon').value, order = parseInt(document.getElementById('serviceOrder').value)||1; if (!title||!desc) { alert('Complete todos los campos'); return; } if (editId) { await supabase.from('services').update({title:title,description:desc,icon:icon,display_order:order}).eq('id',editId); } else { await supabase.from('services').insert([{title:title,description:desc,icon:icon,display_order:order}]); } cancelServiceForm(); await renderServicesList(); showSuccess(); }
+            async function editService(id) { var result = await supabase.from('services').select('*').eq('id',id).single(); if (result.data) { document.getElementById('serviceEditId').value = result.data.id; document.getElementById('serviceTitle').value = result.data.title; document.getElementById('serviceDesc').value = result.data.description||''; document.getElementById('serviceIcon').value = result.data.icon||'🔧'; document.getElementById('serviceOrder').value = result.data.display_order||1; document.getElementById('serviceForm').style.display = 'grid'; document.querySelector('.tab-btn[data-tab="services"]').click(); } }
+            async function deleteService(id) { if (confirm('Eliminar este servicio?')) { await supabase.from('services').delete().eq('id',id); await renderServicesList(); showSuccess(); } }
+            async function addGalleryItem() { var url = document.getElementById('galleryUrl').value, alt = document.getElementById('galleryAlt').value||'Trabajo realizado'; if (!url) { alert('Ingrese la URL de la imagen'); return; } await supabase.from('gallery').insert([{image_url:url,alt_text:alt}]); document.getElementById('galleryUrl').value = ''; document.getElementById('galleryAlt').value = ''; await renderGalleryList(); showSuccess(); }
+            async function deleteGalleryItem(id) { if (confirm('Eliminar esta imagen?')) { await supabase.from('gallery').delete().eq('id',id); await renderGalleryList(); showSuccess(); } }
+            async function addTestimonial() { var name = document.getElementById('testimonialName').value, stars = parseInt(document.getElementById('testimonialStars').value)||5, text = document.getElementById('testimonialText').value; if (!name||!text) { alert('Complete todos los campos'); return; } await supabase.from('testimonials').insert([{client_name:name,stars:Math.min(5,Math.max(1,stars)),testimonial_text:text}]); document.getElementById('testimonialName').value = ''; document.getElementById('testimonialStars').value = '5'; document.getElementById('testimonialText').value = ''; await renderTestimonialsList(); showSuccess(); }
+            async function deleteTestimonial(id) { if (confirm('Eliminar este testimonio?')) { await supabase.from('testimonials').delete().eq('id',id); await renderTestimonialsList(); showSuccess(); } }
+            async function updateBookingPlate(id, plate) { await supabase.from('bookings').update({plate_number:plate.toUpperCase()}).eq('id',id); }
+            async function updateBookingEstimate(id, date) { await supabase.from('bookings').update({estimated_delivery:date}).eq('id',id); showSuccess(); }
+            async function updateBookingStatus(id, status) { await supabase.from('bookings').update({status:status}).eq('id',id); await renderBookings(); showSuccess(); }
+            async function deleteBooking(id) { if (confirm('Eliminar esta cita?')) { await supabase.from('bookings').delete().eq('id',id); await renderBookings(); showSuccess(); } }
+            async function addBookingNote(id) { var note = prompt('Agregar nota:'); if (note && note.trim()) { var result = await supabase.from('bookings').select('notes').eq('id',id).single(); var notes = result.data?.notes||[]; if (typeof notes==='string') notes = JSON.parse(notes); notes.push({text:note.trim(),time:new Date().toISOString()}); await supabase.from('bookings').update({notes:notes}).eq('id',id); await renderBookings(); showSuccess(); } }
 
             window._editService = editService; window._deleteService = deleteService; window._deleteGallery = deleteGalleryItem;
             window._deleteTestimonial = deleteTestimonial; window._updatePlate = updateBookingPlate; window._updateEstimate = updateBookingEstimate;
