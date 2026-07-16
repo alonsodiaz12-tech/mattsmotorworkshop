@@ -8,10 +8,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --bg-dark: #0a0a0a;
-            --bg-card: #111111;
             --red: #dc2626;
             --red-light: #ef4444;
             --red-dark: #991b1b;
@@ -51,7 +51,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Animación del motor */
+        /* ========== ANIMACIÓN DEL MOTOR ========== */
         .engine-container {
             position: relative;
             width: 180px;
@@ -182,9 +182,9 @@
             100% { transform: translateY(-40px) translateX(10px); opacity: 0; }
         }
 
-        /* Texto */
+        /* ========== TEXTO ========== */
         .maintenance-icon {
-            font-size: 1rem;
+            font-size: 0.85rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 4px;
@@ -246,6 +246,13 @@
             color: var(--text-muted);
         }
 
+        .auto-check-msg {
+            margin-top: 1rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
         @media (max-width: 480px) {
             .engine-container {
                 width: 140px;
@@ -267,6 +274,7 @@
             <span>MATTS MOTOR WORKSHOP</span>
         </div>
 
+        <!-- Animación del motor descompuesto -->
         <div class="engine-container">
             <div class="engine-outer"></div>
             <div class="engine-inner"></div>
@@ -290,6 +298,36 @@
             <strong>Matts Motor Workshop</strong><br>
             Ingeniería de precisión para su vehículo
         </div>
+        <p class="auto-check-msg" id="autoCheckMsg">Verificando disponibilidad automáticamente...</p>
     </div>
+
+    <script>
+        (function() {
+            var SUPABASE_URL = 'https://pupfxetbnpgqikzhnjts.supabase.co';
+            var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
+            var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            var checkCount = 0;
+
+            async function checkAvailability() {
+                checkCount++;
+                try {
+                    var result = await supabase.from('site_settings').select('setting_value').eq('setting_key', 'maintenance_mode').single();
+                    if (result.data && result.data.setting_value === 'false') {
+                        window.location.replace('/home');
+                        return;
+                    }
+                } catch(e) {}
+                
+                var msg = document.getElementById('autoCheckMsg');
+                if (msg) {
+                    msg.textContent = 'Verificando disponibilidad... (intento ' + checkCount + ')';
+                }
+                
+                setTimeout(checkAvailability, 15000);
+            }
+
+            setTimeout(checkAvailability, 15000);
+        })();
+    </script>
 </body>
 </html>
