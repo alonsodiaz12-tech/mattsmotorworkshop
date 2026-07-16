@@ -82,6 +82,19 @@
         .status-completed { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
         .status-cancelled { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
 
+        .info-message {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        .info-pending { background: rgba(245,158,11,0.08); color: #fbbf24; border: 1px solid rgba(245,158,11,0.2); }
+        .info-confirmed { background: rgba(59,130,246,0.08); color: #60a5fa; border: 1px solid rgba(59,130,246,0.2); }
+        .info-success { background: rgba(34,197,94,0.08); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
+        .info-cancelled { background: rgba(239,68,68,0.08); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+
         .progress-tracker { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 2rem; }
         .progress-step { text-align: center; }
         .progress-step .step-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem; font-weight: 700; font-size: 0.9rem; background: var(--bg-elevated); border: 2px solid var(--border-light); color: var(--text-muted); transition: var(--transition); }
@@ -96,7 +109,7 @@
         .detail-item .detail-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 0.25rem; }
         .detail-item .detail-value { font-weight: 600; font-size: 0.95rem; }
 
-        .notes-section { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem; }
+        .notes-section { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem; margin-top: 1rem; }
         .notes-section h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 0.75rem; }
         .notes-list { list-style: none; display: grid; gap: 0.75rem; }
         .notes-list li { display: flex; gap: 0.75rem; padding: 0.75rem; background: var(--bg-dark); border-radius: 8px; font-size: 0.9rem; color: var(--text-secondary); }
@@ -145,17 +158,9 @@
                 </div>
                 <span class="status-badge" id="resultStatus"></span>
             </div>
-            <div class="progress-tracker" id="progressTracker"></div>
-            <div class="detail-grid" id="detailGrid">
-                <div class="detail-item"><div class="detail-label">Servicio Solicitado</div><div class="detail-value" id="resultService"></div></div>
-                <div class="detail-item"><div class="detail-label">Fecha de Ingreso</div><div class="detail-value" id="resultDate"></div></div>
-                <div class="detail-item"><div class="detail-label">Fecha Estimada de Entrega</div><div class="detail-value" id="resultEstimate"></div></div>
-                <div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value" id="resultClient"></div></div>
-            </div>
-            <div class="notes-section" id="notesSection">
-                <h3>Notas del Taller</h3>
-                <div id="resultNotes"></div>
-            </div>
+
+            <div id="dynamicContent"></div>
+
             <button class="new-search-btn" onclick="newSearch()">← Nueva consulta</button>
         </div>
     </div>
@@ -192,8 +197,11 @@
         function displayResult(booking) {
             var resultCard = document.getElementById('resultCard');
             var status = booking.status;
+            var dynamicContent = document.getElementById('dynamicContent');
+
             document.getElementById('resultVehicle').textContent = booking.vehicle || 'No especificado';
             document.getElementById('resultPlate').textContent = booking.plate_number || 'N/A';
+
             var statusMap = {
                 'pending': { text: 'Pendiente', class: 'status-pending' },
                 'confirmed': { text: 'Confirmada', class: 'status-confirmed' },
@@ -205,65 +213,87 @@
             };
             var st = statusMap[status] || statusMap.pending;
             var statusBadge = document.getElementById('resultStatus');
-            statusBadge.textContent = st.text; statusBadge.className = 'status-badge ' + st.class;
-            var tracker = document.getElementById('progressTracker');
-            var notesContainer = document.getElementById('resultNotes');
-            document.getElementById('resultService').textContent = booking.service_requested || 'No especificado';
-            document.getElementById('resultDate').textContent = new Date(booking.created_at).toLocaleDateString('es-MX', { year:'numeric', month:'long', day:'numeric' });
-            document.getElementById('resultClient').textContent = booking.client_name || 'No especificado';
+            statusBadge.textContent = st.text;
+            statusBadge.className = 'status-badge ' + st.class;
+
+            var html = '';
 
             if (status === 'pending') {
-                tracker.innerHTML = '<div style="text-align:center;padding:1rem;color:#fbbf24;background:rgba(245,158,11,0.08);border-radius:8px;font-size:0.9rem;">Su cita está pendiente de confirmación. Recibirá una notificación cuando sea confirmada.</div>';
-                document.getElementById('resultEstimate').textContent = 'Pendiente de confirmación';
-                notesContainer.innerHTML = '<p class="no-notes">Aún no hay información disponible.</p>';
+                html += '<div class="info-message info-pending">⏳ Su cita está <strong>pendiente de confirmación</strong>. El taller revisará su solicitud y le notificará cuando sea confirmada.</div>';
+                html += '<div class="detail-grid">';
+                html += '<div class="detail-item"><div class="detail-label">Servicio Solicitado</div><div class="detail-value">' + (booking.service_requested || 'No especificado') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">Fecha Solicitada</div><div class="detail-value">' + (booking.preferred_date ? new Date(booking.preferred_date+'T00:00:00').toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) : 'Sin fecha') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">Hora Solicitada</div><div class="detail-value">' + (booking.preferred_time || 'No especificada') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">' + (booking.client_name || 'No especificado') + '</div></div>';
+                html += '</div>';
             } else if (status === 'confirmed') {
-                var dateFormatted = booking.preferred_date ? new Date(booking.preferred_date + 'T00:00:00').toLocaleDateString('es-MX', { weekday:'long', year:'numeric', month:'long', day:'numeric' }) : 'Sin fecha';
-                tracker.innerHTML = '<div style="text-align:center;padding:1rem;color:#60a5fa;background:rgba(59,130,246,0.08);border-radius:8px;font-size:0.9rem;">✅ Su cita ha sido <strong>confirmada</strong>. Preséntese al taller el <strong>' + dateFormatted + '</strong> a las <strong>' + (booking.preferred_time || '') + '</strong>.</div>';
-                document.getElementById('resultEstimate').textContent = dateFormatted + ' - ' + (booking.preferred_time || '');
-                notesContainer.innerHTML = '<p class="no-notes">Traiga su vehículo a la hora indicada. El estado se actualizará cuando ingrese al taller.</p>';
+                var dateFormatted = booking.preferred_date ? new Date(booking.preferred_date+'T00:00:00').toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) : 'Sin fecha';
+                html += '<div class="info-message info-confirmed">✅ Su cita ha sido <strong>confirmada</strong>. Preséntese al taller el <strong>' + dateFormatted + '</strong> a las <strong>' + (booking.preferred_time || '') + '</strong>. El estado se actualizará cuando su vehículo ingrese al taller.</div>';
+                html += '<div class="detail-grid">';
+                html += '<div class="detail-item"><div class="detail-label">Servicio Solicitado</div><div class="detail-value">' + (booking.service_requested || 'No especificado') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">Fecha de Cita</div><div class="detail-value">' + dateFormatted + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">Hora de Cita</div><div class="detail-value">' + (booking.preferred_time || 'No especificada') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">' + (booking.client_name || 'No especificado') + '</div></div>';
+                html += '</div>';
             } else if (status === 'en_taller' || status === 'en_progreso') {
                 var progressOrder = ['en_taller', 'en_progreso', 'completado', 'entregado'];
                 var currentIndex = progressOrder.indexOf(status);
                 if (currentIndex < 0) currentIndex = 0;
                 var steps = [{label:'En Taller',icon:'🔧'},{label:'En Progreso',icon:'⚙'},{label:'Completado',icon:'✓'},{label:'Entregado',icon:'🎉'}];
-                var stepsHtml = '';
+                html += '<div class="progress-tracker">';
                 for (var i = 0; i < steps.length; i++) {
                     var cls = i < currentIndex ? 'completed' : (i === currentIndex ? 'active' : '');
-                    stepsHtml += '<div class="progress-step ' + cls + '"><div class="step-circle">' + (cls==='completed'?'✓':steps[i].icon) + '</div><div class="step-label">' + steps[i].label + '</div></div>';
+                    html += '<div class="progress-step ' + cls + '"><div class="step-circle">' + (cls==='completed'?'✓':steps[i].icon) + '</div><div class="step-label">' + steps[i].label + '</div></div>';
                 }
-                tracker.innerHTML = stepsHtml;
-                document.getElementById('resultEstimate').textContent = booking.estimated_delivery ? new Date(booking.estimated_delivery+'T00:00:00').toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'}) : 'Por definir';
-                showNotes(booking.notes);
+                html += '</div>';
+                html += '<div class="detail-grid">';
+                html += '<div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">' + (booking.service_requested || 'No especificado') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">Fecha de Ingreso</div><div class="detail-value">' + new Date(booking.created_at).toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'}) + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">Entrega Estimada</div><div class="detail-value">' + (booking.estimated_delivery ? new Date(booking.estimated_delivery+'T00:00:00').toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'}) : 'Por definir') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">' + (booking.client_name || 'No especificado') + '</div></div>';
+                html += '</div>';
+                html += '<div class="notes-section"><h3>Notas del Taller</h3>';
+                var notes = booking.notes || [];
+                if (!notes || notes.length === 0) {
+                    html += '<p class="no-notes">Aún no hay notas del taller.</p>';
+                } else {
+                    var notesArray = typeof notes === 'string' ? JSON.parse(notes) : notes;
+                    html += '<ul class="notes-list">';
+                    for (var n = 0; n < notesArray.length; n++) {
+                        html += '<li><span class="note-time">' + new Date(notesArray[n].time).toLocaleString('es-MX',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'}) + '</span><span>' + notesArray[n].text + '</span></li>';
+                    }
+                    html += '</ul>';
+                }
+                html += '</div>';
             } else if (status === 'completado') {
-                tracker.innerHTML = '<div style="text-align:center;padding:1rem;color:#4ade80;background:rgba(34,197,94,0.08);border-radius:8px;font-size:0.9rem;">✅ Su vehículo está listo. Puede pasar a retirarlo.</div>';
-                document.getElementById('resultEstimate').textContent = 'Listo para entrega';
-                showNotes(booking.notes);
+                html += '<div class="info-message info-success">✅ Su vehículo está <strong>listo</strong>. Puede pasar a retirarlo al taller.</div>';
+                html += '<div class="detail-grid">';
+                html += '<div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">' + (booking.service_requested || 'No especificado') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">Fecha de Ingreso</div><div class="detail-value">' + new Date(booking.created_at).toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'}) + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">Estado</div><div class="detail-value">Listo para entrega</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">' + (booking.client_name || 'No especificado') + '</div></div>';
+                html += '</div>';
             } else if (status === 'entregado') {
-                tracker.innerHTML = '<div style="text-align:center;padding:1rem;color:#4ade80;background:rgba(34,197,94,0.08);border-radius:8px;font-size:0.9rem;">🎉 Vehículo entregado. Gracias por confiar en nosotros.</div>';
-                document.getElementById('resultEstimate').textContent = 'Entregado';
-                showNotes(booking.notes);
+                html += '<div class="info-message info-success">🎉 Vehículo <strong>entregado</strong>. Gracias por confiar en Matts Motor Workshop.</div>';
+                html += '<div class="detail-grid">';
+                html += '<div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">' + (booking.service_requested || 'No especificado') + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">Fecha de Ingreso</div><div class="detail-value">' + new Date(booking.created_at).toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'}) + '</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">Estado</div><div class="detail-value">Entregado</div></div>';
+                html += '<div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">' + (booking.client_name || 'No especificado') + '</div></div>';
+                html += '</div>';
             } else if (status === 'cancelled') {
-                tracker.innerHTML = '<div style="text-align:center;padding:1rem;color:#f87171;background:rgba(239,68,68,0.08);border-radius:8px;font-size:0.9rem;">Esta cita ha sido cancelada.</div>';
-                document.getElementById('resultEstimate').textContent = 'Cancelado';
-                notesContainer.innerHTML = '<p class="no-notes">Cita cancelada.</p>';
+                html += '<div class="info-message info-cancelled">❌ Esta cita ha sido <strong>cancelada</strong>.</div>';
             }
 
+            dynamicContent.innerHTML = html;
             resultCard.style.display = 'block';
             resultCard.scrollIntoView({ behavior:'smooth', block:'center' });
         }
 
-        function showNotes(notes) {
-            var notesContainer = document.getElementById('resultNotes');
-            if (!notes || notes.length === 0) { notesContainer.innerHTML = '<p class="no-notes">Aún no hay notas del taller.</p>'; return; }
-            var notesArray = typeof notes === 'string' ? JSON.parse(notes) : notes;
-            var html = '<ul class="notes-list">';
-            for (var n = 0; n < notesArray.length; n++) { html += '<li><span class="note-time">' + new Date(notesArray[n].time).toLocaleString('es-MX',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'}) + '</span><span>' + notesArray[n].text + '</span></li>'; }
-            html += '</ul>'; notesContainer.innerHTML = html;
-        }
-
         function newSearch() {
             document.getElementById('resultCard').style.display = 'none';
-            document.getElementById('plateInput').value = ''; document.getElementById('plateInput').focus();
+            document.getElementById('plateInput').value = '';
+            document.getElementById('plateInput').focus();
             document.getElementById('errorMessage').style.display = 'none';
             document.getElementById('searchCard').scrollIntoView({ behavior:'smooth' });
         }
