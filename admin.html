@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --bg-dark: #0a0a0a;
@@ -27,11 +28,7 @@
             --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -112,6 +109,11 @@
             box-shadow: 0 8px 25px rgba(220,38,38,0.3);
         }
 
+        #loginScreen button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .error-msg {
             color: #ef4444;
             font-size: 0.85rem;
@@ -128,9 +130,7 @@
             transition: var(--transition);
         }
 
-        .back-link:hover {
-            color: var(--red-light);
-        }
+        .back-link:hover { color: var(--red-light); }
 
         #panelScreen {
             display: none;
@@ -218,9 +218,7 @@
             transition: var(--transition);
         }
 
-        .item-row:hover {
-            border-left-color: var(--red);
-        }
+        .item-row:hover { border-left-color: var(--red); }
 
         .btn-admin {
             padding: 0.4rem 0.9rem;
@@ -233,18 +231,10 @@
             transition: var(--transition);
         }
 
-        .btn-edit {
-            background: #3b82f6;
-        }
-        .btn-edit:hover {
-            background: #2563eb;
-        }
-        .btn-delete {
-            background: #ef4444;
-        }
-        .btn-delete:hover {
-            background: #dc2626;
-        }
+        .btn-edit { background: #3b82f6; }
+        .btn-edit:hover { background: #2563eb; }
+        .btn-delete { background: #ef4444; }
+        .btn-delete:hover { background: #dc2626; }
         .btn-add {
             background: var(--red);
             color: white;
@@ -256,9 +246,7 @@
             font-size: 0.9rem;
             transition: var(--transition);
         }
-        .btn-add:hover {
-            background: var(--red-light);
-        }
+        .btn-add:hover { background: var(--red-light); }
 
         .admin-form {
             display: grid;
@@ -338,9 +326,7 @@
             transition: var(--transition);
         }
 
-        .header-actions a:hover {
-            color: var(--red-light);
-        }
+        .header-actions a:hover { color: var(--red-light); }
 
         .booking-filters {
             display: flex;
@@ -349,18 +335,32 @@
             flex-wrap: wrap;
         }
 
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border-light);
+            border-top: 2px solid var(--red);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         @media (max-width: 768px) {
-            .panel-header {
-                flex-direction: column;
-                text-align: center;
-            }
-            .item-row {
-                flex-direction: column;
-                text-align: center;
-            }
-            #loginScreen {
-                padding: 2rem;
-            }
+            .panel-header { flex-direction: column; text-align: center; }
+            .item-row { flex-direction: column; text-align: center; }
+            #loginScreen { padding: 2rem; }
         }
     </style>
 </head>
@@ -370,9 +370,10 @@
         <div class="logo-icon">🔐</div>
         <h2>Matts Motor Workshop</h2>
         <p class="subtitle">Panel de Administración</p>
-        <input type="password" id="adminPassword" placeholder="Contraseña" autofocus>
-        <p class="error-msg" id="loginError">Contraseña incorrecta</p>
-        <button onclick="login()">Ingresar al Panel</button>
+        <input type="email" id="adminEmail" placeholder="Email del administrador" autofocus>
+        <input type="password" id="adminPassword" placeholder="Contraseña">
+        <p class="error-msg" id="loginError">Credenciales incorrectas</p>
+        <button onclick="login()" id="loginBtn">Ingresar al Panel</button>
         <a href="/home" class="back-link">← Volver al taller</a>
     </div>
 
@@ -380,6 +381,7 @@
         <div class="panel-header">
             <h1>⚙️ Administrar Contenido</h1>
             <div class="header-actions">
+                <span style="color:var(--text-muted); font-size:0.85rem;" id="loggedUser"></span>
                 <a href="/home">← Ver página</a>
                 <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
             </div>
@@ -390,7 +392,7 @@
             <!-- Servicios -->
             <div class="admin-section">
                 <h3>📋 Servicios</h3>
-                <div class="item-list" id="servicesList"></div>
+                <div class="item-list" id="servicesList"><div class="loading"><span class="loading-spinner"></span>Cargando...</div></div>
                 <button class="btn-add" onclick="showServiceForm()">+ Nuevo Servicio</button>
                 <div id="serviceForm" class="admin-form" style="display:none;">
                     <input type="text" id="serviceTitle" placeholder="Título del servicio">
@@ -418,7 +420,7 @@
             <!-- Galería -->
             <div class="admin-section">
                 <h3>🖼️ Galería de Trabajos</h3>
-                <div class="item-list" id="galleryList"></div>
+                <div class="item-list" id="galleryList"><div class="loading"><span class="loading-spinner"></span>Cargando...</div></div>
                 <div class="admin-form">
                     <input type="text" id="galleryUrl" placeholder="URL de la imagen">
                     <input type="text" id="galleryAlt" placeholder="Descripción breve">
@@ -429,7 +431,7 @@
             <!-- Testimonios -->
             <div class="admin-section">
                 <h3>💬 Testimonios de Clientes</h3>
-                <div class="item-list" id="testimonialsList"></div>
+                <div class="item-list" id="testimonialsList"><div class="loading"><span class="loading-spinner"></span>Cargando...</div></div>
                 <div class="admin-form">
                     <input type="text" id="testimonialName" placeholder="Nombre completo del cliente">
                     <input type="number" id="testimonialStars" placeholder="Calificación (1-5)" min="1" max="5" value="5">
@@ -449,45 +451,27 @@
                     <button class="btn-admin btn-edit" onclick="filterBookings('completed')" id="filterCompleted" style="background:#22c55e;">Completadas</button>
                     <button class="btn-admin btn-edit" onclick="filterBookings('cancelled')" id="filterCancelled" style="background:#ef4444;">Canceladas</button>
                 </div>
-                <div class="item-list" id="bookingsList"></div>
+                <div class="item-list" id="bookingsList"><div class="loading"><span class="loading-spinner"></span>Cargando...</div></div>
             </div>
         </div>
     </div>
 
     <script>
-        const ADMIN_PASSWORD = 'admin123';
+        const SUPABASE_URL = 'https://pupfxetbnpgqikzhnjts.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const defaultServices = [
-            { id: 1, title: 'Mecánica General', desc: 'Reparación completa de motor, transmisión y sistemas mecánicos con precisión experta.', icon: '🔧', order: 1 },
-            { id: 2, title: 'Diagnóstico Electrónico', desc: 'Análisis computarizado avanzado para identificar fallas con exactitud milimétrica.', icon: '⚡', order: 2 },
-            { id: 3, title: 'Scanner Automotriz', desc: 'Tecnología OBD-II de última generación para lecturas precisas del sistema.', icon: '🖥️', order: 3 },
-            { id: 4, title: 'Frenos de Alto Rendimiento', desc: 'Sistemas de frenado inspeccionados y reparados con componentes premium.', icon: '🛑', order: 4 },
-            { id: 5, title: 'Climatización', desc: 'Servicio completo de aire acondicionado con refrigerantes ecológicos.', icon: '❄️', order: 5 },
-            { id: 6, title: 'Lubricación Express', desc: 'Cambio de aceite sintético y filtros originales. Servicio rápido y eficiente.', icon: '🛢️', order: 6 },
-        ];
+        let currentFilter = 'all';
+        let session = null;
 
-        const defaultGallery = [
-            { id: 1, url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect fill="%231a1a1a" width="400" height="300"/><rect fill="%23222" x="50" y="50" width="300" height="200" rx="10"/><text fill="%23dc2626" x="200" y="160" text-anchor="middle" font-size="20">Motor Repair</text></svg>', alt: 'Reparación de motor' },
-            { id: 2, url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect fill="%231a1a1a" width="400" height="300"/><rect fill="%23222" x="50" y="50" width="300" height="200" rx="10"/><text fill="%23dc2626" x="200" y="160" text-anchor="middle" font-size="20">Brake System</text></svg>', alt: 'Sistema de frenos' },
-            { id: 3, url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect fill="%231a1a1a" width="400" height="300"/><rect fill="%23222" x="50" y="50" width="300" height="200" rx="10"/><text fill="%23dc2626" x="200" y="160" text-anchor="middle" font-size="20">Diagnostics</text></svg>', alt: 'Diagnóstico computarizado' },
-        ];
-
-        const defaultTestimonials = [
-            { id: 1, name: 'Carlos Mendoza', stars: 5, text: 'El nivel de profesionalismo es excepcional. Diagnosticaron el problema en minutos y la reparación fue impecable.' },
-            { id: 2, name: 'Ana Gabriela R.', stars: 5, text: 'Finalmente encontré un taller donde la transparencia y la calidad van de la mano. Totalmente recomendado.' },
-            { id: 3, name: 'Roberto Linares', stars: 5, text: 'La tecnología que utilizan marca la diferencia. Mi auto nunca había funcionado tan bien.' },
-        ];
-
-        function initData() {
-            if (!localStorage.getItem('services')) localStorage.setItem('services', JSON.stringify(defaultServices));
-            if (!localStorage.getItem('gallery')) localStorage.setItem('gallery', JSON.stringify(defaultGallery));
-            if (!localStorage.getItem('testimonials')) localStorage.setItem('testimonials', JSON.stringify(defaultTestimonials));
+        // Verificar sesión al cargar
+        async function checkSession() {
+            const { data } = await supabase.auth.getSession();
+            if (data.session) {
+                session = data.session;
+                showPanel();
+            }
         }
-
-        function getServices() { return JSON.parse(localStorage.getItem('services')) || []; }
-        function getGallery() { return JSON.parse(localStorage.getItem('gallery')) || []; }
-        function getTestimonials() { return JSON.parse(localStorage.getItem('testimonials')) || []; }
-        function getBookings() { return JSON.parse(localStorage.getItem('bookings')) || []; }
 
         function showSuccess() {
             const msg = document.getElementById('successMsg');
@@ -495,38 +479,108 @@
             setTimeout(() => { msg.style.display = 'none'; }, 2500);
         }
 
-        function login() {
+        // Login con Supabase Auth
+        async function login() {
+            const email = document.getElementById('adminEmail').value.trim();
             const password = document.getElementById('adminPassword').value;
-            if (password === ADMIN_PASSWORD) {
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('panelScreen').style.display = 'block';
-                document.body.style.alignItems = 'flex-start';
-                renderAll();
-                document.getElementById('adminPassword').value = '';
-            } else {
-                document.getElementById('loginError').style.display = 'block';
-                document.getElementById('adminPassword').value = '';
-                document.getElementById('adminPassword').focus();
+            const loginBtn = document.getElementById('loginBtn');
+            const errorMsg = document.getElementById('loginError');
+
+            if (!email || !password) {
+                errorMsg.textContent = 'Complete todos los campos';
+                errorMsg.style.display = 'block';
+                return;
             }
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = '⏳ Ingresando...';
+            errorMsg.style.display = 'none';
+
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+
+            if (error) {
+                errorMsg.textContent = 'Credenciales incorrectas. Verifique e intente nuevamente.';
+                errorMsg.style.display = 'block';
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Ingresar al Panel';
+                return;
+            }
+
+            session = data.session;
+            showPanel();
         }
 
-        function logout() {
+        function showPanel() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('panelScreen').style.display = 'block';
+            document.body.style.alignItems = 'flex-start';
+            document.getElementById('loggedUser').textContent = '👤 ' + session.user.email;
+            loadAllData();
+        }
+
+        async function logout() {
+            await supabase.auth.signOut();
+            session = null;
             document.getElementById('loginScreen').style.display = 'block';
             document.getElementById('panelScreen').style.display = 'none';
             document.body.style.alignItems = 'center';
+            document.getElementById('adminPassword').value = '';
             document.getElementById('loginError').style.display = 'none';
         }
 
+        // Enter para login
         document.getElementById('adminPassword').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') login();
         });
 
-        function renderServicesList() {
+        // ============ CARGAR DATOS ============
+        async function loadServices() {
+            const { data, error } = await supabase.from('services').select('*').order('display_order');
+            if (error) { console.error(error); return []; }
+            return data;
+        }
+
+        async function loadGallery() {
+            const { data, error } = await supabase.from('gallery').select('*').order('created_at', { ascending: false });
+            if (error) { console.error(error); return []; }
+            return data;
+        }
+
+        async function loadTestimonials() {
+            const { data, error } = await supabase.from('testimonials').select('*').order('created_at', { ascending: false });
+            if (error) { console.error(error); return []; }
+            return data;
+        }
+
+        async function loadBookings(filter) {
+            let query = supabase.from('bookings').select('*').order('created_at', { ascending: false });
+            if (filter && filter !== 'all') {
+                query = query.eq('status', filter);
+            }
+            const { data, error } = await query;
+            if (error) { console.error(error); return []; }
+            return data;
+        }
+
+        async function loadAllData() {
+            await Promise.all([
+                renderServicesList(),
+                renderGalleryList(),
+                renderTestimonialsList(),
+                renderBookings()
+            ]);
+        }
+
+        // ============ RENDER ============
+        async function renderServicesList() {
             const container = document.getElementById('servicesList');
-            const services = getServices().sort((a, b) => a.order - b.order);
+            const services = await loadServices();
             container.innerHTML = services.map(s => `
                 <div class="item-row">
-                    <span>${s.icon} <strong>${s.title}</strong> · Orden: ${s.order}</span>
+                    <span>${s.icon || '🔧'} <strong>${s.title}</strong> · Orden: ${s.display_order}</span>
                     <div>
                         <button class="btn-admin btn-edit" onclick="editService(${s.id})">Editar</button>
                         <button class="btn-admin btn-delete" onclick="deleteService(${s.id})">Eliminar</button>
@@ -535,39 +589,31 @@
             `).join('');
         }
 
-        function renderGalleryList() {
+        async function renderGalleryList() {
             const container = document.getElementById('galleryList');
-            const gallery = getGallery();
+            const gallery = await loadGallery();
             container.innerHTML = gallery.map(g => `
                 <div class="item-row">
-                    <span>🖼️ ${g.alt}</span>
+                    <span>🖼️ ${g.alt_text || 'Sin descripción'}</span>
                     <button class="btn-admin btn-delete" onclick="deleteGalleryItem(${g.id})">Eliminar</button>
                 </div>
             `).join('');
         }
 
-        function renderTestimonialsList() {
+        async function renderTestimonialsList() {
             const container = document.getElementById('testimonialsList');
-            const testimonials = getTestimonials();
+            const testimonials = await loadTestimonials();
             container.innerHTML = testimonials.map(t => `
                 <div class="item-row">
-                    <span>💬 ${t.name} · ${'★'.repeat(t.stars)}</span>
+                    <span>💬 ${t.client_name} · ${'★'.repeat(t.stars)}</span>
                     <button class="btn-admin btn-delete" onclick="deleteTestimonial(${t.id})">Eliminar</button>
                 </div>
             `).join('');
         }
 
-        let currentFilter = 'all';
-
-        function renderBookings() {
+        async function renderBookings() {
             const container = document.getElementById('bookingsList');
-            let bookings = getBookings();
-            
-            if (currentFilter !== 'all') {
-                bookings = bookings.filter(b => b.status === currentFilter);
-            }
-            
-            bookings.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            const bookings = await loadBookings(currentFilter);
             
             if (bookings.length === 0) {
                 container.innerHTML = '<div class="item-row" style="justify-content:center; color:var(--text-muted);">No hay citas para mostrar</div>';
@@ -583,34 +629,35 @@
                     cancelled: { bg: '#ef4444', text: 'Cancelada' }
                 };
                 const status = statusColors[b.status] || statusColors.pending;
-                const date = new Date(b.date).toLocaleDateString('es-MX', { weekday:'short', year:'numeric', month:'short', day:'numeric' });
+                const date = b.preferred_date ? new Date(b.preferred_date + 'T00:00:00').toLocaleDateString('es-MX', { weekday:'short', year:'numeric', month:'short', day:'numeric' }) : 'Sin fecha';
                 const notes = b.notes || [];
+                const notesArray = typeof notes === 'string' ? JSON.parse(notes) : notes;
                 
                 return `
                     <div class="item-row" style="flex-direction:column; align-items:stretch; gap:0.75rem;">
                         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
                             <div>
-                                <span style="font-weight:700;">📅 ${date} ${b.time || ''}</span>
-                                ${b.plate ? `<span style="margin-left:1rem; background:var(--bg-dark); padding:0.2rem 0.6rem; border-radius:4px; font-family:monospace; font-weight:700; letter-spacing:1px;">🚗 ${b.plate}</span>` : '<span style="margin-left:0.5rem; color:var(--text-muted); font-size:0.8rem;">Sin placa</span>'}
+                                <span style="font-weight:700;">📅 ${date} ${b.preferred_time || ''}</span>
+                                ${b.plate_number ? `<span style="margin-left:1rem; background:var(--bg-dark); padding:0.2rem 0.6rem; border-radius:4px; font-family:monospace; font-weight:700; letter-spacing:1px;">🚗 ${b.plate_number}</span>` : '<span style="margin-left:0.5rem; color:var(--text-muted); font-size:0.8rem;">Sin placa</span>'}
                             </div>
                             <span style="background:${status.bg}; color:white; padding:0.25rem 0.75rem; border-radius:50px; font-size:0.75rem; font-weight:600;">${status.text}</span>
                         </div>
                         <div style="display:grid; gap:0.3rem; font-size:0.9rem; color:var(--text-secondary);">
-                            <div>👤 <strong style="color:var(--text-primary);">${b.name}</strong></div>
+                            <div>👤 <strong style="color:var(--text-primary);">${b.client_name}</strong></div>
                             <div>📞 ${b.phone} ${b.email ? '| ✉️ ' + b.email : ''}</div>
-                            <div>🚗 ${b.vehicle} | 🔧 ${b.service}</div>
-                            ${b.description ? `<div style="font-style:italic; padding:0.5rem; background:var(--bg-dark); border-radius:6px; margin-top:0.25rem;">"${b.description}"</div>` : ''}
+                            <div>🚗 ${b.vehicle} | 🔧 ${b.service_requested}</div>
+                            ${b.problem_description ? `<div style="font-style:italic; padding:0.5rem; background:var(--bg-dark); border-radius:6px; margin-top:0.25rem;">"${b.problem_description}"</div>` : ''}
                         </div>
                         
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
                             <div>
                                 <label style="font-size:0.7rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">Placa</label>
-                                <input type="text" value="${b.plate || ''}" onchange="updateBookingPlate(${b.id}, this.value)" placeholder="ABC-1234"
+                                <input type="text" value="${b.plate_number || ''}" onchange="updateBookingPlate(${b.id}, this.value)" placeholder="ABC-1234"
                                     style="width:100%; padding:0.5rem 0.8rem; background:var(--bg-dark); border:1px solid var(--border); border-radius:6px; color:var(--text-primary); font-size:0.85rem; font-family:monospace; letter-spacing:1px; text-transform:uppercase; outline:none;">
                             </div>
                             <div>
                                 <label style="font-size:0.7rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">Entrega Estimada</label>
-                                <input type="date" value="${b.estimatedDelivery || ''}" onchange="updateBookingEstimate(${b.id}, this.value)"
+                                <input type="date" value="${b.estimated_delivery || ''}" onchange="updateBookingEstimate(${b.id}, this.value)"
                                     style="width:100%; padding:0.5rem 0.8rem; background:var(--bg-dark); border:1px solid var(--border); border-radius:6px; color:var(--text-primary); font-size:0.85rem; color-scheme:dark; outline:none;">
                             </div>
                         </div>
@@ -620,8 +667,8 @@
                                 <span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">📝 Notas del Taller</span>
                                 <button class="btn-admin btn-edit" onclick="addBookingNote(${b.id})" style="font-size:0.7rem;">+ Nota</button>
                             </div>
-                            ${notes.length === 0 ? '<p style="color:var(--text-muted); font-size:0.8rem; font-style:italic;">Sin notas</p>' : 
-                            `<ul style="list-style:none; display:grid; gap:0.3rem;">${notes.map(n => `
+                            ${notesArray.length === 0 ? '<p style="color:var(--text-muted); font-size:0.8rem; font-style:italic;">Sin notas</p>' : 
+                            `<ul style="list-style:none; display:grid; gap:0.3rem;">${notesArray.map(n => `
                                 <li style="font-size:0.8rem; color:var(--text-secondary); padding:0.4rem 0.6rem; background:var(--bg-elevated); border-radius:4px; display:flex; justify-content:space-between;">
                                     <span>${n.text}</span>
                                     <span style="color:var(--text-muted); font-size:0.7rem;">${new Date(n.time).toLocaleString('es-MX', {hour:'2-digit',minute:'2-digit'})}</span>
@@ -644,59 +691,154 @@
             }).join('');
         }
 
-        function updateBookingPlate(id, plate) {
-            const bookings = getBookings();
-            const index = bookings.findIndex(b => b.id === id);
-            if (index !== -1) {
-                bookings[index].plate = plate.toUpperCase();
-                localStorage.setItem('bookings', JSON.stringify(bookings));
+        // ============ CRUD SERVICIOS ============
+        function showServiceForm() {
+            document.getElementById('serviceForm').style.display = 'grid';
+            document.getElementById('serviceEditId').value = '';
+            document.getElementById('serviceTitle').value = '';
+            document.getElementById('serviceDesc').value = '';
+            document.getElementById('serviceOrder').value = '1';
+            document.getElementById('serviceTitle').focus();
+        }
+
+        function cancelServiceForm() {
+            document.getElementById('serviceForm').style.display = 'none';
+        }
+
+        async function saveService() {
+            const editId = document.getElementById('serviceEditId').value;
+            const title = document.getElementById('serviceTitle').value;
+            const desc = document.getElementById('serviceDesc').value;
+            const icon = document.getElementById('serviceIcon').value;
+            const order = parseInt(document.getElementById('serviceOrder').value) || 1;
+
+            if (!title || !desc) {
+                alert('Complete todos los campos requeridos');
+                return;
+            }
+
+            if (editId) {
+                const { error } = await supabase.from('services').update({
+                    title, description: desc, icon, display_order: order
+                }).eq('id', editId);
+                if (error) { alert('Error: ' + error.message); return; }
+            } else {
+                const { error } = await supabase.from('services').insert([{
+                    title, description: desc, icon, display_order: order
+                }]);
+                if (error) { alert('Error: ' + error.message); return; }
+            }
+
+            cancelServiceForm();
+            await renderServicesList();
+            showSuccess();
+        }
+
+        async function editService(id) {
+            const { data } = await supabase.from('services').select('*').eq('id', id).single();
+            if (data) {
+                document.getElementById('serviceEditId').value = data.id;
+                document.getElementById('serviceTitle').value = data.title;
+                document.getElementById('serviceDesc').value = data.description || '';
+                document.getElementById('serviceIcon').value = data.icon || '🔧';
+                document.getElementById('serviceOrder').value = data.display_order || 1;
+                document.getElementById('serviceForm').style.display = 'grid';
+                document.getElementById('serviceTitle').focus();
             }
         }
 
-        function updateBookingEstimate(id, date) {
-            const bookings = getBookings();
-            const index = bookings.findIndex(b => b.id === id);
-            if (index !== -1) {
-                bookings[index].estimatedDelivery = date;
-                localStorage.setItem('bookings', JSON.stringify(bookings));
+        async function deleteService(id) {
+            if (confirm('¿Eliminar este servicio permanentemente?')) {
+                await supabase.from('services').delete().eq('id', id);
+                await renderServicesList();
                 showSuccess();
             }
         }
 
-        function addBookingNote(id) {
+        // ============ CRUD GALERÍA ============
+        async function addGalleryItem() {
+            const url = document.getElementById('galleryUrl').value;
+            const alt = document.getElementById('galleryAlt').value || 'Trabajo realizado';
+            if (!url) { alert('Ingrese la URL de la imagen'); return; }
+
+            const { error } = await supabase.from('gallery').insert([{ image_url: url, alt_text: alt }]);
+            if (error) { alert('Error: ' + error.message); return; }
+
+            document.getElementById('galleryUrl').value = '';
+            document.getElementById('galleryAlt').value = '';
+            await renderGalleryList();
+            showSuccess();
+        }
+
+        async function deleteGalleryItem(id) {
+            if (confirm('¿Eliminar esta imagen?')) {
+                await supabase.from('gallery').delete().eq('id', id);
+                await renderGalleryList();
+                showSuccess();
+            }
+        }
+
+        // ============ CRUD TESTIMONIOS ============
+        async function addTestimonial() {
+            const name = document.getElementById('testimonialName').value;
+            const stars = parseInt(document.getElementById('testimonialStars').value) || 5;
+            const text = document.getElementById('testimonialText').value;
+
+            if (!name || !text) { alert('Complete todos los campos'); return; }
+
+            const { error } = await supabase.from('testimonials').insert([{
+                client_name: name, stars: Math.min(5, Math.max(1, stars)), testimonial_text: text
+            }]);
+            if (error) { alert('Error: ' + error.message); return; }
+
+            document.getElementById('testimonialName').value = '';
+            document.getElementById('testimonialStars').value = '5';
+            document.getElementById('testimonialText').value = '';
+            await renderTestimonialsList();
+            showSuccess();
+        }
+
+        async function deleteTestimonial(id) {
+            if (confirm('¿Eliminar este testimonio?')) {
+                await supabase.from('testimonials').delete().eq('id', id);
+                await renderTestimonialsList();
+                showSuccess();
+            }
+        }
+
+        // ============ CRUD BOOKINGS ============
+        async function updateBookingPlate(id, plate) {
+            await supabase.from('bookings').update({ plate_number: plate.toUpperCase() }).eq('id', id);
+        }
+
+        async function updateBookingEstimate(id, date) {
+            await supabase.from('bookings').update({ estimated_delivery: date }).eq('id', id);
+            showSuccess();
+        }
+
+        async function updateBookingStatus(id, status) {
+            await supabase.from('bookings').update({ status }).eq('id', id);
+            await renderBookings();
+            showSuccess();
+        }
+
+        async function deleteBooking(id) {
+            if (confirm('¿Eliminar esta cita permanentemente?')) {
+                await supabase.from('bookings').delete().eq('id', id);
+                await renderBookings();
+                showSuccess();
+            }
+        }
+
+        async function addBookingNote(id) {
             const note = prompt('Agregar nota para el cliente:');
             if (note && note.trim()) {
-                const bookings = getBookings();
-                const index = bookings.findIndex(b => b.id === id);
-                if (index !== -1) {
-                    if (!bookings[index].notes) bookings[index].notes = [];
-                    bookings[index].notes.push({
-                        text: note.trim(),
-                        time: new Date().toISOString()
-                    });
-                    localStorage.setItem('bookings', JSON.stringify(bookings));
-                    renderBookings();
-                    showSuccess();
-                }
-            }
-        }
-
-        function updateBookingStatus(id, status) {
-            const bookings = getBookings();
-            const index = bookings.findIndex(b => b.id === id);
-            if (index !== -1) {
-                bookings[index].status = status;
-                localStorage.setItem('bookings', JSON.stringify(bookings));
-                renderBookings();
-                showSuccess();
-            }
-        }
-
-        function deleteBooking(id) {
-            if (confirm('¿Eliminar esta cita permanentemente?')) {
-                const bookings = getBookings().filter(b => b.id !== id);
-                localStorage.setItem('bookings', JSON.stringify(bookings));
-                renderBookings();
+                const { data } = await supabase.from('bookings').select('notes').eq('id', id).single();
+                let notes = data?.notes || [];
+                if (typeof notes === 'string') notes = JSON.parse(notes);
+                notes.push({ text: note.trim(), time: new Date().toISOString() });
+                await supabase.from('bookings').update({ notes }).eq('id', id);
+                await renderBookings();
                 showSuccess();
             }
         }
@@ -711,134 +853,8 @@
             renderBookings();
         }
 
-        function renderAll() {
-            renderServicesList();
-            renderGalleryList();
-            renderTestimonialsList();
-            renderBookings();
-        }
-
-        function showServiceForm() {
-            document.getElementById('serviceForm').style.display = 'grid';
-            document.getElementById('serviceEditId').value = '';
-            document.getElementById('serviceTitle').value = '';
-            document.getElementById('serviceDesc').value = '';
-            document.getElementById('serviceOrder').value = '1';
-            document.getElementById('serviceTitle').focus();
-        }
-
-        function cancelServiceForm() {
-            document.getElementById('serviceForm').style.display = 'none';
-        }
-
-        function saveService() {
-            const services = getServices();
-            const editId = document.getElementById('serviceEditId').value;
-            const title = document.getElementById('serviceTitle').value;
-            const desc = document.getElementById('serviceDesc').value;
-            const icon = document.getElementById('serviceIcon').value;
-            const order = parseInt(document.getElementById('serviceOrder').value) || 1;
-
-            if (!title || !desc) {
-                alert('Complete todos los campos requeridos');
-                return;
-            }
-
-            if (editId) {
-                const index = services.findIndex(s => s.id === parseInt(editId));
-                if (index !== -1) services[index] = { ...services[index], title, desc, icon, order };
-            } else {
-                const newId = services.length > 0 ? Math.max(...services.map(s => s.id)) + 1 : 1;
-                services.push({ id: newId, title, desc, icon, order });
-            }
-
-            localStorage.setItem('services', JSON.stringify(services));
-            cancelServiceForm();
-            renderAll();
-            showSuccess();
-        }
-
-        function editService(id) {
-            const service = getServices().find(s => s.id === id);
-            if (service) {
-                document.getElementById('serviceEditId').value = service.id;
-                document.getElementById('serviceTitle').value = service.title;
-                document.getElementById('serviceDesc').value = service.desc;
-                document.getElementById('serviceIcon').value = service.icon;
-                document.getElementById('serviceOrder').value = service.order;
-                document.getElementById('serviceForm').style.display = 'grid';
-                document.getElementById('serviceTitle').focus();
-            }
-        }
-
-        function deleteService(id) {
-            if (confirm('¿Eliminar este servicio permanentemente?')) {
-                const services = getServices().filter(s => s.id !== id);
-                localStorage.setItem('services', JSON.stringify(services));
-                renderAll();
-                showSuccess();
-            }
-        }
-
-        function addGalleryItem() {
-            const url = document.getElementById('galleryUrl').value;
-            const alt = document.getElementById('galleryAlt').value || 'Trabajo realizado';
-
-            if (!url) {
-                alert('Ingrese la URL de la imagen');
-                return;
-            }
-
-            const gallery = getGallery();
-            const newId = gallery.length > 0 ? Math.max(...gallery.map(g => g.id)) + 1 : 1;
-            gallery.push({ id: newId, url, alt });
-            localStorage.setItem('gallery', JSON.stringify(gallery));
-            document.getElementById('galleryUrl').value = '';
-            document.getElementById('galleryAlt').value = '';
-            renderAll();
-            showSuccess();
-        }
-
-        function deleteGalleryItem(id) {
-            if (confirm('¿Eliminar esta imagen de la galería?')) {
-                const gallery = getGallery().filter(g => g.id !== id);
-                localStorage.setItem('gallery', JSON.stringify(gallery));
-                renderAll();
-                showSuccess();
-            }
-        }
-
-        function addTestimonial() {
-            const name = document.getElementById('testimonialName').value;
-            const stars = parseInt(document.getElementById('testimonialStars').value) || 5;
-            const text = document.getElementById('testimonialText').value;
-
-            if (!name || !text) {
-                alert('Complete todos los campos requeridos');
-                return;
-            }
-
-            const testimonials = getTestimonials();
-            const newId = testimonials.length > 0 ? Math.max(...testimonials.map(t => t.id)) + 1 : 1;
-            testimonials.push({ id: newId, name, stars: Math.min(5, Math.max(1, stars)), text });
-            localStorage.setItem('testimonials', JSON.stringify(testimonials));
-            document.getElementById('testimonialName').value = '';
-            document.getElementById('testimonialStars').value = '5';
-            document.getElementById('testimonialText').value = '';
-            renderAll();
-            showSuccess();
-        }
-
-        function deleteTestimonial(id) {
-            if (confirm('¿Eliminar este testimonio?')) {
-                const testimonials = getTestimonials().filter(t => t.id !== id);
-                localStorage.setItem('testimonials', JSON.stringify(testimonials));
-                renderAll();
-                showSuccess();
-            }
-        }
-
-        initData();
+        // Iniciar
+        checkSession();
     </script>
 </body>
 </html>
