@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --bg-dark: #0a0a0a;
@@ -21,6 +22,8 @@
             --green: #22c55e;
             --green-dark: #166534;
             --blue: #3b82f6;
+            --blue-dark: #1e40af;
+            --purple: #8b5cf6;
             --orange: #f59e0b;
             --text-primary: #ffffff;
             --text-secondary: #a3a3a3;
@@ -425,6 +428,26 @@
             color: var(--text-primary);
         }
 
+        .no-results {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .no-results .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .no-results h3 {
+            font-family: 'Montserrat', sans-serif;
+            margin-bottom: 0.5rem;
+        }
+
+        .no-results p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
         @media (max-width: 600px) {
             body {
                 padding: 1rem;
@@ -457,7 +480,6 @@
             <p>Ingrese el número de placa de su vehículo para consultar el estado actual de su servicio.</p>
         </div>
 
-        <!-- Búsqueda -->
         <div class="search-card" id="searchCard">
             <form class="search-form" onsubmit="searchVehicle(event)">
                 <div class="form-group">
@@ -467,14 +489,11 @@
                         <input type="text" id="plateInput" placeholder="ABC-1234" maxlength="10" required autofocus>
                     </div>
                 </div>
-                <div class="error-message" id="errorMessage">
-                    No se encontró ningún vehículo con esa placa. Verifique e intente nuevamente.
-                </div>
-                <button type="submit" class="btn-search">🔍 Consultar Estado</button>
+                <div class="error-message" id="errorMessage"></div>
+                <button type="submit" class="btn-search" id="searchBtn">🔍 Consultar Estado</button>
             </form>
         </div>
 
-        <!-- Resultados -->
         <div class="result-card" id="resultCard">
             <div class="result-header">
                 <div class="result-vehicle">
@@ -515,17 +534,17 @@
     </div>
 
     <script>
-        function getBookings() {
-            return JSON.parse(localStorage.getItem('bookings')) || [];
-        }
+        const SUPABASE_URL = 'https://pupfxetbnpgqikzhnjts.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        function searchVehicle(e) {
+        async function searchVehicle(e) {
             e.preventDefault();
 
             const plate = document.getElementById('plateInput').value.trim().toUpperCase();
             const errorMsg = document.getElementById('errorMessage');
             const resultCard = document.getElementById('resultCard');
-            const searchCard = document.getElementById('searchCard');
+            const searchBtn = document.getElementById('searchBtn');
 
             if (!plate) {
                 errorMsg.style.display = 'block';
@@ -533,32 +552,43 @@
                 return;
             }
 
-            const bookings = getBookings();
-            const booking = bookings.find(b => {
-                const bookingPlate = (b.plate || '').toUpperCase().replace(/[\s-]/g, '');
-                const searchPlate = plate.replace(/[\s-]/g, '');
-                return bookingPlate === searchPlate;
-            });
+            searchBtn.disabled = true;
+            searchBtn.textContent = '⏳ Buscando...';
+            errorMsg.style.display = 'none';
+            resultCard.style.display = 'none';
 
-            if (!booking) {
+            const { data, error } = await supabase
+                .from('bookings')
+                .select('*')
+                .eq('plate_number', plate)
+                .order('created_at', { ascending: false })
+                .limit(1);
+
+            searchBtn.disabled = false;
+            searchBtn.textContent = '🔍 Consultar Estado';
+
+            if (error) {
                 errorMsg.style.display = 'block';
-                errorMsg.textContent = 'No se encontró ningún vehículo con esa placa. Verifique e intente nuevamente.';
-                resultCard.style.display = 'none';
+                errorMsg.textContent = 'Error al consultar. Intente nuevamente.';
+                console.error('Error:', error);
                 return;
             }
 
-            errorMsg.style.display = 'none';
-            displayResult(booking);
+            if (!data || data.length === 0) {
+                errorMsg.style.display = 'block';
+                errorMsg.textContent = 'No se encontró ningún vehículo con esa placa. Verifique e intente nuevamente.';
+                return;
+            }
+
+            displayResult(data[0]);
         }
 
         function displayResult(booking) {
             const resultCard = document.getElementById('resultCard');
 
-            // Vehicle info
             document.getElementById('resultVehicle').textContent = booking.vehicle || 'No especificado';
-            document.getElementById('resultPlate').textContent = booking.plate || 'N/A';
+            document.getElementById('resultPlate').textContent = booking.plate_number || 'N/A';
 
-            // Status
             const statusMap = {
                 'pending': { text: 'Pendiente', class: 'status-pending' },
                 'confirmed': { text: 'Confirmada', class: 'status-confirmed' },
@@ -571,7 +601,9 @@
             statusBadge.textContent = status.text;
             statusBadge.className = 'status-badge ' + status.class;
 
-            // Progress
+            const progressOrder = ['pending', 'confirmed', 'in_progress', 'completed'];
+            const currentIndex = progressOrder.indexOf(booking.status);
+
             const progressSteps = [
                 { id: 'confirmed', label: 'Confirmado', icon: '✓' },
                 { id: 'in_progress', label: 'En Progreso', icon: '⚙' },
@@ -579,14 +611,11 @@
                 { id: 'delivered', label: 'Entregado', icon: '🎉' }
             ];
 
-            const progressOrder = ['pending', 'confirmed', 'in_progress', 'completed'];
-            const currentIndex = progressOrder.indexOf(booking.status);
-
             const tracker = document.getElementById('progressTracker');
             tracker.innerHTML = progressSteps.map((step, i) => {
                 let stepClass = '';
-                if (i <= currentIndex - 1) stepClass = 'completed';
-                else if (i === currentIndex - 1 && booking.status !== 'pending') stepClass = 'active';
+                if (i < currentIndex) stepClass = 'completed';
+                else if (i === currentIndex && booking.status !== 'pending') stepClass = 'active';
                 return `
                     <div class="progress-step ${stepClass}">
                         <div class="step-circle">${stepClass === 'completed' ? '✓' : step.icon}</div>
@@ -595,21 +624,22 @@
                 `;
             }).join('');
 
-            // Details
-            document.getElementById('resultService').textContent = booking.service || 'No especificado';
-            document.getElementById('resultDate').textContent = new Date(booking.createdAt).toLocaleDateString('es-MX', {
+            document.getElementById('resultService').textContent = booking.service_requested || 'No especificado';
+            document.getElementById('resultDate').textContent = new Date(booking.created_at).toLocaleDateString('es-MX', {
                 year: 'numeric', month: 'long', day: 'numeric'
             });
-            document.getElementById('resultEstimate').textContent = booking.estimatedDelivery || 'Por definir';
-            document.getElementById('resultClient').textContent = booking.name || 'No especificado';
+            document.getElementById('resultEstimate').textContent = booking.estimated_delivery 
+                ? new Date(booking.estimated_delivery + 'T00:00:00').toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' })
+                : 'Por definir';
+            document.getElementById('resultClient').textContent = booking.client_name || 'No especificado';
 
-            // Notes
             const notes = booking.notes || [];
             const notesContainer = document.getElementById('resultNotes');
-            if (notes.length === 0) {
+            if (!notes || notes.length === 0) {
                 notesContainer.innerHTML = '<p class="no-notes">Aún no hay notas del taller. Se agregarán conforme avance el servicio.</p>';
             } else {
-                notesContainer.innerHTML = `<ul class="notes-list">${notes.map(n => `
+                const notesArray = typeof notes === 'string' ? JSON.parse(notes) : notes;
+                notesContainer.innerHTML = `<ul class="notes-list">${notesArray.map(n => `
                     <li>
                         <span class="note-time">${new Date(n.time).toLocaleString('es-MX', {hour:'2-digit',minute:'2-digit', day:'2-digit', month:'2-digit'})}</span>
                         <span>${n.text}</span>
