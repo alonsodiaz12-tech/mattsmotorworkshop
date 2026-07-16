@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --bg-dark: #0a0a0a;
@@ -201,6 +202,12 @@
             transform: translateY(0);
         }
 
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .success-screen {
             display: none;
             text-align: center;
@@ -270,15 +277,15 @@
             background: rgba(255,255,255,0.02);
         }
 
-        .error-input {
-            border-color: var(--red-light) !important;
-            animation: shake 0.4s ease;
-        }
-
-        @keyframes shake {
-            0%,100% { transform: translateX(0); }
-            25% { transform: translateX(-6px); }
-            75% { transform: translateX(6px); }
+        .error-message {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.3);
+            color: #fca5a5;
+            padding: 1rem;
+            border-radius: var(--radius);
+            text-align: center;
+            font-size: 0.9rem;
+            display: none;
         }
 
         @media (max-width: 600px) {
@@ -306,7 +313,8 @@
         </div>
 
         <div class="booking-card">
-            <!-- Formulario -->
+            <div class="error-message" id="errorMessage"></div>
+            
             <form class="booking-form" id="bookingForm" onsubmit="submitBooking(event)">
                 <div class="form-row">
                     <div class="form-group">
@@ -322,6 +330,12 @@
                 <div class="form-group">
                     <label>Correo Electrónico</label>
                     <input type="email" id="bookingEmail" placeholder="correo@ejemplo.com">
+                </div>
+
+                <div class="form-group">
+                    <label>Número de Placa <span class="required">*</span></label>
+                    <input type="text" id="bookingPlate" placeholder="ABC-1234" required maxlength="10" style="text-transform:uppercase; letter-spacing:1px; font-family:monospace;">
+                    <span style="font-size:0.7rem; color:var(--text-muted);">Necesario para consultar el estado de su vehículo</span>
                 </div>
 
                 <div class="form-row">
@@ -354,7 +368,7 @@
                 <div class="form-group">
                     <label>Servicio Requerido <span class="required">*</span></label>
                     <select id="bookingService" required>
-                        <option value="">Seleccione el servicio</option>
+                        <option value="">Cargando servicios...</option>
                     </select>
                 </div>
 
@@ -363,87 +377,115 @@
                     <textarea id="bookingDesc" placeholder="Describa brevemente el problema o trabajo que necesita realizar..."></textarea>
                 </div>
 
-                <button type="submit" class="btn-submit">✅ Confirmar y Agendar Cita</button>
+                <button type="submit" class="btn-submit" id="submitBtn">✅ Confirmar y Agendar Cita</button>
             </form>
 
-            <!-- Pantalla de éxito -->
             <div class="success-screen" id="successScreen">
                 <div class="icon">✅</div>
                 <h2>¡Cita Agendada!</h2>
                 <p>Hemos recibido su solicitud exitosamente.</p>
                 <div class="booking-details" id="bookingDetails"></div>
-                <p style="color:var(--text-muted); font-size:0.9rem;">Nos pondremos en contacto en las próximas 24 horas para confirmar los detalles.</p>
-                <a href="/home" class="btn-back">← Volver al inicio</a>
+                <p style="color:var(--text-muted); font-size:0.9rem;">
+                    Guarde su número de placa. Con él podrá consultar el estado de su vehículo en cualquier momento.
+                </p>
+                <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+                    <a href="/tracking" class="btn-back">🔍 Consultar Estado</a>
+                    <a href="/home" class="btn-back">← Volver al inicio</a>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        function getServices() {
-            return JSON.parse(localStorage.getItem('services')) || [];
+        const SUPABASE_URL = 'https://pupfxetbnpgqikzhnjts.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Cargar servicios desde Supabase
+        async function loadServices() {
+            const { data, error } = await supabase
+                .from('services')
+                .select('*')
+                .order('display_order');
+            
+            if (error) {
+                console.error('Error cargando servicios:', error);
+                return [];
+            }
+            return data;
         }
 
-        function getBookings() {
-            return JSON.parse(localStorage.getItem('bookings')) || [];
-        }
-
-        function populateServiceSelect() {
+        async function populateServiceSelect() {
             const select = document.getElementById('bookingService');
-            const services = getServices().sort((a, b) => a.order - b.order);
+            const services = await loadServices();
             select.innerHTML = '<option value="">Seleccione el servicio</option>' +
-                services.map(s => `<option value="${s.title}">${s.icon} ${s.title}</option>`).join('');
+                services.map(s => `<option value="${s.title}">${s.icon || ''} ${s.title}</option>`).join('');
         }
 
-        function submitBooking(e) {
+        async function submitBooking(e) {
             e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const errorMsg = document.getElementById('errorMessage');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Agendando...';
+            errorMsg.style.display = 'none';
 
             const booking = {
-                id: Date.now(),
-                name: document.getElementById('bookingName').value.trim(),
+                client_name: document.getElementById('bookingName').value.trim(),
                 phone: document.getElementById('bookingPhone').value.trim(),
-                email: document.getElementById('bookingEmail').value.trim(),
-                date: document.getElementById('bookingDate').value,
-                time: document.getElementById('bookingTime').value,
+                email: document.getElementById('bookingEmail').value.trim() || null,
+                plate_number: document.getElementById('bookingPlate').value.trim().toUpperCase(),
                 vehicle: document.getElementById('bookingVehicle').value.trim(),
-                service: document.getElementById('bookingService').value,
-                description: document.getElementById('bookingDesc').value.trim(),
-                status: 'pending',
-                createdAt: new Date().toISOString()
+                service_requested: document.getElementById('bookingService').value,
+                problem_description: document.getElementById('bookingDesc').value.trim() || null,
+                preferred_date: document.getElementById('bookingDate').value,
+                preferred_time: document.getElementById('bookingTime').value || null,
+                status: 'pending'
             };
 
-            const bookings = getBookings();
-            bookings.push(booking);
-            localStorage.setItem('bookings', JSON.stringify(bookings));
+            const { data, error } = await supabase
+                .from('bookings')
+                .insert([booking])
+                .select();
 
-            // Show success
+            if (error) {
+                errorMsg.textContent = 'Error al agendar la cita. Por favor intente nuevamente.';
+                errorMsg.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = '✅ Confirmar y Agendar Cita';
+                console.error('Error:', error);
+                return;
+            }
+
+            // Mostrar éxito
             document.getElementById('bookingForm').style.display = 'none';
             document.getElementById('successScreen').style.display = 'block';
 
-            const dateFormatted = new Date(booking.date + 'T00:00:00').toLocaleDateString('es-MX', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
+            const dateFormatted = new Date(booking.preferred_date + 'T00:00:00').toLocaleDateString('es-MX', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
             });
 
             document.getElementById('bookingDetails').innerHTML = `
-                <p><strong>Nombre:</strong> ${booking.name}</p>
+                <p><strong>Nombre:</strong> ${booking.client_name}</p>
                 <p><strong>Teléfono:</strong> ${booking.phone}</p>
                 ${booking.email ? `<p><strong>Email:</strong> ${booking.email}</p>` : ''}
+                <p><strong>Placa:</strong> 🚗 ${booking.plate_number}</p>
                 <p><strong>Fecha:</strong> ${dateFormatted}</p>
-                ${booking.time ? `<p><strong>Hora:</strong> ${booking.time}</p>` : ''}
+                ${booking.preferred_time ? `<p><strong>Hora:</strong> ${booking.preferred_time}</p>` : ''}
                 <p><strong>Vehículo:</strong> ${booking.vehicle}</p>
-                <p><strong>Servicio:</strong> ${booking.service}</p>
+                <p><strong>Servicio:</strong> ${booking.service_requested}</p>
             `;
 
             document.getElementById('successScreen').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Set minimum date to today
+        // Fecha mínima = hoy
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('bookingDate').setAttribute('min', today);
 
-        // Populate services on load
+        // Iniciar
         populateServiceSelect();
     </script>
 </body>
