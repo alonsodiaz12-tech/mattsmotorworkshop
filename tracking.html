@@ -11,25 +11,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --bg-dark: #0a0a0a;
-            --bg-card: #111111;
-            --bg-elevated: #1a1a1a;
-            --red: #dc2626;
-            --red-light: #ef4444;
-            --gold: #c9a84c;
-            --gold-light: #e2c970;
-            --green: #22c55e;
-            --green-dark: #166534;
-            --blue: #3b82f6;
-            --orange: #f59e0b;
-            --text-primary: #ffffff;
-            --text-secondary: #a3a3a3;
-            --text-muted: #737373;
-            --border: #262626;
-            --border-light: #333333;
-            --radius: 12px;
-            --radius-lg: 20px;
-            --radius-xl: 28px;
+            --bg-dark: #0a0a0a; --bg-card: #111111; --bg-elevated: #1a1a1a;
+            --red: #dc2626; --red-light: #ef4444; --gold: #c9a84c; --gold-light: #e2c970;
+            --green: #22c55e; --green-dark: #166534; --blue: #3b82f6; --orange: #f59e0b;
+            --text-primary: #ffffff; --text-secondary: #a3a3a3; --text-muted: #737373;
+            --border: #262626; --border-light: #333333;
+            --radius: 12px; --radius-lg: 20px; --radius-xl: 28px;
             --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
         }
 
@@ -37,17 +24,10 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-dark);
-            color: var(--text-primary);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            -webkit-font-smoothing: antialiased;
-            background-image:
-                radial-gradient(ellipse at 30% 50%, rgba(220,38,38,0.06) 0%, transparent 50%),
-                radial-gradient(ellipse at 70% 50%, rgba(59,130,246,0.04) 0%, transparent 50%);
+            background: var(--bg-dark); color: var(--text-primary);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            padding: 2rem; -webkit-font-smoothing: antialiased;
+            background-image: radial-gradient(ellipse at 30% 50%, rgba(220,38,38,0.06) 0%, transparent 50%), radial-gradient(ellipse at 70% 50%, rgba(59,130,246,0.04) 0%, transparent 50%);
         }
 
         .tracking-container { width: 100%; max-width: 750px; }
@@ -69,7 +49,6 @@
         .btn-search:hover { background: var(--red-light); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(220,38,38,0.45); }
         .btn-search:disabled { opacity: 0.5; cursor: not-allowed; }
         .error-message { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; padding: 1rem; border-radius: var(--radius); text-align: center; font-size: 0.9rem; display: none; }
-
         .result-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 2.5rem; margin-top: 1.5rem; display: none; animation: fadeIn 0.5s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .result-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
@@ -81,13 +60,11 @@
         .status-in_progress { background: rgba(139,92,246,0.15); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); }
         .status-completed { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
         .status-cancelled { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
-
         .info-message { text-align: center; padding: 1.5rem; border-radius: var(--radius); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem; }
         .info-pending { background: rgba(245,158,11,0.08); color: #fbbf24; border: 1px solid rgba(245,158,11,0.2); }
         .info-confirmed { background: rgba(59,130,246,0.08); color: #60a5fa; border: 1px solid rgba(59,130,246,0.2); }
         .info-success { background: rgba(34,197,94,0.08); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
         .info-cancelled { background: rgba(239,68,68,0.08); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
-
         .progress-tracker { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 2rem; }
         .progress-step { text-align: center; }
         .progress-step .step-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem; font-weight: 700; font-size: 0.9rem; background: var(--bg-elevated); border: 2px solid var(--border-light); color: var(--text-muted); transition: var(--transition); }
@@ -96,12 +73,10 @@
         @keyframes pulse-step { 0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,0.4)} 50%{box-shadow:0 0 0 12px rgba(59,130,246,0)} }
         .progress-step .step-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
         .progress-step.completed .step-label, .progress-step.active .step-label { color: var(--text-secondary); }
-
         .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
         .detail-item { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; }
         .detail-item .detail-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 0.25rem; }
         .detail-item .detail-value { font-weight: 600; font-size: 0.95rem; }
-
         .notes-section { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem; margin-top: 1rem; }
         .notes-section h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 0.75rem; }
         .notes-list { list-style: none; display: grid; gap: 0.75rem; }
@@ -110,7 +85,6 @@
         .no-notes { color: var(--text-muted); font-style: italic; font-size: 0.9rem; }
         .new-search-btn { display: inline-flex; align-items: center; gap: 0.5rem; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-light); padding: 0.7rem 1.5rem; border-radius: 50px; text-decoration: none; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: var(--transition); margin-top: 1rem; }
         .new-search-btn:hover { border-color: var(--text-secondary); color: var(--text-primary); }
-
         .worklog-client-grid { display: grid; gap: 0.5rem; }
         .worklog-client-item { background: var(--bg-dark); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; font-size: 0.85rem; }
         .worklog-client-item .wl-header { display: flex; justify-content: space-between; margin-bottom: 0.25rem; flex-wrap: wrap; gap: 0.5rem; }
@@ -133,7 +107,6 @@
             <h1>Estado del Vehículo</h1>
             <p>Ingrese el número de placa de su vehículo para consultar el estado actual de su servicio.</p>
         </div>
-
         <div class="search-card" id="searchCard">
             <form class="search-form" onsubmit="searchVehicle(event)">
                 <div class="form-group"><label>Número de Placa</label><div class="input-with-icon"><span class="input-icon">🚗</span><input type="text" id="plateInput" placeholder="ABC-1234" maxlength="10" required autofocus></div></div>
@@ -141,12 +114,8 @@
                 <button type="submit" class="btn-search" id="searchBtn">Consultar Estado</button>
             </form>
         </div>
-
         <div class="result-card" id="resultCard">
-            <div class="result-header">
-                <div class="result-vehicle"><h2 id="resultVehicle"></h2><span class="plate" id="resultPlate"></span></div>
-                <span class="status-badge" id="resultStatus"></span>
-            </div>
+            <div class="result-header"><div class="result-vehicle"><h2 id="resultVehicle"></h2><span class="plate" id="resultPlate"></span></div><span class="status-badge" id="resultStatus"></span></div>
             <div id="dynamicContent"></div>
             <button class="new-search-btn" onclick="newSearch()">← Nueva consulta</button>
         </div>
@@ -186,8 +155,7 @@
             document.getElementById('resultPlate').textContent = booking.plate_number || 'N/A';
             var statusMap = {'pending':{text:'Pendiente',class:'status-pending'},'confirmed':{text:'Confirmada',class:'status-confirmed'},'en_taller':{text:'En Taller',class:'status-in_progress'},'en_progreso':{text:'En Progreso',class:'status-in_progress'},'completado':{text:'Completado',class:'status-completed'},'entregado':{text:'Entregado',class:'status-completed'},'cancelled':{text:'Cancelado',class:'status-cancelled'}};
             var st = statusMap[status] || statusMap.pending;
-            var statusBadge = document.getElementById('resultStatus');
-            statusBadge.textContent = st.text; statusBadge.className = 'status-badge ' + st.class;
+            document.getElementById('resultStatus').textContent = st.text; document.getElementById('resultStatus').className = 'status-badge ' + st.class;
             var html = '';
 
             if (status === 'pending') {
@@ -215,7 +183,7 @@
                 html += '<div class="detail-grid"><div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">'+(booking.service_requested||'')+'</div></div><div class="detail-item"><div class="detail-label">Ingreso</div><div class="detail-value">'+new Date(booking.created_at).toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})+'</div></div><div class="detail-item"><div class="detail-label">Estado</div><div class="detail-value">Listo</div></div><div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">'+(booking.client_name||'')+'</div></div></div>';
                 html += '<div class="notes-section"><h3>Historial de Trabajos</h3><div id="worklogClient"></div></div>';
             } else if (status === 'entregado') {
-                html += '<div class="info-message info-success">🎉 Vehículo <strong>entregado</strong>. Gracias por confiar en Matts Motor Workshop.</div>';
+                html += '<div class="info-message info-success">🎉 Vehículo <strong>entregado</strong>. Gracias por confiar.</div>';
             } else if (status === 'cancelled') {
                 html += '<div class="info-message info-cancelled">❌ Esta cita ha sido <strong>cancelada</strong>.</div>';
             }
@@ -234,7 +202,7 @@
             var result = await supabase.from('work_log').select('*').eq('booking_id',bookingId).order('created_at',{ascending:false});
             if (!result.data || result.data.length===0) { container.innerHTML = '<p class="no-notes">Sin registros aún.</p>'; return; }
             var html = '<div class="worklog-client-grid">';
-            for (var i=0; i<result.data.length; i++) { var log = result.data[i]; html += '<div class="worklog-client-item"><div class="wl-header"><span style="color:var(--text-secondary);">'+log.description+'</span><span style="color:var(--text-muted);font-size:0.7rem;">'+new Date(log.created_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></div>'+(log.photo_url?'<img src="'+log.photo_url+'" loading="lazy">':'')+'</div>'; }
+            for (var i=0; i<result.data.length; i++) { var log = result.data[i]; html += '<div class="worklog-client-item"><div class="wl-header"><span style="color:var(--text-secondary);">'+log.description+'</span><span style="color:var(--text-muted);font-size:0.7rem;">'+new Date(log.created_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></div>'+(log.photo_url?'<img src="'+log.photo_url+'" style="width:100%;max-width:100%;border-radius:6px;display:block;margin-top:0.5rem;" onerror="this.style.display=\'none\'">':'')+'</div>'; }
             html += '</div>'; container.innerHTML = html;
         }
 
