@@ -109,18 +109,18 @@
             background: none; 
             border: none; 
             cursor: pointer; 
-            padding: 0.5rem; 
+            padding: 10px; 
             z-index: 1001;
             position: relative;
         }
         .menu-toggle span { 
             display: block; 
-            width: 24px; 
-            height: 2px; 
-            background: var(--text-primary); 
-            margin: 5px 0; 
+            width: 26px; 
+            height: 2.5px; 
+            background: #ffffff; 
+            margin: 6px 0; 
             transition: var(--transition); 
-            border-radius: 1px; 
+            border-radius: 2px; 
         }
 
         .hero {
@@ -283,6 +283,8 @@
         }
 
         @media (max-width: 768px) {
+            .menu-toggle { display: block; }
+
             .nav-links {
                 display: none;
                 position: fixed;
@@ -293,30 +295,12 @@
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
-                gap: 2rem;
+                gap: 2.5rem;
                 z-index: 999;
             }
             .nav-links.active { display: flex; }
-            .nav-links a { font-size: 1.2rem; }
-
-            .menu-toggle { 
-                display: block; 
-                position: relative; 
-                z-index: 1001;
-                background: none;
-                border: none;
-                cursor: pointer;
-                padding: 0.5rem;
-            }
-            .menu-toggle span { 
-                display: block; 
-                width: 24px; 
-                height: 2px; 
-                background: var(--text-primary); 
-                margin: 5px 0; 
-                transition: var(--transition); 
-                border-radius: 1px; 
-            }
+            .nav-links a { font-size: 1.3rem; }
+            .nav-links .btn-nav { font-size: 1rem !important; padding: 0.8rem 2rem !important; }
 
             .footer-grid { grid-template-columns: 1fr; }
             .trust-bar { grid-template-columns: 1fr; max-width: 350px; gap: 1rem; padding: 2rem 1rem; }
@@ -483,13 +467,25 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const header = document.getElementById('header');
-        window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 50));
+        const headerEl = document.getElementById('header');
+        window.addEventListener('scroll', () => headerEl.classList.toggle('scrolled', window.scrollY > 50));
 
-        const menuToggle = document.getElementById('menuToggle');
-        const navLinks = document.getElementById('navLinks');
-        menuToggle.addEventListener('click', () => navLinks.classList.toggle('active'));
-        navLinks.querySelectorAll('a').forEach(link => link.addEventListener('click', () => navLinks.classList.remove('active')));
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menuToggle');
+            const navLinks = document.getElementById('navLinks');
+            
+            menuToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                navLinks.classList.toggle('active');
+            });
+
+            navLinks.querySelectorAll('a').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    navLinks.classList.remove('active');
+                });
+            });
+        });
 
         async function loadServices() {
             const { data, error } = await supabase.from('services').select('*').order('display_order');
