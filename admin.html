@@ -765,4 +765,97 @@
             async function deleteGalleryItem(id) {
                 if (confirm('¿Eliminar esta imagen?')) {
                     await supabase.from('gallery').delete().eq('id', id);
-                    await
+                    await renderGalleryList();
+                    showSuccess();
+                }
+            }
+
+            async function addTestimonial() {
+                const name = document.getElementById('testimonialName').value;
+                const stars = parseInt(document.getElementById('testimonialStars').value) || 5;
+                const text = document.getElementById('testimonialText').value;
+                if (!name || !text) { alert('Complete todos los campos'); return; }
+                await supabase.from('testimonials').insert([{ client_name: name, stars: Math.min(5, Math.max(1, stars)), testimonial_text: text }]);
+                document.getElementById('testimonialName').value = '';
+                document.getElementById('testimonialStars').value = '5';
+                document.getElementById('testimonialText').value = '';
+                await renderTestimonialsList();
+                showSuccess();
+            }
+
+            async function deleteTestimonial(id) {
+                if (confirm('¿Eliminar este testimonio?')) {
+                    await supabase.from('testimonials').delete().eq('id', id);
+                    await renderTestimonialsList();
+                    showSuccess();
+                }
+            }
+
+            async function updateBookingPlate(id, plate) {
+                await supabase.from('bookings').update({ plate_number: plate.toUpperCase() }).eq('id', id);
+            }
+
+            async function updateBookingEstimate(id, date) {
+                await supabase.from('bookings').update({ estimated_delivery: date }).eq('id', id);
+                showSuccess();
+            }
+
+            async function updateBookingStatus(id, status) {
+                await supabase.from('bookings').update({ status }).eq('id', id);
+                await renderBookings();
+                showSuccess();
+            }
+
+            async function deleteBooking(id) {
+                if (confirm('¿Eliminar esta cita?')) {
+                    await supabase.from('bookings').delete().eq('id', id);
+                    await renderBookings();
+                    showSuccess();
+                }
+            }
+
+            async function addBookingNote(id) {
+                const note = prompt('Agregar nota:');
+                if (note && note.trim()) {
+                    const { data } = await supabase.from('bookings').select('notes').eq('id', id).single();
+                    let notes = data?.notes || [];
+                    if (typeof notes === 'string') notes = JSON.parse(notes);
+                    notes.push({ text: note.trim(), time: new Date().toISOString() });
+                    await supabase.from('bookings').update({ notes }).eq('id', id);
+                    await renderBookings();
+                    showSuccess();
+                }
+            }
+
+            function filterBookings(filter) {
+                currentFilter = filter;
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.style.opacity = btn.dataset.filter === filter ? '1' : '0.5';
+                });
+                renderBookings();
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('loginBtn').addEventListener('click', login);
+                document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') login();
+                });
+                document.getElementById('logoutBtn').addEventListener('click', logout);
+                document.getElementById('addServiceBtn').addEventListener('click', showServiceForm);
+                document.getElementById('saveServiceBtn').addEventListener('click', saveService);
+                document.getElementById('cancelServiceBtn').addEventListener('click', cancelServiceForm);
+                document.getElementById('addGalleryBtn').addEventListener('click', addGalleryItem);
+                document.getElementById('addTestimonialBtn').addEventListener('click', addTestimonial);
+                
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        filterBookings(this.dataset.filter);
+                    });
+                });
+
+                checkSession();
+            });
+        })();
+    </script>
+</body>
+</html>
