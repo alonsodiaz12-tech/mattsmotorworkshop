@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Cita | Matts Motor Workshop</title>
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg-dark: #0a0a0a;
+            --bg-card: #111111;
+            --bg-elevated: #1a1a1a;
+            --bg-input: #0f0f0f;
+            --red: #dc2626;
+            --red-hover: #b91c1c;
+            --text-primary: #ffffff;
+            --text-secondary: #a3a3a3;
+            --text-muted: #6b7280;
+            --border: #262626;
+            --border-light: #333333;
+            --radius-sm: 6px;
+            --radius: 10px;
+            --radius-lg: 16px;
+            --transition: 0.2s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; }
+
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; margin-bottom: 1.5rem; transition: var(--transition); }
+        .back-link:hover { color: var(--text-secondary); }
+
+        .page-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; }
+        .page-header h1 { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; font-weight: 700; }
+
+        .status-badge { padding: 0.4rem 1rem; border-radius: 50px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .status-pending { background: rgba(245,158,11,0.12); color: #fbbf24; }
+        .status-confirmed { background: rgba(59,130,246,0.12); color: #60a5fa; }
+        .status-in_progress { background: rgba(139,92,246,0.12); color: #a78bfa; }
+        .status-completed { background: rgba(34,197,94,0.12); color: #4ade80; }
+        .status-cancelled { background: rgba(239,68,68,0.12); color: #f87171; }
+
+        .info-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 1.5rem; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .info-item { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; }
+        .info-item .label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 0.25rem; }
+        .info-item .value { font-weight: 600; font-size: 0.95rem; }
+
+        .section-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 1.5rem; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem; }
+        .section-header h2 { font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 700; }
+
+        .btn { padding: 0.5rem 1rem; border: none; border-radius: var(--radius-sm); cursor: pointer; font-weight: 500; font-size: 0.82rem; font-family: inherit; transition: var(--transition); }
+        .btn-primary { background: var(--red); color: white; }
+        .btn-primary:hover { background: var(--red-hover); }
+        .btn-secondary { background: transparent; color: var(--text-secondary); border: 1px solid var(--border); }
+        .btn-secondary:hover { border-color: var(--border-light); color: var(--text-primary); }
+        .btn-sm { padding: 0.3rem 0.6rem; font-size: 0.72rem; }
+
+        .note-list { display: grid; gap: 0.5rem; }
+        .note-item { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.75rem 1rem; display: flex; justify-content: space-between; gap: 0.5rem; font-size: 0.85rem; }
+        .note-item .note-time { color: var(--text-muted); font-size: 0.7rem; white-space: nowrap; }
+
+        .worklog-grid { display: grid; gap: 0.75rem; }
+        .worklog-card { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; }
+        .worklog-card .worklog-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.25rem; font-size: 0.8rem; }
+        .worklog-card .worklog-header span { color: var(--text-muted); }
+        .worklog-card p { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 0.5rem; }
+        .worklog-card img { width: 100%; max-width: 300px; border-radius: var(--radius-sm); cursor: pointer; }
+
+        .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.85rem; }
+        .loading-state { text-align: center; padding: 2rem; color: var(--text-muted); }
+
+        .inline-row { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .inline-row input, .inline-row select { padding: 0.5rem 0.8rem; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.85rem; font-family: inherit; outline: none; }
+        .inline-row input:focus, .inline-row select:focus { border-color: var(--red); }
+        .inline-row input { flex: 1; }
+        .inline-row select { width: auto; }
+
+        .add-worklog-form { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1.25rem; margin-top: 1rem; display: none; }
+        .add-worklog-form textarea { width: 100%; padding: 0.7rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.85rem; font-family: inherit; outline: none; resize: vertical; min-height: 60px; margin-bottom: 0.75rem; }
+        .add-worklog-form textarea:focus { border-color: var(--red); }
+
+        .success-toast { position: fixed; bottom: 2rem; right: 2rem; background: #166534; color: #bbf7d0; padding: 0.75rem 1.25rem; border-radius: var(--radius); font-weight: 500; font-size: 0.85rem; display: none; z-index: 9999; border: 1px solid #22c55e; }
+
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .info-grid { grid-template-columns: 1fr; }
+            .page-header { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/admin" class="back-link">← Volver al panel</a>
+
+        <div class="page-header">
+            <h1 id="pageTitle">Cargando cita...</h1>
+            <span class="status-badge" id="pageStatus"></span>
+        </div>
+
+        <div class="info-card">
+            <div class="info-grid" id="infoGrid">
+                <div class="loading-state">Cargando información...</div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <div class="section-header">
+                <h2>Notas del Taller</h2>
+                <button class="btn btn-primary btn-sm" onclick="addNote()">Agregar nota</button>
+            </div>
+            <div id="notesContainer"><div class="loading-state">Cargando notas...</div></div>
+        </div>
+
+        <div class="section-card">
+            <div class="section-header">
+                <h2>Registro de Trabajos</h2>
+                <button class="btn btn-primary btn-sm" onclick="toggleWorklogForm()">Agregar trabajo</button>
+            </div>
+            <div id="worklogContainer"><div class="loading-state">Cargando trabajos...</div></div>
+            <div class="add-worklog-form" id="worklogForm">
+                <textarea id="worklogDesc" placeholder="Describa el trabajo realizado..."></textarea>
+                <div class="inline-row">
+                    <input type="file" id="worklogPhoto" accept="image/*" style="flex:1;">
+                    <button class="btn btn-primary" onclick="saveWorklog()">Guardar</button>
+                    <button class="btn btn-secondary" onclick="toggleWorklogForm()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="success-toast" id="successMsg">Cambios guardados</div>
+
+    <script>
+        (function() {
+            var SUPABASE_URL = 'https://pupfxetbnpgqikzhnjts.supabase.co';
+            var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
+            var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            var bookingId = null;
+            var booking = null;
+
+            function showSuccess() { var msg = document.getElementById('successMsg'); msg.style.display = 'block'; setTimeout(function() { msg.style.display = 'none'; }, 2500); }
+
+            function getBookingIdFromURL() {
+                var params = new URLSearchParams(window.location.search);
+                return params.get('id');
+            }
+
+            async function checkSession() {
+                var result = await supabase.auth.getSession();
+                if (!result.data || !result.data.session) { window.location.href = '/admin'; return; }
+                loadBooking();
+            }
+
+            async function loadBooking() {
+                bookingId = getBookingIdFromURL();
+                if (!bookingId) { window.location.href = '/admin'; return; }
+                var result = await supabase.from('bookings').select('*').eq('id', bookingId).single();
+                if (result.error || !result.data) { window.location.href = '/admin'; return; }
+                booking = result.data;
+                renderBooking();
+                loadNotes();
+                loadWorkLogs();
+            }
+
+            function renderBooking() {
+                var statusMap = { pending:{text:'Pendiente',cls:'status-pending'}, confirmed:{text:'Confirmada',cls:'status-confirmed'}, en_taller:{text:'En Taller',cls:'status-in_progress'}, en_progreso:{text:'En Progreso',cls:'status-in_progress'}, completado:{text:'Completada',cls:'status-completed'}, entregado:{text:'Entregado',cls:'status-completed'}, cancelled:{text:'Cancelada',cls:'status-cancelled'} };
+                var st = statusMap[booking.status] || statusMap.pending;
+                document.getElementById('pageTitle').textContent = 'Cita #' + booking.id + ' - ' + (booking.plate_number || 'Sin placa');
+                var badge = document.getElementById('pageStatus');
+                badge.textContent = st.text; badge.className = 'status-badge ' + st.cls;
+
+                var dateStr = booking.preferred_date ? new Date(booking.preferred_date+'T00:00:00').toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) : 'Sin fecha';
+                var html = '';
+                html += '<div class="info-item"><div class="label">Cliente</div><div class="value">'+booking.client_name+'</div></div>';
+                html += '<div class="info-item"><div class="label">Teléfono</div><div class="value">'+booking.phone+'</div></div>';
+                html += '<div class="info-item"><div class="label">Email</div><div class="value">'+(booking.email||'No registrado')+'</div></div>';
+                html += '<div class="info-item"><div class="label">Placa</div><div class="value" style="font-family:monospace;letter-spacing:1px;">'+(booking.plate_number||'Sin placa')+'</div></div>';
+                html += '<div class="info-item"><div class="label">Vehículo</div><div class="value">'+booking.vehicle+'</div></div>';
+                html += '<div class="info-item"><div class="label">Servicio</div><div class="value">'+booking.service_requested+'</div></div>';
+                html += '<div class="info-item"><div class="label">Fecha</div><div class="value">'+dateStr+'</div></div>';
+                html += '<div class="info-item"><div class="label">Hora</div><div class="value">'+(booking.preferred_time||'No especificada')+'</div></div>';
+                html += '<div class="info-item"><div class="label">Descripción</div><div class="value">'+(booking.problem_description||'Sin descripción')+'</div></div>';
+                html += '<div class="info-item"><div class="label">Entrega Estimada</div><div class="value">'+(booking.estimated_delivery?new Date(booking.estimated_delivery+'T00:00:00').toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'}):'Por definir')+'</div></div>';
+                document.getElementById('infoGrid').innerHTML = html;
+            }
+
+            function loadNotes() {
+                var notes = booking.notes || [];
+                if (typeof notes === 'string') notes = JSON.parse(notes);
+                var container = document.getElementById('notesContainer');
+                if (notes.length === 0) { container.innerHTML = '<div class="empty-state">Sin notas</div>'; return; }
+                var html = '<div class="note-list">';
+                for (var i = notes.length-1; i >= 0; i--) {
+                    html += '<div class="note-item"><span>'+notes[i].text+'</span><span class="note-time">'+new Date(notes[i].time).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></div>';
+                }
+                html += '</div>';
+                container.innerHTML = html;
+            }
+
+            async function addNote() {
+                var note = prompt('Agregar nota:');
+                if (!note || !note.trim()) return;
+                var notes = booking.notes || [];
+                if (typeof notes === 'string') notes = JSON.parse(notes);
+                notes.push({text:note.trim(),time:new Date().toISOString()});
+                await supabase.from('bookings').update({notes:notes}).eq('id',bookingId);
+                booking.notes = notes;
+                loadNotes();
+                showSuccess();
+            }
+
+            async function loadWorkLogs() {
+                var container = document.getElementById('worklogContainer');
+                var result = await supabase.from('work_log').select('*').eq('booking_id',bookingId).order('created_at',{ascending:false});
+                if (!result.data || result.data.length===0) { container.innerHTML = '<div class="empty-state">Sin registros de trabajo</div>'; return; }
+                var html = '<div class="worklog-grid">';
+                for (var i=0; i<result.data.length; i++) {
+                    var log = result.data[i];
+                    html += '<div class="worklog-card"><div class="worklog-header"><strong>'+log.description+'</strong><span>'+new Date(log.created_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></div>'+(log.photo_url?'<img src="'+log.photo_url+'" onclick="window.open(\''+log.photo_url+'\')">':'')+'</div>';
+                }
+                html += '</div>';
+                container.innerHTML = html;
+            }
+
+            function toggleWorklogForm() {
+                var form = document.getElementById('worklogForm');
+                form.style.display = form.style.display === 'block' ? 'none' : 'block';
+                if (form.style.display === 'block') document.getElementById('worklogDesc').focus();
+            }
+
+            async function saveWorklog() {
+                var desc = document.getElementById('worklogDesc').value.trim();
+                if (!desc) { alert('Describa el trabajo'); return; }
+                var photoUrl = null;
+                var fileInput = document.getElementById('worklogPhoto');
+                if (fileInput.files && fileInput.files[0]) {
+                    var file = fileInput.files[0];
+                    var fileName = 'booking-'+bookingId+'-'+Date.now()+'.'+file.name.split('.').pop();
+                    var uploadResult = await supabase.storage.from('workshop-photos').upload(fileName, file);
+                    if (!uploadResult.error) {
+                        var publicUrlResult = supabase.storage.from('workshop-photos').getPublicUrl(fileName);
+                        photoUrl = publicUrlResult.data.publicUrl;
+                    }
+                }
+                await supabase.from('work_log').insert([{booking_id:bookingId,description:desc,photo_url:photoUrl}]);
+                document.getElementById('worklogDesc').value = '';
+                document.getElementById('worklogPhoto').value = '';
+                toggleWorklogForm();
+                loadWorkLogs();
+                showSuccess();
+            }
+
+            window.addNote = addNote;
+            window.toggleWorklogForm = toggleWorklogForm;
+            window.saveWorklog = saveWorklog;
+
+            checkSession();
+        })();
+    </script>
+</body>
+</html>
