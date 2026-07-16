@@ -41,11 +41,7 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        #loginScreen {
-            background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: var(--radius-lg); padding: 3rem 2.5rem; text-align: center;
-            width: 90%; max-width: 400px;
-        }
+        #loginScreen { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 3rem 2.5rem; text-align: center; width: 90%; max-width: 400px; }
         #loginScreen h2 { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.4rem; letter-spacing: -0.3px; margin-bottom: 0.25rem; }
         #loginScreen .subtitle { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 2rem; }
         #loginScreen input { display: block; width: 100%; padding: 0.85rem 1.2rem; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-primary); font-size: 0.95rem; transition: var(--transition); margin-bottom: 1rem; outline: none; font-family: inherit; }
@@ -131,6 +127,10 @@
         .success-toast { position: fixed; bottom: 2rem; right: 2rem; background: #166534; color: #bbf7d0; padding: 0.75rem 1.25rem; border-radius: var(--radius); font-weight: 500; font-size: 0.85rem; display: none; z-index: 9999; border: 1px solid #22c55e; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.85rem; }
         .loading-state { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.85rem; }
+        .search-bar { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+        .search-bar input { flex: 1; padding: 0.5rem 0.8rem; background: var(--bg-input); border: 1px solid var(--border); border-radius: 50px; color: var(--text-primary); font-size: 0.82rem; outline: none; font-family: inherit; }
+        .worklog-item { background: var(--bg-elevated); border-radius: 6px; padding: 0.6rem; font-size: 0.8rem; }
+        .worklog-item img { width: 100%; max-width: 200px; border-radius: 4px; margin-top: 0.25rem; cursor: pointer; }
 
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; align-items: center; justify-content: center; padding: 1.5rem; }
         .modal-overlay.active { display: flex; }
@@ -179,10 +179,7 @@
             <div class="header-actions">
                 <div class="maintenance-toggle">
                     <span class="toggle-label">Mantenimiento</span>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="maintenanceSwitch" onchange="handleMaintenanceToggle(this)">
-                        <span class="toggle-slider"></span>
-                    </label>
+                    <label class="toggle-switch"><input type="checkbox" id="maintenanceSwitch" onchange="handleMaintenanceToggle(this)"><span class="toggle-slider"></span></label>
                     <span class="timer-indicator" id="timerIndicator"></span>
                 </div>
                 <span style="color:var(--text-muted);font-size:0.8rem;" id="loggedUser"></span>
@@ -190,14 +187,12 @@
                 <button class="btn-logout" id="logoutBtn">Cerrar sesión</button>
             </div>
         </div>
-
         <div class="tab-nav">
             <button class="tab-btn active" data-tab="bookings">Citas</button>
             <button class="tab-btn" data-tab="services">Servicios</button>
             <button class="tab-btn" data-tab="gallery">Galería</button>
             <button class="tab-btn" data-tab="testimonials">Testimonios</button>
         </div>
-
         <div class="panel-content">
             <div class="success-toast" id="successMsg">Cambios guardados</div>
             <div class="tab-panel active" id="tab-bookings">
@@ -210,6 +205,11 @@
                     <button class="filter-chip" data-filter="completado">Completadas</button>
                     <button class="filter-chip" data-filter="entregado">Entregados</button>
                     <button class="filter-chip" data-filter="cancelled">Canceladas</button>
+                </div>
+                <div class="search-bar">
+                    <input type="text" id="plateSearch" placeholder="Buscar por placa...">
+                    <button class="btn-primary" onclick="searchByPlate()" style="padding:0.5rem 1rem;font-size:0.8rem;">Buscar</button>
+                    <button class="btn-secondary" onclick="clearPlateSearch()" style="padding:0.5rem 1rem;font-size:0.8rem;">Limpiar</button>
                 </div>
                 <div class="data-list" id="bookingsList"><div class="loading-state">Cargando citas...</div></div>
             </div>
@@ -237,27 +237,10 @@
     </div>
 
     <div class="modal-overlay" id="maintenanceModal">
-        <div class="modal-dialog">
-            <button class="modal-close" onclick="closeMaintenanceModal()">✕</button>
-            <div class="modal-icon">⚠️</div>
-            <h3>Activar Modo Mantenimiento</h3>
-            <p class="modal-text">Está a punto de activar el modo mantenimiento en toda la página. Se recomienda dejar esta opción en manos del programador. Usarse únicamente en casos realmente necesarios.</p>
-            <p class="modal-warning">Una vez haya sido activado, deberá esperar 1 hora para poder desactivarlo nuevamente.</p>
-            <input type="password" id="maintenancePassword" placeholder="Contraseña de seguridad" autocomplete="off">
-            <p class="modal-error" id="modalError">Contraseña incorrecta</p>
-            <div class="modal-actions"><button class="btn-cancel" onclick="closeMaintenanceModal()">Cancelar</button><button class="btn-confirm" id="confirmMaintenanceBtn" onclick="confirmMaintenance()">Activar mantenimiento</button></div>
-        </div>
+        <div class="modal-dialog"><button class="modal-close" onclick="closeMaintenanceModal()">✕</button><div class="modal-icon">⚠️</div><h3>Activar Modo Mantenimiento</h3><p class="modal-text">Está a punto de activar el modo mantenimiento en toda la página.</p><p class="modal-warning">Una vez activado, deberá esperar 1 hora para desactivarlo.</p><input type="password" id="maintenancePassword" placeholder="Contraseña de seguridad"><p class="modal-error" id="modalError"></p><div class="modal-actions"><button class="btn-cancel" onclick="closeMaintenanceModal()">Cancelar</button><button class="btn-confirm" onclick="confirmMaintenance()">Activar</button></div></div>
     </div>
-
     <div class="modal-overlay" id="blockedModal">
-        <div class="modal-dialog">
-            <button class="modal-close" onclick="closeBlockedModal()">✕</button>
-            <div class="modal-icon" style="background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.3);">🔒</div>
-            <h3 style="color:#f87171;">Desactivación Bloqueada</h3>
-            <p class="modal-text">El modo mantenimiento fue activado recientemente. Debe esperar 1 hora desde su activación para poder desactivarlo.</p>
-            <p class="modal-warning" id="blockedTimeRemaining"></p>
-            <div class="modal-actions"><button class="btn-cancel" onclick="closeBlockedModal()">Entendido</button></div>
-        </div>
+        <div class="modal-dialog"><button class="modal-close" onclick="closeBlockedModal()">✕</button><div class="modal-icon" style="background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.3);">🔒</div><h3 style="color:#f87171;">Desactivación Bloqueada</h3><p class="modal-text">Debe esperar 1 hora desde su activación.</p><p class="modal-warning" id="blockedTimeRemaining"></p><div class="modal-actions"><button class="btn-cancel" onclick="closeBlockedModal()">Entendido</button></div></div>
     </div>
 
     <script>
@@ -277,14 +260,9 @@
             function startTimer(activatedAt) { maintenanceActivatedAt = new Date(activatedAt); clearInterval(timerInterval); updateTimerDisplay(); timerInterval = setInterval(updateTimerDisplay, 30000); }
             function updateTimerDisplay() { var indicator = document.getElementById('timerIndicator'); if (!maintenanceActivatedAt) { indicator.classList.remove('active'); return; } var now = new Date(); var diffMs = now - maintenanceActivatedAt; var diffMin = Math.floor(diffMs/60000); var remaining = LOCK_DURATION_MINUTES - diffMin; if (remaining <= 0) { indicator.classList.remove('active'); clearInterval(timerInterval); maintenanceActivatedAt = null; return; } indicator.textContent = '🔒 ' + formatTimeRemaining(remaining); indicator.classList.add('active'); }
             function stopTimer() { clearInterval(timerInterval); maintenanceActivatedAt = null; document.getElementById('timerIndicator').classList.remove('active'); }
-
-            async function loadMaintenanceState() {
-                try { var result = await supabase.from('site_settings').select('*').eq('setting_key','maintenance_mode').single(); if (result.data) { var isActive = result.data.setting_value==='true'; document.getElementById('maintenanceSwitch').checked = isActive; if (isActive && result.data.updated_at) { startTimer(result.data.updated_at); } else { stopTimer(); } } } catch(e) {}
-            }
-
+            async function loadMaintenanceState() { try { var result = await supabase.from('site_settings').select('*').eq('setting_key','maintenance_mode').single(); if (result.data) { var isActive = result.data.setting_value==='true'; document.getElementById('maintenanceSwitch').checked = isActive; if (isActive && result.data.updated_at) { startTimer(result.data.updated_at); } else { stopTimer(); } } } catch(e) {} }
             function handleMaintenanceToggle(checkbox) { if (checkbox.checked) { showMaintenanceModal(); } else { checkbox.checked = true; attemptDeactivate(); } }
             window.handleMaintenanceToggle = handleMaintenanceToggle;
-
             function attemptDeactivate() { if (!maintenanceActivatedAt) { toggleMaintenanceDirect(false); return; } var now = new Date(); var diffMs = now - maintenanceActivatedAt; var diffMin = Math.floor(diffMs/60000); if (diffMin < LOCK_DURATION_MINUTES) { var remaining = LOCK_DURATION_MINUTES - diffMin; document.getElementById('blockedTimeRemaining').textContent = formatTimeRemaining(remaining); document.getElementById('blockedModal').classList.add('active'); document.getElementById('maintenanceSwitch').checked = true; } else { toggleMaintenanceDirect(false); } }
             function showMaintenanceModal() { document.getElementById('maintenanceModal').classList.add('active'); document.getElementById('maintenancePassword').value = ''; document.getElementById('modalError').style.display = 'none'; document.getElementById('maintenancePassword').focus(); }
             function closeMaintenanceModal() { document.getElementById('maintenanceModal').classList.remove('active'); document.getElementById('maintenanceSwitch').checked = false; document.getElementById('maintenancePassword').value = ''; document.getElementById('modalError').style.display = 'none'; }
@@ -293,10 +271,19 @@
             window.closeBlockedModal = closeBlockedModal;
             function confirmMaintenance() { var password = document.getElementById('maintenancePassword').value; if (password !== MAINTENANCE_PASSWORD) { document.getElementById('modalError').style.display = 'block'; document.getElementById('maintenancePassword').value = ''; document.getElementById('maintenancePassword').focus(); return; } document.getElementById('modalError').style.display = 'none'; closeMaintenanceModal(); document.getElementById('maintenanceSwitch').checked = true; toggleMaintenanceDirect(true); }
             window.confirmMaintenance = confirmMaintenance;
+            async function toggleMaintenanceDirect(active) { try { var now = new Date().toISOString(); await supabase.from('site_settings').upsert({ setting_key:'maintenance_mode', setting_value:active?'true':'false', updated_at:now }, { onConflict:'setting_key' }); if (active) { startTimer(new Date()); } else { stopTimer(); document.getElementById('maintenanceSwitch').checked = false; } showSuccess(); } catch(e) {} }
 
-            async function toggleMaintenanceDirect(active) {
-                try { var now = new Date().toISOString(); await supabase.from('site_settings').upsert({ setting_key:'maintenance_mode', setting_value:active?'true':'false', updated_at:now }, { onConflict:'setting_key' }); if (active) { startTimer(new Date()); } else { stopTimer(); document.getElementById('maintenanceSwitch').checked = false; } showSuccess(); } catch(e) {}
-            }
+            // Búsqueda por placa
+            function searchByPlate() { var plate = document.getElementById('plateSearch').value.trim().toUpperCase(); if (!plate) { renderBookings(); return; } currentFilter = 'all'; document.querySelectorAll('.filter-chip').forEach(function(c){c.classList.remove('active')}); document.querySelector('.filter-chip[data-filter="all"]').classList.add('active'); loadAndRenderByPlate(plate); }
+            function clearPlateSearch() { document.getElementById('plateSearch').value = ''; renderBookings(); }
+            async function loadAndRenderByPlate(plate) { var container = document.getElementById('bookingsList'); var result = await supabase.from('bookings').select('*').ilike('plate_number','%'+plate+'%').order('created_at',{ascending:false}); if (result.error || !result.data || result.data.length===0) { container.innerHTML = '<div class="empty-state">No se encontraron citas con esa placa</div>'; return; } renderBookingsFromData(result.data); }
+            function renderBookingsFromData(bookings) { renderBookingsHTML(bookings); setTimeout(function() { for (var i=0; i<bookings.length; i++) { loadWorkLog(bookings[i].id); } }, 300); }
+
+            // Work Log
+            async function loadWorkLog(bookingId) { var container = document.getElementById('worklog-'+bookingId); if (!container) return; var result = await supabase.from('work_log').select('*').eq('booking_id',bookingId).order('created_at',{ascending:false}); if (!result.data || result.data.length===0) { container.innerHTML = '<p style="color:var(--text-muted);font-size:0.78rem;font-style:italic;">Sin registros de trabajo</p>'; return; } var html = '<div style="display:grid;gap:0.5rem;">'; for (var i=0; i<result.data.length; i++) { var log = result.data[i]; html += '<div class="worklog-item"><div style="display:flex;justify-content:space-between;margin-bottom:0.25rem;flex-wrap:wrap;gap:0.25rem;"><span style="color:var(--text-secondary);">'+log.description+'</span><span style="color:var(--text-muted);font-size:0.7rem;">'+new Date(log.created_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></div>'+(log.photo_url?'<img src="'+log.photo_url+'" onclick="window.open(\''+log.photo_url+'\')">':'')+'</div>'; } html += '</div>'; container.innerHTML = html; }
+            async function addWorkLog(bookingId) { var description = prompt('Describa el trabajo realizado:'); if (!description || !description.trim()) return; var addPhoto = confirm('¿Desea agregar una foto?'); var photoUrl = null; if (addPhoto) { var fileInput = document.createElement('input'); fileInput.type = 'file'; fileInput.accept = 'image/*'; fileInput.onchange = async function() { var file = fileInput.files[0]; if (!file) return; var fileName = 'booking-'+bookingId+'-'+Date.now()+'.'+file.name.split('.').pop(); var uploadResult = await supabase.storage.from('workshop-photos').upload(fileName, file); if (uploadResult.error) { alert('Error al subir la foto'); return; } var publicUrlResult = supabase.storage.from('workshop-photos').getPublicUrl(fileName); photoUrl = publicUrlResult.data.publicUrl; await saveWorkLog(bookingId, description.trim(), photoUrl); }; fileInput.click(); } else { await saveWorkLog(bookingId, description.trim(), null); } }
+            async function saveWorkLog(bookingId, description, photoUrl) { await supabase.from('work_log').insert([{booking_id:bookingId,description:description,photo_url:photoUrl}]); loadWorkLog(bookingId); showSuccess(); }
+            window._addWorkLog = addWorkLog;
 
             document.addEventListener('DOMContentLoaded', function() {
                 var tabBtns = document.querySelectorAll('.tab-btn');
@@ -332,9 +319,10 @@
             async function renderGalleryList() { var container = document.getElementById('galleryList'); var gallery = await loadGallery(); if (gallery.length===0) { container.innerHTML = '<div class="empty-state">No hay imágenes en la galería</div>'; return; } var html = ''; for (var i=0; i<gallery.length; i++) { var g = gallery[i]; html += '<div class="data-row"><span>'+(g.alt_text||'Sin descripción')+'</span><button class="btn-sm btn-delete" onclick="window._deleteGallery('+g.id+')">Eliminar</button></div>'; } container.innerHTML = html; }
             async function renderTestimonialsList() { var container = document.getElementById('testimonialsList'); var testimonials = await loadTestimonials(); if (testimonials.length===0) { container.innerHTML = '<div class="empty-state">No hay testimonios registrados</div>'; return; } var html = ''; for (var i=0; i<testimonials.length; i++) { var t = testimonials[i]; var stars = ''; for (var j=0; j<t.stars; j++) stars += '★'; html += '<div class="data-row"><span><strong>'+t.client_name+'</strong> <span style="color:#c9a84c;">'+stars+'</span></span><button class="btn-sm btn-delete" onclick="window._deleteTestimonial('+t.id+')">Eliminar</button></div>'; } container.innerHTML = html; }
 
-            async function renderBookings() {
+            function renderBookings() { loadBookings(currentFilter).then(function(bookings) { renderBookingsHTML(bookings); setTimeout(function() { for (var i=0; i<bookings.length; i++) { loadWorkLog(bookings[i].id); } }, 300); }); }
+
+            function renderBookingsHTML(bookings) {
                 var container = document.getElementById('bookingsList');
-                var bookings = await loadBookings(currentFilter);
                 if (bookings.length===0) { container.innerHTML = '<div class="empty-state">No hay citas para mostrar</div>'; return; }
                 var html = '';
                 for (var i=0; i<bookings.length; i++) {
@@ -347,8 +335,9 @@
                     html += '<div class="booking-card">';
                     html += '<div class="booking-header-row"><div class="booking-meta"><strong>'+dateStr+'</strong>'+(b.preferred_time?' <span style="color:var(--text-muted);">'+b.preferred_time+'</span>':'')+(b.plate_number?'<span class="plate-badge">'+b.plate_number+'</span>':'')+'</div><span class="status-badge '+st.cls+'">'+st.text+'</span></div>';
                     html += '<div class="booking-detail-grid"><div><strong>Cliente:</strong> '+b.client_name+'</div><div><strong>Teléfono:</strong> '+b.phone+'</div><div><strong>Vehículo:</strong> '+b.vehicle+'</div><div><strong>Servicio:</strong> '+b.service_requested+'</div></div>';
-                    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;"><div><label style="font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:0.25rem;">Placa</label><input type="text" value="'+(b.plate_number||'')+'" onchange="window._updatePlate('+b.id+',this.value)" placeholder="ABC-1234" style="width:100%;padding:0.4rem 0.6rem;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text-primary);font-size:0.8rem;font-family:monospace;letter-spacing:1px;text-transform:uppercase;outline:none;"></div><div><label style="font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:0.25rem;">Entrega estimada</label><input type="date" value="'+(b.estimated_delivery||'')+'" onchange="window._updateEstimate('+b.id+',this.value)" style="width:100%;padding:0.4rem 0.6rem;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text-primary);font-size:0.8rem;color-scheme:dark;outline:none;"></div></div>';
+                    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;"><div><label style="font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:0.25rem;">Placa</label><input type="text" value="'+(b.plate_number||'')+'" onchange="window._updatePlate('+b.id+',this.value)" style="width:100%;padding:0.4rem 0.6rem;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text-primary);font-size:0.8rem;font-family:monospace;letter-spacing:1px;text-transform:uppercase;outline:none;"></div><div><label style="font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:0.25rem;">Entrega estimada</label><input type="date" value="'+(b.estimated_delivery||'')+'" onchange="window._updateEstimate('+b.id+',this.value)" style="width:100%;padding:0.4rem 0.6rem;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text-primary);font-size:0.8rem;color-scheme:dark;outline:none;"></div></div>';
                     html += '<div class="booking-notes"><div class="booking-notes-header"><span>Notas del taller</span><button class="btn-sm btn-edit" onclick="window._addNote('+b.id+')" style="font-size:0.7rem;">Agregar nota</button></div>'+notesHtml+'</div>';
+                    html += '<div class="booking-notes" style="margin-top:0.5rem;"><div class="booking-notes-header"><span>Registro de Trabajos</span><button class="btn-sm btn-edit" onclick="window._addWorkLog('+b.id+')" style="font-size:0.7rem;">Agregar trabajo</button></div><div id="worklog-'+b.id+'"><p style="color:var(--text-muted);font-size:0.78rem;">Cargando...</p></div></div>';
                     html += '<div class="booking-actions"><select onchange="window._updateStatus('+b.id+',this.value)">';
                     html += '<option value="pending"'+(b.status==='pending'?' selected':'')+'>Pendiente</option>';
                     html += '<option value="confirmed"'+(b.status==='confirmed'?' selected':'')+'>Confirmar</option>';
