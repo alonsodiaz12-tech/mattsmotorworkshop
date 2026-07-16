@@ -82,14 +82,7 @@
         .status-completed { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
         .status-cancelled { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
 
-        .info-message {
-            text-align: center;
-            padding: 1.5rem;
-            border-radius: var(--radius);
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-        }
+        .info-message { text-align: center; padding: 1.5rem; border-radius: var(--radius); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem; }
         .info-pending { background: rgba(245,158,11,0.08); color: #fbbf24; border: 1px solid rgba(245,158,11,0.2); }
         .info-confirmed { background: rgba(59,130,246,0.08); color: #60a5fa; border: 1px solid rgba(59,130,246,0.2); }
         .info-success { background: rgba(34,197,94,0.08); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
@@ -118,6 +111,11 @@
         .new-search-btn { display: inline-flex; align-items: center; gap: 0.5rem; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-light); padding: 0.7rem 1.5rem; border-radius: 50px; text-decoration: none; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: var(--transition); margin-top: 1rem; }
         .new-search-btn:hover { border-color: var(--text-secondary); color: var(--text-primary); }
 
+        .worklog-client-grid { display: grid; gap: 0.5rem; }
+        .worklog-client-item { background: var(--bg-dark); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; font-size: 0.85rem; }
+        .worklog-client-item .wl-header { display: flex; justify-content: space-between; margin-bottom: 0.25rem; flex-wrap: wrap; gap: 0.5rem; }
+        .worklog-client-item img { width: 100%; max-width: 250px; border-radius: 6px; margin-top: 0.5rem; cursor: pointer; }
+
         @media (max-width: 600px) {
             body { padding: 1rem; align-items: flex-start; padding-top: 2rem; }
             .search-card, .result-card { padding: 1.5rem; }
@@ -138,13 +136,7 @@
 
         <div class="search-card" id="searchCard">
             <form class="search-form" onsubmit="searchVehicle(event)">
-                <div class="form-group">
-                    <label>Número de Placa</label>
-                    <div class="input-with-icon">
-                        <span class="input-icon">🚗</span>
-                        <input type="text" id="plateInput" placeholder="ABC-1234" maxlength="10" required autofocus>
-                    </div>
-                </div>
+                <div class="form-group"><label>Número de Placa</label><div class="input-with-icon"><span class="input-icon">🚗</span><input type="text" id="plateInput" placeholder="ABC-1234" maxlength="10" required autofocus></div></div>
                 <div class="error-message" id="errorMessage"></div>
                 <button type="submit" class="btn-search" id="searchBtn">Consultar Estado</button>
             </form>
@@ -152,15 +144,10 @@
 
         <div class="result-card" id="resultCard">
             <div class="result-header">
-                <div class="result-vehicle">
-                    <h2 id="resultVehicle"></h2>
-                    <span class="plate" id="resultPlate"></span>
-                </div>
+                <div class="result-vehicle"><h2 id="resultVehicle"></h2><span class="plate" id="resultPlate"></span></div>
                 <span class="status-badge" id="resultStatus"></span>
             </div>
-
             <div id="dynamicContent"></div>
-
             <button class="new-search-btn" onclick="newSearch()">← Nueva consulta</button>
         </div>
     </div>
@@ -172,10 +159,7 @@
 
         document.documentElement.style.display = 'none';
         (async function() {
-            try {
-                var result = await supabase.from('site_settings').select('setting_value').eq('setting_key', 'maintenance_mode').single();
-                if (result.data && result.data.setting_value === 'true') { window.location.replace('/maintenance'); return; }
-            } catch(e) {}
+            try { var result = await supabase.from('site_settings').select('setting_value').eq('setting_key','maintenance_mode').single(); if (result.data && result.data.setting_value==='true') { window.location.replace('/maintenance'); return; } } catch(e) {}
             document.documentElement.style.display = '';
         })();
 
@@ -185,12 +169,12 @@
             var errorMsg = document.getElementById('errorMessage');
             var resultCard = document.getElementById('resultCard');
             var searchBtn = document.getElementById('searchBtn');
-            if (!plate) { errorMsg.style.display = 'block'; errorMsg.textContent = 'Ingrese un número de placa válido.'; return; }
-            searchBtn.disabled = true; searchBtn.textContent = 'Buscando...'; errorMsg.style.display = 'none'; resultCard.style.display = 'none';
-            var result = await supabase.from('bookings').select('*').eq('plate_number', plate).order('created_at', { ascending: false }).limit(1);
-            searchBtn.disabled = false; searchBtn.textContent = 'Consultar Estado';
-            if (result.error) { errorMsg.style.display = 'block'; errorMsg.textContent = 'Error al consultar.'; return; }
-            if (!result.data || result.data.length === 0) { errorMsg.style.display = 'block'; errorMsg.textContent = 'No se encontró ningún vehículo con esa placa.'; return; }
+            if (!plate) { errorMsg.style.display='block'; errorMsg.textContent='Ingrese un número de placa válido.'; return; }
+            searchBtn.disabled=true; searchBtn.textContent='Buscando...'; errorMsg.style.display='none'; resultCard.style.display='none';
+            var result = await supabase.from('bookings').select('*').eq('plate_number',plate).order('created_at',{ascending:false}).limit(1);
+            searchBtn.disabled=false; searchBtn.textContent='Consultar Estado';
+            if (result.error) { errorMsg.style.display='block'; errorMsg.textContent='Error al consultar.'; return; }
+            if (!result.data || result.data.length===0) { errorMsg.style.display='block'; errorMsg.textContent='No se encontró ningún vehículo con esa placa.'; return; }
             displayResult(result.data[0]);
         }
 
@@ -198,89 +182,42 @@
             var resultCard = document.getElementById('resultCard');
             var status = booking.status;
             var dynamicContent = document.getElementById('dynamicContent');
-
             document.getElementById('resultVehicle').textContent = booking.vehicle || 'No especificado';
             document.getElementById('resultPlate').textContent = booking.plate_number || 'N/A';
-
-            var statusMap = {
-                'pending': { text: 'Pendiente', class: 'status-pending' },
-                'confirmed': { text: 'Confirmada', class: 'status-confirmed' },
-                'en_taller': { text: 'En Taller', class: 'status-in_progress' },
-                'en_progreso': { text: 'En Progreso', class: 'status-in_progress' },
-                'completado': { text: 'Completado', class: 'status-completed' },
-                'entregado': { text: 'Entregado', class: 'status-completed' },
-                'cancelled': { text: 'Cancelado', class: 'status-cancelled' }
-            };
+            var statusMap = {'pending':{text:'Pendiente',class:'status-pending'},'confirmed':{text:'Confirmada',class:'status-confirmed'},'en_taller':{text:'En Taller',class:'status-in_progress'},'en_progreso':{text:'En Progreso',class:'status-in_progress'},'completado':{text:'Completado',class:'status-completed'},'entregado':{text:'Entregado',class:'status-completed'},'cancelled':{text:'Cancelado',class:'status-cancelled'}};
             var st = statusMap[status] || statusMap.pending;
             var statusBadge = document.getElementById('resultStatus');
-            statusBadge.textContent = st.text;
-            statusBadge.className = 'status-badge ' + st.class;
-
+            statusBadge.textContent = st.text; statusBadge.className = 'status-badge ' + st.class;
             var html = '';
 
             if (status === 'pending') {
-                html += '<div class="info-message info-pending">⏳ Su cita está <strong>pendiente de confirmación</strong>. El taller revisará su solicitud y le notificará cuando sea confirmada.</div>';
-                html += '<div class="detail-grid">';
-                html += '<div class="detail-item"><div class="detail-label">Servicio Solicitado</div><div class="detail-value">' + (booking.service_requested || 'No especificado') + '</div></div>';
-                html += '<div class="detail-item"><div class="detail-label">Fecha Solicitada</div><div class="detail-value">' + (booking.preferred_date ? new Date(booking.preferred_date+'T00:00:00').toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) : 'Sin fecha') + '</div></div>';
-                html += '<div class="detail-item"><div class="detail-label">Hora Solicitada</div><div class="detail-value">' + (booking.preferred_time || 'No especificada') + '</div></div>';
-                html += '<div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">' + (booking.client_name || 'No especificado') + '</div></div>';
-                html += '</div>';
+                html += '<div class="info-message info-pending">⏳ Su cita está <strong>pendiente de confirmación</strong>. El taller revisará su solicitud.</div>';
+                html += '<div class="detail-grid"><div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">'+(booking.service_requested||'')+'</div></div><div class="detail-item"><div class="detail-label">Fecha</div><div class="detail-value">'+(booking.preferred_date?new Date(booking.preferred_date+'T00:00:00').toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'}):'')+'</div></div><div class="detail-item"><div class="detail-label">Hora</div><div class="detail-value">'+(booking.preferred_time||'')+'</div></div><div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">'+(booking.client_name||'')+'</div></div></div>';
             } else if (status === 'confirmed') {
-                var dateFormatted = booking.preferred_date ? new Date(booking.preferred_date+'T00:00:00').toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) : 'Sin fecha';
-                html += '<div class="info-message info-confirmed">✅ Su cita ha sido <strong>confirmada</strong>. Preséntese al taller el <strong>' + dateFormatted + '</strong> a las <strong>' + (booking.preferred_time || '') + '</strong>. El estado se actualizará cuando su vehículo ingrese al taller.</div>';
-                html += '<div class="detail-grid">';
-                html += '<div class="detail-item"><div class="detail-label">Servicio Solicitado</div><div class="detail-value">' + (booking.service_requested || 'No especificado') + '</div></div>';
-                html += '<div class="detail-item"><div class="detail-label">Fecha de Cita</div><div class="detail-value">' + dateFormatted + '</div></div>';
-                html += '<div class="detail-item"><div class="detail-label">Hora de Cita</div><div class="detail-value">' + (booking.preferred_time || 'No especificada') + '</div></div>';
-                html += '<div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">' + (booking.client_name || 'No especificado') + '</div></div>';
-                html += '</div>';
+                var dateFormatted = booking.preferred_date ? new Date(booking.preferred_date+'T00:00:00').toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) : '';
+                html += '<div class="info-message info-confirmed">✅ Su cita ha sido <strong>confirmada</strong>. Preséntese al taller el <strong>'+dateFormatted+'</strong> a las <strong>'+(booking.preferred_time||'')+'</strong>.</div>';
+                html += '<div class="detail-grid"><div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">'+(booking.service_requested||'')+'</div></div><div class="detail-item"><div class="detail-label">Fecha</div><div class="detail-value">'+dateFormatted+'</div></div><div class="detail-item"><div class="detail-label">Hora</div><div class="detail-value">'+(booking.preferred_time||'')+'</div></div><div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">'+(booking.client_name||'')+'</div></div></div>';
             } else if (status === 'en_taller' || status === 'en_progreso') {
-                var progressOrder = ['en_taller', 'en_progreso', 'completado', 'entregado'];
+                var progressOrder = ['en_taller','en_progreso','completado','entregado'];
                 var currentIndex = progressOrder.indexOf(status);
                 if (currentIndex < 0) currentIndex = 0;
                 var steps = [{label:'En Taller',icon:'🔧'},{label:'En Progreso',icon:'⚙'},{label:'Completado',icon:'✓'},{label:'Entregado',icon:'🎉'}];
                 html += '<div class="progress-tracker">';
-                for (var i = 0; i < steps.length; i++) {
-                    var cls = i < currentIndex ? 'completed' : (i === currentIndex ? 'active' : '');
-                    html += '<div class="progress-step ' + cls + '"><div class="step-circle">' + (cls==='completed'?'✓':steps[i].icon) + '</div><div class="step-label">' + steps[i].label + '</div></div>';
-                }
+                for (var i=0; i<steps.length; i++) { var cls = i<currentIndex?'completed':(i===currentIndex?'active':''); html += '<div class="progress-step '+cls+'"><div class="step-circle">'+(cls==='completed'?'✓':steps[i].icon)+'</div><div class="step-label">'+steps[i].label+'</div></div>'; }
                 html += '</div>';
-                html += '<div class="detail-grid">';
-                html += '<div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">' + (booking.service_requested || 'No especificado') + '</div></div>';
-                html += '<div class="detail-item"><div class="detail-label">Fecha de Ingreso</div><div class="detail-value">' + new Date(booking.created_at).toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'}) + '</div></div>';
-                html += '<div class="detail-item"><div class="detail-label">Entrega Estimada</div><div class="detail-value">' + (booking.estimated_delivery ? new Date(booking.estimated_delivery+'T00:00:00').toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'}) : 'Por definir') + '</div></div>';
-                html += '<div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">' + (booking.client_name || 'No especificado') + '</div></div>';
-                html += '</div>';
+                html += '<div class="detail-grid"><div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">'+(booking.service_requested||'')+'</div></div><div class="detail-item"><div class="detail-label">Ingreso</div><div class="detail-value">'+new Date(booking.created_at).toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})+'</div></div><div class="detail-item"><div class="detail-label">Entrega Est.</div><div class="detail-value">'+(booking.estimated_delivery?new Date(booking.estimated_delivery+'T00:00:00').toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'}):'Por definir')+'</div></div><div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">'+(booking.client_name||'')+'</div></div></div>';
                 html += '<div class="notes-section"><h3>Notas del Taller</h3>';
-                var notes = booking.notes || [];
-                if (!notes || notes.length === 0) {
-                    html += '<p class="no-notes">Aún no hay notas del taller.</p>';
-                } else {
-                    var notesArray = typeof notes === 'string' ? JSON.parse(notes) : notes;
-                    html += '<ul class="notes-list">';
-                    for (var n = 0; n < notesArray.length; n++) {
-                        html += '<li><span class="note-time">' + new Date(notesArray[n].time).toLocaleString('es-MX',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'}) + '</span><span>' + notesArray[n].text + '</span></li>';
-                    }
-                    html += '</ul>';
-                }
+                var notes = booking.notes || []; if (typeof notes==='string') notes = JSON.parse(notes);
+                if (!notes || notes.length===0) { html += '<p class="no-notes">Sin notas.</p>'; } else { html += '<ul class="notes-list">'; for (var n=0; n<notes.length; n++) { html += '<li><span class="note-time">'+new Date(notes[n].time).toLocaleString('es-MX',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'})+'</span><span>'+notes[n].text+'</span></li>'; } html += '</ul>'; }
                 html += '</div>';
+                html += '<div class="notes-section"><h3>Historial de Trabajos</h3><div id="worklogClient"></div></div>';
             } else if (status === 'completado') {
-                html += '<div class="info-message info-success">✅ Su vehículo está <strong>listo</strong>. Puede pasar a retirarlo al taller.</div>';
-                html += '<div class="detail-grid">';
-                html += '<div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">' + (booking.service_requested || 'No especificado') + '</div></div>';
-                html += '<div class="detail-item"><div class="detail-label">Fecha de Ingreso</div><div class="detail-value">' + new Date(booking.created_at).toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'}) + '</div></div>';
-                html += '<div class="detail-item"><div class="detail-label">Estado</div><div class="detail-value">Listo para entrega</div></div>';
-                html += '<div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">' + (booking.client_name || 'No especificado') + '</div></div>';
-                html += '</div>';
+                html += '<div class="info-message info-success">✅ Su vehículo está <strong>listo</strong>. Puede pasar a retirarlo.</div>';
+                html += '<div class="detail-grid"><div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">'+(booking.service_requested||'')+'</div></div><div class="detail-item"><div class="detail-label">Ingreso</div><div class="detail-value">'+new Date(booking.created_at).toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})+'</div></div><div class="detail-item"><div class="detail-label">Estado</div><div class="detail-value">Listo para entrega</div></div><div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">'+(booking.client_name||'')+'</div></div></div>';
+                html += '<div class="notes-section"><h3>Historial de Trabajos</h3><div id="worklogClient"></div></div>';
             } else if (status === 'entregado') {
                 html += '<div class="info-message info-success">🎉 Vehículo <strong>entregado</strong>. Gracias por confiar en Matts Motor Workshop.</div>';
-                html += '<div class="detail-grid">';
-                html += '<div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">' + (booking.service_requested || 'No especificado') + '</div></div>';
-                html += '<div class="detail-item"><div class="detail-label">Fecha de Ingreso</div><div class="detail-value">' + new Date(booking.created_at).toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'}) + '</div></div>';
-                html += '<div class="detail-item"><div class="detail-label">Estado</div><div class="detail-value">Entregado</div></div>';
-                html += '<div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">' + (booking.client_name || 'No especificado') + '</div></div>';
-                html += '</div>';
+                html += '<div class="detail-grid"><div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">'+(booking.service_requested||'')+'</div></div><div class="detail-item"><div class="detail-label">Ingreso</div><div class="detail-value">'+new Date(booking.created_at).toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})+'</div></div><div class="detail-item"><div class="detail-label">Estado</div><div class="detail-value">Entregado</div></div><div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">'+(booking.client_name||'')+'</div></div></div>';
             } else if (status === 'cancelled') {
                 html += '<div class="info-message info-cancelled">❌ Esta cita ha sido <strong>cancelada</strong>.</div>';
             }
@@ -288,12 +225,25 @@
             dynamicContent.innerHTML = html;
             resultCard.style.display = 'block';
             resultCard.scrollIntoView({ behavior:'smooth', block:'center' });
+
+            if (status === 'en_taller' || status === 'en_progreso' || status === 'completado') {
+                setTimeout(function() { loadWorkLogClient(booking.id); }, 300);
+            }
+        }
+
+        async function loadWorkLogClient(bookingId) {
+            var container = document.getElementById('worklogClient');
+            if (!container) return;
+            var result = await supabase.from('work_log').select('*').eq('booking_id',bookingId).order('created_at',{ascending:false});
+            if (!result.data || result.data.length===0) { container.innerHTML = '<p class="no-notes">Sin registros aún.</p>'; return; }
+            var html = '<div class="worklog-client-grid">';
+            for (var i=0; i<result.data.length; i++) { var log = result.data[i]; html += '<div class="worklog-client-item"><div class="wl-header"><span style="color:var(--text-secondary);">'+log.description+'</span><span style="color:var(--text-muted);font-size:0.7rem;">'+new Date(log.created_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></div>'+(log.photo_url?'<img src="'+log.photo_url+'" onclick="window.open(\''+log.photo_url+'\')">':'')+'</div>'; }
+            html += '</div>'; container.innerHTML = html;
         }
 
         function newSearch() {
             document.getElementById('resultCard').style.display = 'none';
-            document.getElementById('plateInput').value = '';
-            document.getElementById('plateInput').focus();
+            document.getElementById('plateInput').value = ''; document.getElementById('plateInput').focus();
             document.getElementById('errorMessage').style.display = 'none';
             document.getElementById('searchCard').scrollIntoView({ behavior:'smooth' });
         }
