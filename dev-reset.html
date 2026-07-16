@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso Técnico | Matts Motor Workshop</title>
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: #111111;
+            border: 1px solid #262626;
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+        .container h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+        .container p {
+            color: #6b7280;
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+        }
+        .container input {
+            display: block;
+            width: 100%;
+            padding: 0.85rem 1.2rem;
+            background: #0f0f0f;
+            border: 1px solid #262626;
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            outline: none;
+            font-family: inherit;
+        }
+        .container input:focus { border-color: #dc2626; }
+        .container button {
+            width: 100%;
+            padding: 0.85rem;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .container button:hover { background: #b91c1c; }
+        .container button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .msg {
+            font-size: 0.8rem;
+            margin-top: 1rem;
+            display: none;
+            padding: 0.5rem;
+            border-radius: 6px;
+        }
+        .msg.error { background: rgba(239,68,68,0.1); color: #f87171; }
+        .msg.success { background: rgba(34,197,94,0.1); color: #4ade80; }
+        .back-link {
+            display: inline-block;
+            margin-top: 1.5rem;
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 0.8rem;
+        }
+        .back-link:hover { color: #a3a3a3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Acceso Técnico</h1>
+        <p>Panel de desbloqueo remoto</p>
+        <input type="password" id="masterPassword" placeholder="Credencial de seguridad" autofocus>
+        <div class="msg" id="msg"></div>
+        <button id="unlockBtn">Desbloquear mantenimiento</button>
+        <a href="/home" class="back-link">Volver al taller</a>
+    </div>
+
+    <script>
+        (function() {
+            var SUPABASE_URL = 'https://pupfxetbnpgqikzhnjts.supabase.co';
+            var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
+            var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            var MASTER_PASSWORD = 'mmw2024dev';
+
+            document.getElementById('unlockBtn').addEventListener('click', unlock);
+            document.getElementById('masterPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') unlock();
+            });
+
+            async function unlock() {
+                var password = document.getElementById('masterPassword').value;
+                var btn = document.getElementById('unlockBtn');
+                var msg = document.getElementById('msg');
+
+                if (password !== MASTER_PASSWORD) {
+                    msg.textContent = 'Credencial incorrecta';
+                    msg.className = 'msg error';
+                    msg.style.display = 'block';
+                    document.getElementById('masterPassword').value = '';
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.textContent = 'Desbloqueando...';
+                msg.style.display = 'none';
+
+                try {
+                    await supabase.from('site_settings').upsert({
+                        setting_key: 'maintenance_mode',
+                        setting_value: 'false',
+                        updated_at: '2020-01-01T00:00:00Z'
+                    }, { onConflict: 'setting_key' });
+
+                    msg.textContent = 'Mantenimiento desactivado correctamente.';
+                    msg.className = 'msg success';
+                    msg.style.display = 'block';
+                    btn.textContent = 'Completado';
+                } catch(e) {
+                    msg.textContent = 'Error de conexión. Intente nuevamente.';
+                    msg.className = 'msg error';
+                    msg.style.display = 'block';
+                    btn.disabled = false;
+                    btn.textContent = 'Desbloquear mantenimiento';
+                }
+            }
+        })();
+    </script>
+</body>
+</html>
