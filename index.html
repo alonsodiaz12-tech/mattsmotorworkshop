@@ -459,29 +459,31 @@
             var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
             var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+            // Verificar modo mantenimiento
+            (async function() {
+                try {
+                    var result = await supabase.from('site_settings').select('setting_value').eq('setting_key', 'maintenance_mode').single();
+                    if (result.data && result.data.setting_value === 'true') {
+                        window.location.href = '/maintenance';
+                    }
+                } catch(e) {}
+            })();
+
             var headerEl = document.getElementById('header');
             window.addEventListener('scroll', function() {
                 if (window.scrollY > 50) headerEl.classList.add('scrolled');
                 else headerEl.classList.remove('scrolled');
             });
 
-            // Menú hamburguesa
             var menuBtn = document.getElementById('menuToggle');
             var menu = document.getElementById('navLinks');
-
             menuBtn.onclick = function() {
-                if (menu.className.indexOf('active') > -1) {
-                    menu.className = 'nav-links';
-                } else {
-                    menu.className = 'nav-links active';
-                }
+                if (menu.className.indexOf('active') > -1) menu.className = 'nav-links';
+                else menu.className = 'nav-links active';
             };
-
             var links = menu.getElementsByTagName('a');
             for (var i = 0; i < links.length; i++) {
-                links[i].onclick = function() {
-                    menu.className = 'nav-links';
-                };
+                links[i].onclick = function() { menu.className = 'nav-links'; };
             }
 
             async function loadServices() {
@@ -505,10 +507,7 @@
             async function renderServices() {
                 var services = await loadServices();
                 var container = document.getElementById('servicesContainer');
-                if (services.length === 0) {
-                    container.innerHTML = '<p style="text-align:center;color:var(--text-muted);">Cargando servicios...</p>';
-                    return;
-                }
+                if (services.length === 0) { container.innerHTML = '<p style="text-align:center;color:var(--text-muted);">Cargando servicios...</p>'; return; }
                 var html = '';
                 for (var i = 0; i < services.length; i++) {
                     var s = services[i];
