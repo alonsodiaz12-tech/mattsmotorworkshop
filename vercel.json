@@ -5,6 +5,7 @@
     { "source": "/booking", "destination": "/booking.html" },
     { "source": "/tracking", "destination": "/tracking.html" },
     { "source": "/maintenance", "destination": "/maintenance.html" },
-    { "source": "/dev-reset", "destination": "/dev-reset.html" }
+    { "source": "/dev-reset", "destination": "/dev-reset.html" },
+    { "source": "/booking-detail", "destination": "/booking-detail.html" }
   ]
 }
