@@ -454,35 +454,43 @@
                 loginBtn.textContent = '⏳ Verificando IP...';
                 errorMsg.style.display = 'none';
 
-                // 1. Obtener IP del usuario
                 let userIP = 'desconocida';
                 try {
                     const ipResponse = await fetch('https://api.ipify.org?format=json');
                     const ipData = await ipResponse.json();
-                    userIP = ipData.ip;
+                    userIP = ipData.ip.trim();
                 } catch (e) {
-                    console.log('No se pudo obtener IP, se permite acceso por error de red');
+                    console.log('No se pudo obtener IP');
                 }
 
-                // 2. Verificar si la IP está permitida
-                if (userIP !== 'desconocida') {
-                    const { data: allowedIPs, error: ipError } = await supabase
+                try {
+                    const { data: allIPs, error: fetchError } = await supabase
                         .from('allowed_admin_ips')
-                        .select('ip_address')
-                        .eq('ip_address', userIP);
+                        .select('ip_address');
 
-                    if (ipError || !allowedIPs || allowedIPs.length === 0) {
-                        errorMsg.textContent = '⛔ Acceso denegado. Su IP (' + userIP + ') no está autorizada.';
+                    if (fetchError) {
+                        console.error('Error consultando IPs:', fetchError);
+                    }
+
+                    const ipList = allIPs ? allIPs.map(row => row.ip_address.trim()) : [];
+
+                    if (!ipList.includes(userIP)) {
+                        errorMsg.textContent = '⛔ Acceso denegado. IP no autorizada: ' + userIP;
                         errorMsg.style.display = 'block';
                         loginBtn.disabled = false;
                         loginBtn.textContent = 'Ingresar al Panel';
                         return;
                     }
+                } catch (err) {
+                    console.error('Error en verificación:', err);
+                    errorMsg.textContent = 'Error verificando IP. Intente de nuevo.';
+                    errorMsg.style.display = 'block';
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Ingresar al Panel';
+                    return;
                 }
 
-                // 3. IP válida, intentar login
                 loginBtn.textContent = '⏳ Ingresando...';
-                
                 const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
                 if (error) {
