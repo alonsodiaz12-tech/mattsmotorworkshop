@@ -59,6 +59,9 @@
         .info-item { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; }
         .info-item .label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 0.25rem; }
         .info-item .value { font-weight: 600; font-size: 0.95rem; }
+        .info-item input, .info-item select { padding: 0.4rem 0.6rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; color: var(--text-primary); font-size: 0.85rem; outline: none; width: 100%; font-family: inherit; }
+        .info-item select { cursor: pointer; }
+        .info-item input:focus, .info-item select:focus { border-color: var(--red); }
 
         .section-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 1.5rem; }
         .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem; }
@@ -85,15 +88,11 @@
         .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.85rem; }
         .loading-state { text-align: center; padding: 2rem; color: var(--text-muted); }
 
-        .inline-row { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
-        .inline-row input, .inline-row select { padding: 0.5rem 0.8rem; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.85rem; font-family: inherit; outline: none; }
-        .inline-row input:focus, .inline-row select:focus { border-color: var(--red); }
-        .inline-row input { flex: 1; }
-        .inline-row select { width: auto; }
-
         .add-worklog-form { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1.25rem; margin-top: 1rem; display: none; }
         .add-worklog-form textarea { width: 100%; padding: 0.7rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.85rem; font-family: inherit; outline: none; resize: vertical; min-height: 60px; margin-bottom: 0.75rem; }
         .add-worklog-form textarea:focus { border-color: var(--red); }
+        .add-worklog-form .form-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+        .add-worklog-form input[type="file"] { flex: 1; padding: 0.4rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.8rem; }
 
         .success-toast { position: fixed; bottom: 2rem; right: 2rem; background: #166534; color: #bbf7d0; padding: 0.75rem 1.25rem; border-radius: var(--radius); font-weight: 500; font-size: 0.85rem; display: none; z-index: 9999; border: 1px solid #22c55e; }
 
@@ -135,8 +134,8 @@
             <div id="worklogContainer"><div class="loading-state">Cargando trabajos...</div></div>
             <div class="add-worklog-form" id="worklogForm">
                 <textarea id="worklogDesc" placeholder="Describa el trabajo realizado..."></textarea>
-                <div class="inline-row">
-                    <input type="file" id="worklogPhoto" accept="image/*" style="flex:1;">
+                <div class="form-row">
+                    <input type="file" id="worklogPhoto" accept="image/*">
                     <button class="btn btn-primary" onclick="saveWorklog()">Guardar</button>
                     <button class="btn btn-secondary" onclick="toggleWorklogForm()">Cancelar</button>
                 </div>
@@ -156,20 +155,17 @@
 
             function showSuccess() { var msg = document.getElementById('successMsg'); msg.style.display = 'block'; setTimeout(function() { msg.style.display = 'none'; }, 2500); }
 
-            function getBookingIdFromURL() {
-                var params = new URLSearchParams(window.location.search);
-                return params.get('id');
-            }
+            function getBookingIdFromURL() { var params = new URLSearchParams(window.location.search); return params.get('id'); }
 
-            async function checkSession() {
-                var result = await supabase.auth.getSession();
-                if (!result.data || !result.data.session) { window.location.href = '/admin'; return; }
-                loadBooking();
+            async function init() {
+                bookingId = getBookingIdFromURL();
+                if (!bookingId) { window.location.href = '/admin'; return; }
+                var sessionResult = await supabase.auth.getSession();
+                if (!sessionResult.data || !sessionResult.data.session) { window.location.href = '/admin'; return; }
+                await loadBooking();
             }
 
             async function loadBooking() {
-                bookingId = getBookingIdFromURL();
-                if (!bookingId) { window.location.href = '/admin'; return; }
                 var result = await supabase.from('bookings').select('*').eq('id', bookingId).single();
                 if (result.error || !result.data) { window.location.href = '/admin'; return; }
                 booking = result.data;
@@ -182,9 +178,7 @@
                 var statusMap = { pending:{text:'Pendiente',cls:'status-pending'}, confirmed:{text:'Confirmada',cls:'status-confirmed'}, en_taller:{text:'En Taller',cls:'status-in_progress'}, en_progreso:{text:'En Progreso',cls:'status-in_progress'}, completado:{text:'Completada',cls:'status-completed'}, entregado:{text:'Entregado',cls:'status-completed'}, cancelled:{text:'Cancelada',cls:'status-cancelled'} };
                 var st = statusMap[booking.status] || statusMap.pending;
                 document.getElementById('pageTitle').textContent = 'Cita #' + booking.id + ' - ' + (booking.plate_number || 'Sin placa');
-                var badge = document.getElementById('pageStatus');
-                badge.textContent = st.text; badge.className = 'status-badge ' + st.cls;
-
+                var badge = document.getElementById('pageStatus'); badge.textContent = st.text; badge.className = 'status-badge ' + st.cls;
                 var dateStr = booking.preferred_date ? new Date(booking.preferred_date+'T00:00:00').toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) : 'Sin fecha';
                 var html = '';
                 html += '<div class="info-item"><div class="label">Cliente</div><div class="value">'+booking.client_name+'</div></div>';
@@ -196,7 +190,9 @@
                 html += '<div class="info-item"><div class="label">Fecha</div><div class="value">'+dateStr+'</div></div>';
                 html += '<div class="info-item"><div class="label">Hora</div><div class="value">'+(booking.preferred_time||'No especificada')+'</div></div>';
                 html += '<div class="info-item"><div class="label">Descripción</div><div class="value">'+(booking.problem_description||'Sin descripción')+'</div></div>';
-                html += '<div class="info-item"><div class="label">Entrega Estimada</div><div class="value">'+(booking.estimated_delivery?new Date(booking.estimated_delivery+'T00:00:00').toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'}):'Por definir')+'</div></div>';
+                html += '<div class="info-item"><div class="label">Cambiar Estado</div><div class="value"><select onchange="updateStatus(this.value)"><option value="pending"'+(booking.status==='pending'?' selected':'')+'>Pendiente</option><option value="confirmed"'+(booking.status==='confirmed'?' selected':'')+'>Confirmar</option><option value="en_taller"'+(booking.status==='en_taller'?' selected':'')+'>Ingresó al taller</option><option value="en_progreso"'+(booking.status==='en_progreso'?' selected':'')+'>En progreso</option><option value="completado"'+(booking.status==='completado'?' selected':'')+'>Completar</option><option value="entregado"'+(booking.status==='entregado'?' selected':'')+'>Entregado</option><option value="cancelled"'+(booking.status==='cancelled'?' selected':'')+'>Cancelar</option></select></div></div>';
+                html += '<div class="info-item"><div class="label">Editar Placa</div><div class="value"><input type="text" value="'+(booking.plate_number||'')+'" onchange="updatePlate(this.value)" style="font-family:monospace;letter-spacing:1px;text-transform:uppercase;"></div></div>';
+                html += '<div class="info-item"><div class="label">Entrega Estimada</div><div class="value"><input type="date" value="'+(booking.estimated_delivery||'')+'" onchange="updateEstimate(this.value)" style="color-scheme:dark;"></div></div>';
                 document.getElementById('infoGrid').innerHTML = html;
             }
 
@@ -206,11 +202,8 @@
                 var container = document.getElementById('notesContainer');
                 if (notes.length === 0) { container.innerHTML = '<div class="empty-state">Sin notas</div>'; return; }
                 var html = '<div class="note-list">';
-                for (var i = notes.length-1; i >= 0; i--) {
-                    html += '<div class="note-item"><span>'+notes[i].text+'</span><span class="note-time">'+new Date(notes[i].time).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></div>';
-                }
-                html += '</div>';
-                container.innerHTML = html;
+                for (var i = notes.length-1; i >= 0; i--) { html += '<div class="note-item"><span>'+notes[i].text+'</span><span class="note-time">'+new Date(notes[i].time).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></div>'; }
+                html += '</div>'; container.innerHTML = html;
             }
 
             async function addNote() {
@@ -220,9 +213,22 @@
                 if (typeof notes === 'string') notes = JSON.parse(notes);
                 notes.push({text:note.trim(),time:new Date().toISOString()});
                 await supabase.from('bookings').update({notes:notes}).eq('id',bookingId);
-                booking.notes = notes;
-                loadNotes();
-                showSuccess();
+                booking.notes = notes; loadNotes(); showSuccess();
+            }
+
+            async function updateStatus(newStatus) {
+                await supabase.from('bookings').update({status:newStatus}).eq('id',bookingId);
+                booking.status = newStatus; renderBooking(); showSuccess();
+            }
+
+            async function updatePlate(plate) {
+                await supabase.from('bookings').update({plate_number:plate.toUpperCase()}).eq('id',bookingId);
+                booking.plate_number = plate.toUpperCase(); showSuccess();
+            }
+
+            async function updateEstimate(date) {
+                await supabase.from('bookings').update({estimated_delivery:date}).eq('id',bookingId);
+                booking.estimated_delivery = date; showSuccess();
             }
 
             async function loadWorkLogs() {
@@ -230,12 +236,8 @@
                 var result = await supabase.from('work_log').select('*').eq('booking_id',bookingId).order('created_at',{ascending:false});
                 if (!result.data || result.data.length===0) { container.innerHTML = '<div class="empty-state">Sin registros de trabajo</div>'; return; }
                 var html = '<div class="worklog-grid">';
-                for (var i=0; i<result.data.length; i++) {
-                    var log = result.data[i];
-                    html += '<div class="worklog-card"><div class="worklog-header"><strong>'+log.description+'</strong><span>'+new Date(log.created_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></div>'+(log.photo_url?'<img src="'+log.photo_url+'" onclick="window.open(\''+log.photo_url+'\')">':'')+'</div>';
-                }
-                html += '</div>';
-                container.innerHTML = html;
+                for (var i=0; i<result.data.length; i++) { var log = result.data[i]; html += '<div class="worklog-card"><div class="worklog-header"><strong>'+log.description+'</strong><span>'+new Date(log.created_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></div>'+(log.photo_url?'<img src="'+log.photo_url+'" onclick="window.open(\''+log.photo_url+'\')">':'')+'</div>'; }
+                html += '</div>'; container.innerHTML = html;
             }
 
             function toggleWorklogForm() {
@@ -253,24 +255,17 @@
                     var file = fileInput.files[0];
                     var fileName = 'booking-'+bookingId+'-'+Date.now()+'.'+file.name.split('.').pop();
                     var uploadResult = await supabase.storage.from('workshop-photos').upload(fileName, file);
-                    if (!uploadResult.error) {
-                        var publicUrlResult = supabase.storage.from('workshop-photos').getPublicUrl(fileName);
-                        photoUrl = publicUrlResult.data.publicUrl;
-                    }
+                    if (uploadResult.error) { alert('Error al subir la foto: ' + uploadResult.error.message); }
+                    else { var publicUrlResult = supabase.storage.from('workshop-photos').getPublicUrl(fileName); photoUrl = publicUrlResult.data.publicUrl; }
                 }
-                await supabase.from('work_log').insert([{booking_id:bookingId,description:desc,photo_url:photoUrl}]);
-                document.getElementById('worklogDesc').value = '';
-                document.getElementById('worklogPhoto').value = '';
-                toggleWorklogForm();
-                loadWorkLogs();
-                showSuccess();
+                var insertResult = await supabase.from('work_log').insert([{booking_id:parseInt(bookingId),description:desc,photo_url:photoUrl}]);
+                if (insertResult.error) { alert('Error al guardar: ' + insertResult.error.message); }
+                else { document.getElementById('worklogDesc').value = ''; document.getElementById('worklogPhoto').value = ''; toggleWorklogForm(); loadWorkLogs(); showSuccess(); }
             }
 
-            window.addNote = addNote;
-            window.toggleWorklogForm = toggleWorklogForm;
-            window.saveWorklog = saveWorklog;
-
-            checkSession();
+            window.addNote = addNote; window.toggleWorklogForm = toggleWorklogForm; window.saveWorklog = saveWorklog;
+            window.updateStatus = updateStatus; window.updatePlate = updatePlate; window.updateEstimate = updateEstimate;
+            init();
         })();
     </script>
 </body>
