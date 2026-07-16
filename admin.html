@@ -52,10 +52,7 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.5);
         }
 
-        #loginScreen .logo-icon {
-            font-size: 3rem;
-            margin-bottom: 1.5rem;
-        }
+        #loginScreen .logo-icon { font-size: 3rem; margin-bottom: 1.5rem; }
 
         #loginScreen h2 {
             font-family: 'Montserrat', sans-serif;
@@ -104,21 +101,17 @@
             letter-spacing: 0.5px;
         }
 
-        #loginScreen button:hover {
-            background: var(--red-light);
-            box-shadow: 0 8px 25px rgba(220,38,38,0.3);
-        }
-
-        #loginScreen button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
+        #loginScreen button:hover { background: var(--red-light); box-shadow: 0 8px 25px rgba(220,38,38,0.3); }
+        #loginScreen button:disabled { opacity: 0.6; cursor: not-allowed; }
 
         .error-msg {
             color: #ef4444;
             font-size: 0.85rem;
             display: none;
             margin-bottom: 1rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+            background: rgba(239,68,68,0.1);
         }
 
         .back-link {
@@ -168,10 +161,7 @@
             transition: var(--transition);
         }
 
-        .btn-logout:hover {
-            border-color: var(--red);
-            color: var(--red-light);
-        }
+        .btn-logout:hover { border-color: var(--red); color: var(--red-light); }
 
         .panel-content {
             background: var(--bg-card);
@@ -199,11 +189,7 @@
             gap: 0.5rem;
         }
 
-        .item-list {
-            display: grid;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
+        .item-list { display: grid; gap: 0.5rem; margin-bottom: 1rem; }
 
         .item-row {
             background: var(--bg-elevated);
@@ -274,20 +260,11 @@
 
         .admin-form input:focus,
         .admin-form textarea:focus,
-        .admin-form select:focus {
-            border-color: var(--red);
-        }
+        .admin-form select:focus { border-color: var(--red); }
 
-        .admin-form textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
+        .admin-form textarea { resize: vertical; min-height: 80px; }
 
-        .form-buttons {
-            display: flex;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-        }
+        .form-buttons { display: flex; gap: 0.75rem; flex-wrap: wrap; }
 
         .btn-cancel {
             background: var(--text-muted);
@@ -312,12 +289,7 @@
             border: 1px solid #22c55e;
         }
 
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
+        .header-actions { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
 
         .header-actions a {
             color: var(--text-secondary);
@@ -328,19 +300,9 @@
 
         .header-actions a:hover { color: var(--red-light); }
 
-        .booking-filters {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-        }
+        .booking-filters { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
 
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-muted);
-            font-size: 1rem;
-        }
+        .loading { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 1rem; }
 
         .loading-spinner {
             display: inline-block;
@@ -353,9 +315,7 @@
             margin-right: 0.5rem;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         @media (max-width: 768px) {
             .panel-header { flex-direction: column; text-align: center; }
@@ -373,7 +333,7 @@
         <input type="email" id="adminEmail" placeholder="Email del administrador" autofocus>
         <input type="password" id="adminPassword" placeholder="Contraseña">
         <p class="error-msg" id="loginError">Credenciales incorrectas</p>
-        <button onclick="login()" id="loginBtn">Ingresar al Panel</button>
+        <button id="loginBtn">Ingresar al Panel</button>
         <a href="/home" class="back-link">← Volver al taller</a>
     </div>
 
@@ -383,17 +343,16 @@
             <div class="header-actions">
                 <span style="color:var(--text-muted); font-size:0.85rem;" id="loggedUser"></span>
                 <a href="/home">← Ver página</a>
-                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+                <button class="btn-logout" id="logoutBtn">Cerrar Sesión</button>
             </div>
         </div>
         <div class="panel-content">
             <div class="success-msg" id="successMsg">✅ Cambios guardados correctamente</div>
 
-            <!-- Servicios -->
             <div class="admin-section">
                 <h3>📋 Servicios</h3>
                 <div class="item-list" id="servicesList"><div class="loading"><span class="loading-spinner"></span>Cargando...</div></div>
-                <button class="btn-add" onclick="showServiceForm()">+ Nuevo Servicio</button>
+                <button class="btn-add" id="addServiceBtn">+ Nuevo Servicio</button>
                 <div id="serviceForm" class="admin-form" style="display:none;">
                     <input type="text" id="serviceTitle" placeholder="Título del servicio">
                     <textarea id="serviceDesc" placeholder="Descripción del servicio"></textarea>
@@ -411,24 +370,22 @@
                     <input type="number" id="serviceOrder" placeholder="Orden de aparición (1,2,3...)" min="1" value="1">
                     <input type="hidden" id="serviceEditId">
                     <div class="form-buttons">
-                        <button class="btn-add" onclick="saveService()">💾 Guardar</button>
-                        <button class="btn-cancel" onclick="cancelServiceForm()">Cancelar</button>
+                        <button class="btn-add" id="saveServiceBtn">💾 Guardar</button>
+                        <button class="btn-cancel" id="cancelServiceBtn">Cancelar</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Galería -->
             <div class="admin-section">
                 <h3>🖼️ Galería de Trabajos</h3>
                 <div class="item-list" id="galleryList"><div class="loading"><span class="loading-spinner"></span>Cargando...</div></div>
                 <div class="admin-form">
                     <input type="text" id="galleryUrl" placeholder="URL de la imagen">
                     <input type="text" id="galleryAlt" placeholder="Descripción breve">
-                    <button class="btn-add" onclick="addGalleryItem()">+ Agregar Imagen</button>
+                    <button class="btn-add" id="addGalleryBtn">+ Agregar Imagen</button>
                 </div>
             </div>
 
-            <!-- Testimonios -->
             <div class="admin-section">
                 <h3>💬 Testimonios de Clientes</h3>
                 <div class="item-list" id="testimonialsList"><div class="loading"><span class="loading-spinner"></span>Cargando...</div></div>
@@ -436,20 +393,19 @@
                     <input type="text" id="testimonialName" placeholder="Nombre completo del cliente">
                     <input type="number" id="testimonialStars" placeholder="Calificación (1-5)" min="1" max="5" value="5">
                     <textarea id="testimonialText" placeholder="Texto del testimonio"></textarea>
-                    <button class="btn-add" onclick="addTestimonial()">+ Agregar Testimonio</button>
+                    <button class="btn-add" id="addTestimonialBtn">+ Agregar Testimonio</button>
                 </div>
             </div>
 
-            <!-- Citas -->
             <div class="admin-section">
                 <h3>📅 Citas Agendadas</h3>
                 <div class="booking-filters">
-                    <button class="btn-admin btn-edit" onclick="filterBookings('all')" id="filterAll" style="background:var(--red);">Todas</button>
-                    <button class="btn-admin btn-edit" onclick="filterBookings('pending')" id="filterPending" style="background:#f59e0b;">Pendientes</button>
-                    <button class="btn-admin btn-edit" onclick="filterBookings('confirmed')" id="filterConfirmed" style="background:#3b82f6;">Confirmadas</button>
-                    <button class="btn-admin btn-edit" onclick="filterBookings('in_progress')" id="filterInProgress" style="background:#8b5cf6;">En Progreso</button>
-                    <button class="btn-admin btn-edit" onclick="filterBookings('completed')" id="filterCompleted" style="background:#22c55e;">Completadas</button>
-                    <button class="btn-admin btn-edit" onclick="filterBookings('cancelled')" id="filterCancelled" style="background:#ef4444;">Canceladas</button>
+                    <button class="btn-admin btn-edit filter-btn" data-filter="all" style="background:var(--red);">Todas</button>
+                    <button class="btn-admin btn-edit filter-btn" data-filter="pending" style="background:#f59e0b;">Pendientes</button>
+                    <button class="btn-admin btn-edit filter-btn" data-filter="confirmed" style="background:#3b82f6;">Confirmadas</button>
+                    <button class="btn-admin btn-edit filter-btn" data-filter="in_progress" style="background:#8b5cf6;">En Progreso</button>
+                    <button class="btn-admin btn-edit filter-btn" data-filter="completed" style="background:#22c55e;">Completadas</button>
+                    <button class="btn-admin btn-edit filter-btn" data-filter="cancelled" style="background:#ef4444;">Canceladas</button>
                 </div>
                 <div class="item-list" id="bookingsList"><div class="loading"><span class="loading-spinner"></span>Cargando...</div></div>
             </div>
@@ -457,404 +413,356 @@
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://pupfxetbnpgqikzhnjts.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        let currentFilter = 'all';
-        let session = null;
-
-        // Verificar sesión al cargar
-        async function checkSession() {
-            const { data } = await supabase.auth.getSession();
-            if (data.session) {
-                session = data.session;
-                showPanel();
-            }
-        }
-
-        function showSuccess() {
-            const msg = document.getElementById('successMsg');
-            msg.style.display = 'block';
-            setTimeout(() => { msg.style.display = 'none'; }, 2500);
-        }
-
-        // Login con Supabase Auth
-        async function login() {
-            const email = document.getElementById('adminEmail').value.trim();
-            const password = document.getElementById('adminPassword').value;
-            const loginBtn = document.getElementById('loginBtn');
-            const errorMsg = document.getElementById('loginError');
-
-            if (!email || !password) {
-                errorMsg.textContent = 'Complete todos los campos';
-                errorMsg.style.display = 'block';
-                return;
-            }
-
-            loginBtn.disabled = true;
-            loginBtn.textContent = '⏳ Ingresando...';
-            errorMsg.style.display = 'none';
-
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email: email,
-                password: password
-            });
-
-            if (error) {
-                errorMsg.textContent = 'Credenciales incorrectas. Verifique e intente nuevamente.';
-                errorMsg.style.display = 'block';
-                loginBtn.disabled = false;
-                loginBtn.textContent = 'Ingresar al Panel';
-                return;
-            }
-
-            session = data.session;
-            showPanel();
-        }
-
-        function showPanel() {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('panelScreen').style.display = 'block';
-            document.body.style.alignItems = 'flex-start';
-            document.getElementById('loggedUser').textContent = '👤 ' + session.user.email;
-            loadAllData();
-        }
-
-        async function logout() {
-            await supabase.auth.signOut();
-            session = null;
-            document.getElementById('loginScreen').style.display = 'block';
-            document.getElementById('panelScreen').style.display = 'none';
-            document.body.style.alignItems = 'center';
-            document.getElementById('adminPassword').value = '';
-            document.getElementById('loginError').style.display = 'none';
-        }
-
-        // Enter para login
-        document.getElementById('adminPassword').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') login();
-        });
-
-        // ============ CARGAR DATOS ============
-        async function loadServices() {
-            const { data, error } = await supabase.from('services').select('*').order('display_order');
-            if (error) { console.error(error); return []; }
-            return data;
-        }
-
-        async function loadGallery() {
-            const { data, error } = await supabase.from('gallery').select('*').order('created_at', { ascending: false });
-            if (error) { console.error(error); return []; }
-            return data;
-        }
-
-        async function loadTestimonials() {
-            const { data, error } = await supabase.from('testimonials').select('*').order('created_at', { ascending: false });
-            if (error) { console.error(error); return []; }
-            return data;
-        }
-
-        async function loadBookings(filter) {
-            let query = supabase.from('bookings').select('*').order('created_at', { ascending: false });
-            if (filter && filter !== 'all') {
-                query = query.eq('status', filter);
-            }
-            const { data, error } = await query;
-            if (error) { console.error(error); return []; }
-            return data;
-        }
-
-        async function loadAllData() {
-            await Promise.all([
-                renderServicesList(),
-                renderGalleryList(),
-                renderTestimonialsList(),
-                renderBookings()
-            ]);
-        }
-
-        // ============ RENDER ============
-        async function renderServicesList() {
-            const container = document.getElementById('servicesList');
-            const services = await loadServices();
-            container.innerHTML = services.map(s => `
-                <div class="item-row">
-                    <span>${s.icon || '🔧'} <strong>${s.title}</strong> · Orden: ${s.display_order}</span>
-                    <div>
-                        <button class="btn-admin btn-edit" onclick="editService(${s.id})">Editar</button>
-                        <button class="btn-admin btn-delete" onclick="deleteService(${s.id})">Eliminar</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        async function renderGalleryList() {
-            const container = document.getElementById('galleryList');
-            const gallery = await loadGallery();
-            container.innerHTML = gallery.map(g => `
-                <div class="item-row">
-                    <span>🖼️ ${g.alt_text || 'Sin descripción'}</span>
-                    <button class="btn-admin btn-delete" onclick="deleteGalleryItem(${g.id})">Eliminar</button>
-                </div>
-            `).join('');
-        }
-
-        async function renderTestimonialsList() {
-            const container = document.getElementById('testimonialsList');
-            const testimonials = await loadTestimonials();
-            container.innerHTML = testimonials.map(t => `
-                <div class="item-row">
-                    <span>💬 ${t.client_name} · ${'★'.repeat(t.stars)}</span>
-                    <button class="btn-admin btn-delete" onclick="deleteTestimonial(${t.id})">Eliminar</button>
-                </div>
-            `).join('');
-        }
-
-        async function renderBookings() {
-            const container = document.getElementById('bookingsList');
-            const bookings = await loadBookings(currentFilter);
+        (function() {
+            const SUPABASE_URL = 'https://pupfxetbnpgqikzhnjts.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
             
-            if (bookings.length === 0) {
-                container.innerHTML = '<div class="item-row" style="justify-content:center; color:var(--text-muted);">No hay citas para mostrar</div>';
-                return;
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            let currentFilter = 'all';
+            let session = null;
+
+            function showSuccess() {
+                const msg = document.getElementById('successMsg');
+                msg.style.display = 'block';
+                setTimeout(() => { msg.style.display = 'none'; }, 2500);
             }
-            
-            container.innerHTML = bookings.map(b => {
-                const statusColors = {
-                    pending: { bg: '#f59e0b', text: 'Pendiente' },
-                    confirmed: { bg: '#3b82f6', text: 'Confirmada' },
-                    in_progress: { bg: '#8b5cf6', text: 'En Progreso' },
-                    completed: { bg: '#22c55e', text: 'Completada' },
-                    cancelled: { bg: '#ef4444', text: 'Cancelada' }
-                };
-                const status = statusColors[b.status] || statusColors.pending;
-                const date = b.preferred_date ? new Date(b.preferred_date + 'T00:00:00').toLocaleDateString('es-MX', { weekday:'short', year:'numeric', month:'short', day:'numeric' }) : 'Sin fecha';
-                const notes = b.notes || [];
-                const notesArray = typeof notes === 'string' ? JSON.parse(notes) : notes;
+
+            async function checkSession() {
+                const { data } = await supabase.auth.getSession();
+                if (data && data.session) {
+                    session = data.session;
+                    showPanel();
+                }
+            }
+
+            async function login() {
+                const emailInput = document.getElementById('adminEmail');
+                const passwordInput = document.getElementById('adminPassword');
+                const loginBtn = document.getElementById('loginBtn');
+                const errorMsg = document.getElementById('loginError');
+
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+
+                if (!email || !password) {
+                    errorMsg.textContent = 'Complete todos los campos';
+                    errorMsg.style.display = 'block';
+                    return;
+                }
+
+                loginBtn.disabled = true;
+                loginBtn.textContent = '⏳ Verificando IP...';
+                errorMsg.style.display = 'none';
+
+                // 1. Obtener IP del usuario
+                let userIP = 'desconocida';
+                try {
+                    const ipResponse = await fetch('https://api.ipify.org?format=json');
+                    const ipData = await ipResponse.json();
+                    userIP = ipData.ip;
+                } catch (e) {
+                    console.log('No se pudo obtener IP, se permite acceso por error de red');
+                }
+
+                // 2. Verificar si la IP está permitida
+                if (userIP !== 'desconocida') {
+                    const { data: allowedIPs, error: ipError } = await supabase
+                        .from('allowed_admin_ips')
+                        .select('ip_address')
+                        .eq('ip_address', userIP);
+
+                    if (ipError || !allowedIPs || allowedIPs.length === 0) {
+                        errorMsg.textContent = '⛔ Acceso denegado. Su IP (' + userIP + ') no está autorizada.';
+                        errorMsg.style.display = 'block';
+                        loginBtn.disabled = false;
+                        loginBtn.textContent = 'Ingresar al Panel';
+                        return;
+                    }
+                }
+
+                // 3. IP válida, intentar login
+                loginBtn.textContent = '⏳ Ingresando...';
                 
-                return `
-                    <div class="item-row" style="flex-direction:column; align-items:stretch; gap:0.75rem;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
-                            <div>
-                                <span style="font-weight:700;">📅 ${date} ${b.preferred_time || ''}</span>
-                                ${b.plate_number ? `<span style="margin-left:1rem; background:var(--bg-dark); padding:0.2rem 0.6rem; border-radius:4px; font-family:monospace; font-weight:700; letter-spacing:1px;">🚗 ${b.plate_number}</span>` : '<span style="margin-left:0.5rem; color:var(--text-muted); font-size:0.8rem;">Sin placa</span>'}
-                            </div>
-                            <span style="background:${status.bg}; color:white; padding:0.25rem 0.75rem; border-radius:50px; font-size:0.75rem; font-weight:600;">${status.text}</span>
-                        </div>
-                        <div style="display:grid; gap:0.3rem; font-size:0.9rem; color:var(--text-secondary);">
-                            <div>👤 <strong style="color:var(--text-primary);">${b.client_name}</strong></div>
-                            <div>📞 ${b.phone} ${b.email ? '| ✉️ ' + b.email : ''}</div>
-                            <div>🚗 ${b.vehicle} | 🔧 ${b.service_requested}</div>
-                            ${b.problem_description ? `<div style="font-style:italic; padding:0.5rem; background:var(--bg-dark); border-radius:6px; margin-top:0.25rem;">"${b.problem_description}"</div>` : ''}
-                        </div>
-                        
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
-                            <div>
-                                <label style="font-size:0.7rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">Placa</label>
-                                <input type="text" value="${b.plate_number || ''}" onchange="updateBookingPlate(${b.id}, this.value)" placeholder="ABC-1234"
-                                    style="width:100%; padding:0.5rem 0.8rem; background:var(--bg-dark); border:1px solid var(--border); border-radius:6px; color:var(--text-primary); font-size:0.85rem; font-family:monospace; letter-spacing:1px; text-transform:uppercase; outline:none;">
-                            </div>
-                            <div>
-                                <label style="font-size:0.7rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">Entrega Estimada</label>
-                                <input type="date" value="${b.estimated_delivery || ''}" onchange="updateBookingEstimate(${b.id}, this.value)"
-                                    style="width:100%; padding:0.5rem 0.8rem; background:var(--bg-dark); border:1px solid var(--border); border-radius:6px; color:var(--text-primary); font-size:0.85rem; color-scheme:dark; outline:none;">
-                            </div>
-                        </div>
-                        
-                        <div style="background:var(--bg-dark); border:1px solid var(--border); border-radius:8px; padding:1rem;">
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-                                <span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">📝 Notas del Taller</span>
-                                <button class="btn-admin btn-edit" onclick="addBookingNote(${b.id})" style="font-size:0.7rem;">+ Nota</button>
-                            </div>
-                            ${notesArray.length === 0 ? '<p style="color:var(--text-muted); font-size:0.8rem; font-style:italic;">Sin notas</p>' : 
-                            `<ul style="list-style:none; display:grid; gap:0.3rem;">${notesArray.map(n => `
-                                <li style="font-size:0.8rem; color:var(--text-secondary); padding:0.4rem 0.6rem; background:var(--bg-elevated); border-radius:4px; display:flex; justify-content:space-between;">
-                                    <span>${n.text}</span>
-                                    <span style="color:var(--text-muted); font-size:0.7rem;">${new Date(n.time).toLocaleString('es-MX', {hour:'2-digit',minute:'2-digit'})}</span>
-                                </li>
-                            `).join('')}</ul>`}
-                        </div>
-                        
-                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
-                            <select onchange="updateBookingStatus(${b.id}, this.value)" style="padding:0.4rem 0.8rem; background:var(--bg-dark); border:1px solid var(--border); border-radius:6px; color:var(--text-primary); font-size:0.8rem; cursor:pointer;">
-                                <option value="pending" ${b.status==='pending'?'selected':''}>Pendiente</option>
-                                <option value="confirmed" ${b.status==='confirmed'?'selected':''}>Confirmar</option>
-                                <option value="in_progress" ${b.status==='in_progress'?'selected':''}>En Progreso</option>
-                                <option value="completed" ${b.status==='completed'?'selected':''}>Completar</option>
-                                <option value="cancelled" ${b.status==='cancelled'?'selected':''}>Cancelar</option>
-                            </select>
-                            <button class="btn-admin btn-delete" onclick="deleteBooking(${b.id})">Eliminar</button>
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+                if (error) {
+                    errorMsg.textContent = error.message || 'Credenciales incorrectas';
+                    errorMsg.style.display = 'block';
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Ingresar al Panel';
+                    return;
+                }
+
+                if (data && data.session) {
+                    session = data.session;
+                    showPanel();
+                }
+            }
+
+            function showPanel() {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('panelScreen').style.display = 'block';
+                document.body.style.alignItems = 'flex-start';
+                if (session && session.user) {
+                    document.getElementById('loggedUser').textContent = '👤 ' + session.user.email;
+                }
+                loadAllData();
+            }
+
+            async function logout() {
+                await supabase.auth.signOut();
+                session = null;
+                document.getElementById('loginScreen').style.display = 'block';
+                document.getElementById('panelScreen').style.display = 'none';
+                document.body.style.alignItems = 'center';
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('loginError').style.display = 'none';
+            }
+
+            async function loadServices() {
+                const { data, error } = await supabase.from('services').select('*').order('display_order');
+                if (error) { console.error(error); return []; }
+                return data;
+            }
+
+            async function loadGallery() {
+                const { data, error } = await supabase.from('gallery').select('*').order('created_at', { ascending: false });
+                if (error) { console.error(error); return []; }
+                return data;
+            }
+
+            async function loadTestimonials() {
+                const { data, error } = await supabase.from('testimonials').select('*').order('created_at', { ascending: false });
+                if (error) { console.error(error); return []; }
+                return data;
+            }
+
+            async function loadBookings(filter) {
+                let query = supabase.from('bookings').select('*').order('created_at', { ascending: false });
+                if (filter && filter !== 'all') query = query.eq('status', filter);
+                const { data, error } = await query;
+                if (error) { console.error(error); return []; }
+                return data;
+            }
+
+            async function loadAllData() {
+                await Promise.all([renderServicesList(), renderGalleryList(), renderTestimonialsList(), renderBookings()]);
+            }
+
+            async function renderServicesList() {
+                const container = document.getElementById('servicesList');
+                const services = await loadServices();
+                container.innerHTML = services.map(s => `
+                    <div class="item-row">
+                        <span>${s.icon || '🔧'} <strong>${s.title}</strong> · Orden: ${s.display_order}</span>
+                        <div>
+                            <button class="btn-admin btn-edit edit-service-btn" data-id="${s.id}">Editar</button>
+                            <button class="btn-admin btn-delete delete-service-btn" data-id="${s.id}">Eliminar</button>
                         </div>
                     </div>
-                `;
-            }).join('');
-        }
-
-        // ============ CRUD SERVICIOS ============
-        function showServiceForm() {
-            document.getElementById('serviceForm').style.display = 'grid';
-            document.getElementById('serviceEditId').value = '';
-            document.getElementById('serviceTitle').value = '';
-            document.getElementById('serviceDesc').value = '';
-            document.getElementById('serviceOrder').value = '1';
-            document.getElementById('serviceTitle').focus();
-        }
-
-        function cancelServiceForm() {
-            document.getElementById('serviceForm').style.display = 'none';
-        }
-
-        async function saveService() {
-            const editId = document.getElementById('serviceEditId').value;
-            const title = document.getElementById('serviceTitle').value;
-            const desc = document.getElementById('serviceDesc').value;
-            const icon = document.getElementById('serviceIcon').value;
-            const order = parseInt(document.getElementById('serviceOrder').value) || 1;
-
-            if (!title || !desc) {
-                alert('Complete todos los campos requeridos');
-                return;
+                `).join('');
+                attachServiceEvents();
             }
 
-            if (editId) {
-                const { error } = await supabase.from('services').update({
-                    title, description: desc, icon, display_order: order
-                }).eq('id', editId);
-                if (error) { alert('Error: ' + error.message); return; }
-            } else {
-                const { error } = await supabase.from('services').insert([{
-                    title, description: desc, icon, display_order: order
-                }]);
-                if (error) { alert('Error: ' + error.message); return; }
+            async function renderGalleryList() {
+                const container = document.getElementById('galleryList');
+                const gallery = await loadGallery();
+                container.innerHTML = gallery.map(g => `
+                    <div class="item-row">
+                        <span>🖼️ ${g.alt_text || 'Sin descripción'}</span>
+                        <button class="btn-admin btn-delete delete-gallery-btn" data-id="${g.id}">Eliminar</button>
+                    </div>
+                `).join('');
+                attachGalleryEvents();
             }
 
-            cancelServiceForm();
-            await renderServicesList();
-            showSuccess();
-        }
+            async function renderTestimonialsList() {
+                const container = document.getElementById('testimonialsList');
+                const testimonials = await loadTestimonials();
+                container.innerHTML = testimonials.map(t => `
+                    <div class="item-row">
+                        <span>💬 ${t.client_name} · ${'★'.repeat(t.stars)}</span>
+                        <button class="btn-admin btn-delete delete-testimonial-btn" data-id="${t.id}">Eliminar</button>
+                    </div>
+                `).join('');
+                attachTestimonialEvents();
+            }
 
-        async function editService(id) {
-            const { data } = await supabase.from('services').select('*').eq('id', id).single();
-            if (data) {
-                document.getElementById('serviceEditId').value = data.id;
-                document.getElementById('serviceTitle').value = data.title;
-                document.getElementById('serviceDesc').value = data.description || '';
-                document.getElementById('serviceIcon').value = data.icon || '🔧';
-                document.getElementById('serviceOrder').value = data.display_order || 1;
+            async function renderBookings() {
+                const container = document.getElementById('bookingsList');
+                const bookings = await loadBookings(currentFilter);
+                
+                if (bookings.length === 0) {
+                    container.innerHTML = '<div class="item-row" style="justify-content:center; color:var(--text-muted);">No hay citas para mostrar</div>';
+                    return;
+                }
+                
+                container.innerHTML = bookings.map(b => {
+                    const statusColors = {
+                        pending: { bg: '#f59e0b', text: 'Pendiente' },
+                        confirmed: { bg: '#3b82f6', text: 'Confirmada' },
+                        in_progress: { bg: '#8b5cf6', text: 'En Progreso' },
+                        completed: { bg: '#22c55e', text: 'Completada' },
+                        cancelled: { bg: '#ef4444', text: 'Cancelada' }
+                    };
+                    const status = statusColors[b.status] || statusColors.pending;
+                    const date = b.preferred_date ? new Date(b.preferred_date + 'T00:00:00').toLocaleDateString('es-MX', { weekday:'short', year:'numeric', month:'short', day:'numeric' }) : 'Sin fecha';
+                    const notes = b.notes || [];
+                    const notesArray = typeof notes === 'string' ? JSON.parse(notes) : notes;
+                    
+                    return `
+                        <div class="item-row" style="flex-direction:column; align-items:stretch; gap:0.75rem;" data-booking-id="${b.id}">
+                            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+                                <div>
+                                    <span style="font-weight:700;">📅 ${date} ${b.preferred_time || ''}</span>
+                                    ${b.plate_number ? `<span style="margin-left:1rem; background:var(--bg-dark); padding:0.2rem 0.6rem; border-radius:4px; font-family:monospace; font-weight:700; letter-spacing:1px;">🚗 ${b.plate_number}</span>` : '<span style="margin-left:0.5rem; color:var(--text-muted); font-size:0.8rem;">Sin placa</span>'}
+                                </div>
+                                <span style="background:${status.bg}; color:white; padding:0.25rem 0.75rem; border-radius:50px; font-size:0.75rem; font-weight:600;">${status.text}</span>
+                            </div>
+                            <div style="display:grid; gap:0.3rem; font-size:0.9rem; color:var(--text-secondary);">
+                                <div>👤 <strong style="color:var(--text-primary);">${b.client_name}</strong></div>
+                                <div>📞 ${b.phone} ${b.email ? '| ✉️ ' + b.email : ''}</div>
+                                <div>🚗 ${b.vehicle} | 🔧 ${b.service_requested}</div>
+                            </div>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+                                <div>
+                                    <label style="font-size:0.7rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">Placa</label>
+                                    <input type="text" value="${b.plate_number || ''}" class="plate-input" data-id="${b.id}" placeholder="ABC-1234" style="width:100%; padding:0.5rem 0.8rem; background:var(--bg-dark); border:1px solid var(--border); border-radius:6px; color:var(--text-primary); font-size:0.85rem; font-family:monospace; letter-spacing:1px; text-transform:uppercase; outline:none;">
+                                </div>
+                                <div>
+                                    <label style="font-size:0.7rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">Entrega Estimada</label>
+                                    <input type="date" value="${b.estimated_delivery || ''}" class="estimate-input" data-id="${b.id}" style="width:100%; padding:0.5rem 0.8rem; background:var(--bg-dark); border:1px solid var(--border); border-radius:6px; color:var(--text-primary); font-size:0.85rem; color-scheme:dark; outline:none;">
+                                </div>
+                            </div>
+                            <div style="background:var(--bg-dark); border:1px solid var(--border); border-radius:8px; padding:1rem;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                                    <span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">📝 Notas del Taller</span>
+                                    <button class="btn-admin btn-edit add-note-btn" data-id="${b.id}" style="font-size:0.7rem;">+ Nota</button>
+                                </div>
+                                ${notesArray.length === 0 ? '<p style="color:var(--text-muted); font-size:0.8rem; font-style:italic;">Sin notas</p>' : 
+                                `<ul style="list-style:none; display:grid; gap:0.3rem;">${notesArray.map(n => `
+                                    <li style="font-size:0.8rem; color:var(--text-secondary); padding:0.4rem 0.6rem; background:var(--bg-elevated); border-radius:4px; display:flex; justify-content:space-between;">
+                                        <span>${n.text}</span>
+                                        <span style="color:var(--text-muted); font-size:0.7rem;">${new Date(n.time).toLocaleString('es-MX', {hour:'2-digit',minute:'2-digit'})}</span>
+                                    </li>
+                                `).join('')}</ul>`}
+                            </div>
+                            <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+                                <select class="status-select" data-id="${b.id}" style="padding:0.4rem 0.8rem; background:var(--bg-dark); border:1px solid var(--border); border-radius:6px; color:var(--text-primary); font-size:0.8rem; cursor:pointer;">
+                                    <option value="pending" ${b.status==='pending'?'selected':''}>Pendiente</option>
+                                    <option value="confirmed" ${b.status==='confirmed'?'selected':''}>Confirmar</option>
+                                    <option value="in_progress" ${b.status==='in_progress'?'selected':''}>En Progreso</option>
+                                    <option value="completed" ${b.status==='completed'?'selected':''}>Completar</option>
+                                    <option value="cancelled" ${b.status==='cancelled'?'selected':''}>Cancelar</option>
+                                </select>
+                                <button class="btn-admin btn-delete delete-booking-btn" data-id="${b.id}">Eliminar</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                attachBookingEvents();
+            }
+
+            function attachServiceEvents() {
+                document.querySelectorAll('.edit-service-btn').forEach(btn => {
+                    btn.addEventListener('click', function() { editService(this.dataset.id); });
+                });
+                document.querySelectorAll('.delete-service-btn').forEach(btn => {
+                    btn.addEventListener('click', function() { deleteService(this.dataset.id); });
+                });
+            }
+
+            function attachGalleryEvents() {
+                document.querySelectorAll('.delete-gallery-btn').forEach(btn => {
+                    btn.addEventListener('click', function() { deleteGalleryItem(this.dataset.id); });
+                });
+            }
+
+            function attachTestimonialEvents() {
+                document.querySelectorAll('.delete-testimonial-btn').forEach(btn => {
+                    btn.addEventListener('click', function() { deleteTestimonial(this.dataset.id); });
+                });
+            }
+
+            function attachBookingEvents() {
+                document.querySelectorAll('.plate-input').forEach(input => {
+                    input.addEventListener('change', function() { updateBookingPlate(this.dataset.id, this.value); });
+                });
+                document.querySelectorAll('.estimate-input').forEach(input => {
+                    input.addEventListener('change', function() { updateBookingEstimate(this.dataset.id, this.value); });
+                });
+                document.querySelectorAll('.status-select').forEach(select => {
+                    select.addEventListener('change', function() { updateBookingStatus(this.dataset.id, this.value); });
+                });
+                document.querySelectorAll('.delete-booking-btn').forEach(btn => {
+                    btn.addEventListener('click', function() { deleteBooking(this.dataset.id); });
+                });
+                document.querySelectorAll('.add-note-btn').forEach(btn => {
+                    btn.addEventListener('click', function() { addBookingNote(this.dataset.id); });
+                });
+            }
+
+            function showServiceForm() {
                 document.getElementById('serviceForm').style.display = 'grid';
-                document.getElementById('serviceTitle').focus();
+                document.getElementById('serviceEditId').value = '';
+                document.getElementById('serviceTitle').value = '';
+                document.getElementById('serviceDesc').value = '';
+                document.getElementById('serviceOrder').value = '1';
             }
-        }
 
-        async function deleteService(id) {
-            if (confirm('¿Eliminar este servicio permanentemente?')) {
-                await supabase.from('services').delete().eq('id', id);
+            function cancelServiceForm() {
+                document.getElementById('serviceForm').style.display = 'none';
+            }
+
+            async function saveService() {
+                const editId = document.getElementById('serviceEditId').value;
+                const title = document.getElementById('serviceTitle').value;
+                const desc = document.getElementById('serviceDesc').value;
+                const icon = document.getElementById('serviceIcon').value;
+                const order = parseInt(document.getElementById('serviceOrder').value) || 1;
+                if (!title || !desc) { alert('Complete todos los campos'); return; }
+                if (editId) {
+                    await supabase.from('services').update({ title, description: desc, icon, display_order: order }).eq('id', editId);
+                } else {
+                    await supabase.from('services').insert([{ title, description: desc, icon, display_order: order }]);
+                }
+                cancelServiceForm();
                 await renderServicesList();
                 showSuccess();
             }
-        }
 
-        // ============ CRUD GALERÍA ============
-        async function addGalleryItem() {
-            const url = document.getElementById('galleryUrl').value;
-            const alt = document.getElementById('galleryAlt').value || 'Trabajo realizado';
-            if (!url) { alert('Ingrese la URL de la imagen'); return; }
+            async function editService(id) {
+                const { data } = await supabase.from('services').select('*').eq('id', id).single();
+                if (data) {
+                    document.getElementById('serviceEditId').value = data.id;
+                    document.getElementById('serviceTitle').value = data.title;
+                    document.getElementById('serviceDesc').value = data.description || '';
+                    document.getElementById('serviceIcon').value = data.icon || '🔧';
+                    document.getElementById('serviceOrder').value = data.display_order || 1;
+                    document.getElementById('serviceForm').style.display = 'grid';
+                }
+            }
 
-            const { error } = await supabase.from('gallery').insert([{ image_url: url, alt_text: alt }]);
-            if (error) { alert('Error: ' + error.message); return; }
+            async function deleteService(id) {
+                if (confirm('¿Eliminar este servicio?')) {
+                    await supabase.from('services').delete().eq('id', id);
+                    await renderServicesList();
+                    showSuccess();
+                }
+            }
 
-            document.getElementById('galleryUrl').value = '';
-            document.getElementById('galleryAlt').value = '';
-            await renderGalleryList();
-            showSuccess();
-        }
-
-        async function deleteGalleryItem(id) {
-            if (confirm('¿Eliminar esta imagen?')) {
-                await supabase.from('gallery').delete().eq('id', id);
+            async function addGalleryItem() {
+                const url = document.getElementById('galleryUrl').value;
+                const alt = document.getElementById('galleryAlt').value || 'Trabajo realizado';
+                if (!url) { alert('Ingrese la URL'); return; }
+                await supabase.from('gallery').insert([{ image_url: url, alt_text: alt }]);
+                document.getElementById('galleryUrl').value = '';
+                document.getElementById('galleryAlt').value = '';
                 await renderGalleryList();
                 showSuccess();
             }
-        }
 
-        // ============ CRUD TESTIMONIOS ============
-        async function addTestimonial() {
-            const name = document.getElementById('testimonialName').value;
-            const stars = parseInt(document.getElementById('testimonialStars').value) || 5;
-            const text = document.getElementById('testimonialText').value;
-
-            if (!name || !text) { alert('Complete todos los campos'); return; }
-
-            const { error } = await supabase.from('testimonials').insert([{
-                client_name: name, stars: Math.min(5, Math.max(1, stars)), testimonial_text: text
-            }]);
-            if (error) { alert('Error: ' + error.message); return; }
-
-            document.getElementById('testimonialName').value = '';
-            document.getElementById('testimonialStars').value = '5';
-            document.getElementById('testimonialText').value = '';
-            await renderTestimonialsList();
-            showSuccess();
-        }
-
-        async function deleteTestimonial(id) {
-            if (confirm('¿Eliminar este testimonio?')) {
-                await supabase.from('testimonials').delete().eq('id', id);
-                await renderTestimonialsList();
-                showSuccess();
-            }
-        }
-
-        // ============ CRUD BOOKINGS ============
-        async function updateBookingPlate(id, plate) {
-            await supabase.from('bookings').update({ plate_number: plate.toUpperCase() }).eq('id', id);
-        }
-
-        async function updateBookingEstimate(id, date) {
-            await supabase.from('bookings').update({ estimated_delivery: date }).eq('id', id);
-            showSuccess();
-        }
-
-        async function updateBookingStatus(id, status) {
-            await supabase.from('bookings').update({ status }).eq('id', id);
-            await renderBookings();
-            showSuccess();
-        }
-
-        async function deleteBooking(id) {
-            if (confirm('¿Eliminar esta cita permanentemente?')) {
-                await supabase.from('bookings').delete().eq('id', id);
-                await renderBookings();
-                showSuccess();
-            }
-        }
-
-        async function addBookingNote(id) {
-            const note = prompt('Agregar nota para el cliente:');
-            if (note && note.trim()) {
-                const { data } = await supabase.from('bookings').select('notes').eq('id', id).single();
-                let notes = data?.notes || [];
-                if (typeof notes === 'string') notes = JSON.parse(notes);
-                notes.push({ text: note.trim(), time: new Date().toISOString() });
-                await supabase.from('bookings').update({ notes }).eq('id', id);
-                await renderBookings();
-                showSuccess();
-            }
-        }
-
-        function filterBookings(filter) {
-            currentFilter = filter;
-            const filters = ['all','pending','confirmed','in_progress','completed','cancelled'];
-            filters.forEach(f => {
-                const btn = document.getElementById('filter' + f.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(''));
-                if (btn) btn.style.opacity = filter === f ? '1' : '0.5';
-            });
-            renderBookings();
-        }
-
-        // Iniciar
-        checkSession();
-    </script>
-</body>
-</html>
+            async function deleteGalleryItem(id) {
+                if (confirm('¿Eliminar esta imagen?')) {
+                    await supabase.from('gallery').delete().eq('id', id);
+                    await
