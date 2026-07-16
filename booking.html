@@ -397,42 +397,47 @@
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://pupfxetbnpgqikzhnjts.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        var SUPABASE_URL = 'https://pupfxetbnpgqikzhnjts.supabase.co';
+        var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
+        var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Cargar servicios desde Supabase
+        // Verificar modo mantenimiento
+        (async function() {
+            try {
+                var result = await supabase.from('site_settings').select('setting_value').eq('setting_key', 'maintenance_mode').single();
+                if (result.data && result.data.setting_value === 'true') {
+                    window.location.href = '/maintenance';
+                }
+            } catch(e) {}
+        })();
+
         async function loadServices() {
-            const { data, error } = await supabase
-                .from('services')
-                .select('*')
-                .order('display_order');
-            
-            if (error) {
-                console.error('Error cargando servicios:', error);
-                return [];
-            }
-            return data;
+            var result = await supabase.from('services').select('*').order('display_order');
+            if (result.error) { console.error(result.error); return []; }
+            return result.data;
         }
 
         async function populateServiceSelect() {
-            const select = document.getElementById('bookingService');
-            const services = await loadServices();
-            select.innerHTML = '<option value="">Seleccione el servicio</option>' +
-                services.map(s => `<option value="${s.title}">${s.icon || ''} ${s.title}</option>`).join('');
+            var select = document.getElementById('bookingService');
+            var services = await loadServices();
+            var html = '<option value="">Seleccione el servicio</option>';
+            for (var i = 0; i < services.length; i++) {
+                html += '<option value="' + services[i].title + '">' + (services[i].icon || '') + ' ' + services[i].title + '</option>';
+            }
+            select.innerHTML = html;
         }
 
         async function submitBooking(e) {
             e.preventDefault();
             
-            const submitBtn = document.getElementById('submitBtn');
-            const errorMsg = document.getElementById('errorMessage');
+            var submitBtn = document.getElementById('submitBtn');
+            var errorMsg = document.getElementById('errorMessage');
             
             submitBtn.disabled = true;
-            submitBtn.textContent = '⏳ Agendando...';
+            submitBtn.textContent = 'Agendando...';
             errorMsg.style.display = 'none';
 
-            const booking = {
+            var booking = {
                 client_name: document.getElementById('bookingName').value.trim(),
                 phone: document.getElementById('bookingPhone').value.trim(),
                 email: document.getElementById('bookingEmail').value.trim() || null,
@@ -445,47 +450,39 @@
                 status: 'pending'
             };
 
-            const { data, error } = await supabase
-                .from('bookings')
-                .insert([booking])
-                .select();
+            var result = await supabase.from('bookings').insert([booking]).select();
 
-            if (error) {
+            if (result.error) {
                 errorMsg.textContent = 'Error al agendar la cita. Por favor intente nuevamente.';
                 errorMsg.style.display = 'block';
                 submitBtn.disabled = false;
-                submitBtn.textContent = '✅ Confirmar y Agendar Cita';
-                console.error('Error:', error);
+                submitBtn.textContent = 'Confirmar y Agendar Cita';
                 return;
             }
 
-            // Mostrar éxito
             document.getElementById('bookingForm').style.display = 'none';
             document.getElementById('successScreen').style.display = 'block';
 
-            const dateFormatted = new Date(booking.preferred_date + 'T00:00:00').toLocaleDateString('es-MX', {
+            var dateFormatted = new Date(booking.preferred_date + 'T00:00:00').toLocaleDateString('es-MX', {
                 weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
             });
 
-            document.getElementById('bookingDetails').innerHTML = `
-                <p><strong>Nombre:</strong> ${booking.client_name}</p>
-                <p><strong>Teléfono:</strong> ${booking.phone}</p>
-                ${booking.email ? `<p><strong>Email:</strong> ${booking.email}</p>` : ''}
-                <p><strong>Placa:</strong> 🚗 ${booking.plate_number}</p>
-                <p><strong>Fecha:</strong> ${dateFormatted}</p>
-                ${booking.preferred_time ? `<p><strong>Hora:</strong> ${booking.preferred_time}</p>` : ''}
-                <p><strong>Vehículo:</strong> ${booking.vehicle}</p>
-                <p><strong>Servicio:</strong> ${booking.service_requested}</p>
-            `;
-
+            var detailsHtml = '<p><strong>Nombre:</strong> ' + booking.client_name + '</p>';
+            detailsHtml += '<p><strong>Teléfono:</strong> ' + booking.phone + '</p>';
+            if (booking.email) detailsHtml += '<p><strong>Email:</strong> ' + booking.email + '</p>';
+            detailsHtml += '<p><strong>Placa:</strong> ' + booking.plate_number + '</p>';
+            detailsHtml += '<p><strong>Fecha:</strong> ' + dateFormatted + '</p>';
+            if (booking.preferred_time) detailsHtml += '<p><strong>Hora:</strong> ' + booking.preferred_time + '</p>';
+            detailsHtml += '<p><strong>Vehículo:</strong> ' + booking.vehicle + '</p>';
+            detailsHtml += '<p><strong>Servicio:</strong> ' + booking.service_requested + '</p>';
+            
+            document.getElementById('bookingDetails').innerHTML = detailsHtml;
             document.getElementById('successScreen').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Fecha mínima = hoy
-        const today = new Date().toISOString().split('T')[0];
+        var today = new Date().toISOString().split('T')[0];
         document.getElementById('bookingDate').setAttribute('min', today);
 
-        // Iniciar
         populateServiceSelect();
     </script>
 </body>
