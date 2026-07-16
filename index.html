@@ -106,21 +106,24 @@
 
         .menu-toggle { 
             display: none; 
-            background: none; 
+            background: transparent; 
             border: none; 
             cursor: pointer; 
-            padding: 10px; 
-            z-index: 1001;
+            padding: 15px; 
+            z-index: 9999;
             position: relative;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
         }
         .menu-toggle span { 
             display: block; 
-            width: 26px; 
-            height: 2.5px; 
+            width: 28px; 
+            height: 3px; 
             background: #ffffff; 
-            margin: 6px 0; 
+            margin: 5px 0; 
             transition: var(--transition); 
             border-radius: 2px; 
+            pointer-events: none;
         }
 
         .hero {
@@ -283,24 +286,22 @@
         }
 
         @media (max-width: 768px) {
-            .menu-toggle { display: block; }
+            .menu-toggle { display: block !important; }
 
             .nav-links {
                 display: none;
                 position: fixed;
                 top: 0; left: 0; right: 0; bottom: 0;
-                background: rgba(10,10,10,0.98);
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
+                background: rgba(10,10,10,0.99);
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
                 gap: 2.5rem;
-                z-index: 999;
+                z-index: 9998;
             }
-            .nav-links.active { display: flex; }
-            .nav-links a { font-size: 1.3rem; }
-            .nav-links .btn-nav { font-size: 1rem !important; padding: 0.8rem 2rem !important; }
+            .nav-links.active { display: flex !important; }
+            .nav-links a { font-size: 1.3rem; color: #ffffff !important; }
+            .nav-links .btn-nav { font-size: 1rem !important; padding: 0.8rem 2rem !important; background: var(--red) !important; }
 
             .footer-grid { grid-template-columns: 1fr; }
             .trust-bar { grid-template-columns: 1fr; max-width: 350px; gap: 1rem; padding: 2rem 1rem; }
@@ -350,18 +351,9 @@
     </section>
 
     <div class="trust-bar">
-        <div class="trust-item">
-            <span class="trust-number">4+</span>
-            <p>Años de Experiencia</p>
-        </div>
-        <div class="trust-item">
-            <span class="trust-number">3,500+</span>
-            <p>Vehículos Reparados</p>
-        </div>
-        <div class="trust-item">
-            <span class="trust-number">100%</span>
-            <p>Garantía de Servicio</p>
-        </div>
+        <div class="trust-item"><span class="trust-number">4+</span><p>Años de Experiencia</p></div>
+        <div class="trust-item"><span class="trust-number">3,500+</span><p>Vehículos Reparados</p></div>
+        <div class="trust-item"><span class="trust-number">100%</span><p>Garantía de Servicio</p></div>
     </div>
 
     <section id="servicios">
@@ -467,88 +459,83 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const headerEl = document.getElementById('header');
-        window.addEventListener('scroll', () => headerEl.classList.toggle('scrolled', window.scrollY > 50));
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const menuToggle = document.getElementById('menuToggle');
-            const navLinks = document.getElementById('navLinks');
-            
-            menuToggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                navLinks.classList.toggle('active');
-            });
-
-            navLinks.querySelectorAll('a').forEach(function(link) {
-                link.addEventListener('click', function() {
-                    navLinks.classList.remove('active');
-                });
-            });
+        var headerEl = document.getElementById('header');
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 50) headerEl.classList.add('scrolled');
+            else headerEl.classList.remove('scrolled');
         });
 
+        // Menú hamburguesa
+        (function() {
+            var menuBtn = document.getElementById('menuToggle');
+            var menu = document.getElementById('navLinks');
+            
+            if (menuBtn && menu) {
+                menuBtn.onclick = function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (menu.className.indexOf('active') > -1) {
+                        menu.className = 'nav-links';
+                    } else {
+                        menu.className = 'nav-links active';
+                    }
+                };
+
+                var links = menu.getElementsByTagName('a');
+                for (var i = 0; i < links.length; i++) {
+                    links[i].onclick = function() {
+                        menu.className = 'nav-links';
+                    };
+                }
+            }
+        })();
+
         async function loadServices() {
-            const { data, error } = await supabase.from('services').select('*').order('display_order');
+            var { data, error } = await supabase.from('services').select('*').order('display_order');
             if (error) { console.error(error); return []; }
             return data;
         }
 
         async function loadGallery() {
-            const { data, error } = await supabase.from('gallery').select('*').order('created_at', { ascending: false });
+            var { data, error } = await supabase.from('gallery').select('*').order('created_at', { ascending: false });
             if (error) { console.error(error); return []; }
             return data;
         }
 
         async function loadTestimonials() {
-            const { data, error } = await supabase.from('testimonials').select('*').order('created_at', { ascending: false });
+            var { data, error } = await supabase.from('testimonials').select('*').order('created_at', { ascending: false });
             if (error) { console.error(error); return []; }
             return data;
         }
 
         async function renderServices() {
-            const services = await loadServices();
-            const container = document.getElementById('servicesContainer');
+            var services = await loadServices();
+            var container = document.getElementById('servicesContainer');
             if (services.length === 0) {
                 container.innerHTML = '<p style="text-align:center;color:var(--text-muted);">Cargando servicios...</p>';
                 return;
             }
-            container.innerHTML = services.map(s => `
-                <div class="service-card">
-                    <div class="service-icon-wrap">${s.icon || '🔧'}</div>
-                    <h3>${s.title}</h3>
-                    <p>${s.description || ''}</p>
-                    <a href="/booking" class="service-link">Solicitar servicio<span class="arrow">→</span></a>
-                </div>
-            `).join('');
+            container.innerHTML = services.map(function(s) {
+                return '<div class="service-card"><div class="service-icon-wrap">' + (s.icon || '🔧') + '</div><h3>' + s.title + '</h3><p>' + (s.description || '') + '</p><a href="/booking" class="service-link">Solicitar servicio<span class="arrow">→</span></a></div>';
+            }).join('');
         }
 
         async function renderGallery() {
-            const gallery = await loadGallery();
-            const container = document.getElementById('galleryContainer');
-            container.innerHTML = gallery.map(g => `
-                <div class="gallery-item">
-                    <img src="${g.image_url}" alt="${g.alt_text || ''}" loading="lazy">
-                    <span class="gallery-label">${g.alt_text || ''}</span>
-                </div>
-            `).join('');
+            var gallery = await loadGallery();
+            var container = document.getElementById('galleryContainer');
+            container.innerHTML = gallery.map(function(g) {
+                return '<div class="gallery-item"><img src="' + g.image_url + '" alt="' + (g.alt_text || '') + '" loading="lazy"><span class="gallery-label">' + (g.alt_text || '') + '</span></div>';
+            }).join('');
         }
 
         async function renderTestimonials() {
-            const testimonials = await loadTestimonials();
-            const container = document.getElementById('testimonialsContainer');
-            container.innerHTML = testimonials.map(t => `
-                <div class="testimonial-card">
-                    <div class="testimonial-stars">${'★'.repeat(t.stars)}</div>
-                    <p class="testimonial-text">${t.testimonial_text}</p>
-                    <div class="testimonial-author">
-                        <div class="testimonial-avatar">${t.client_name.charAt(0)}</div>
-                        <div class="testimonial-info">
-                            <strong>${t.client_name}</strong>
-                            <span>Cliente Verificado</span>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
+            var testimonials = await loadTestimonials();
+            var container = document.getElementById('testimonialsContainer');
+            container.innerHTML = testimonials.map(function(t) {
+                var stars = '';
+                for (var i = 0; i < t.stars; i++) stars += '★';
+                return '<div class="testimonial-card"><div class="testimonial-stars">' + stars + '</div><p class="testimonial-text">' + t.testimonial_text + '</p><div class="testimonial-author"><div class="testimonial-avatar">' + t.client_name.charAt(0) + '</div><div class="testimonial-info"><strong>' + t.client_name + '</strong><span>Cliente Verificado</span></div></div></div>';
+            }).join('');
         }
 
         async function init() {
