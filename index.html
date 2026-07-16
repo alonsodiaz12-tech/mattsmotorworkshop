@@ -465,30 +465,24 @@
             else headerEl.classList.remove('scrolled');
         });
 
-        // Menú hamburguesa
-        (function() {
-            var menuBtn = document.getElementById('menuToggle');
-            var menu = document.getElementById('navLinks');
-            
-            if (menuBtn && menu) {
-                menuBtn.onclick = function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (menu.className.indexOf('active') > -1) {
-                        menu.className = 'nav-links';
-                    } else {
-                        menu.className = 'nav-links active';
-                    }
-                };
+          // Menú hamburguesa
+var menuBtn = document.getElementById('menuToggle');
+var menu = document.getElementById('navLinks');
 
-                var links = menu.getElementsByTagName('a');
-                for (var i = 0; i < links.length; i++) {
-                    links[i].onclick = function() {
-                        menu.className = 'nav-links';
-                    };
-                }
-            }
-        })();
+menuBtn.onclick = function() {
+    if (menu.classList.contains('active')) {
+        menu.classList.remove('active');
+    } else {
+        menu.classList.add('active');
+    }
+};
+
+var links = menu.getElementsByTagName('a');
+for (var i = 0; i < links.length; i++) {
+    links[i].onclick = function() {
+        menu.classList.remove('active');
+    };
+}
 
         async function loadServices() {
             var { data, error } = await supabase.from('services').select('*').order('display_order');
