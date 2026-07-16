@@ -114,7 +114,7 @@
         .worklog-client-grid { display: grid; gap: 0.5rem; }
         .worklog-client-item { background: var(--bg-dark); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; font-size: 0.85rem; }
         .worklog-client-item .wl-header { display: flex; justify-content: space-between; margin-bottom: 0.25rem; flex-wrap: wrap; gap: 0.5rem; }
-        .worklog-client-item img { width: 100%; max-width: 250px; border-radius: 6px; margin-top: 0.5rem; cursor: pointer; }
+        .worklog-client-item img { width: 100%; max-width: 100%; border-radius: 6px; margin-top: 0.5rem; display: block; }
 
         @media (max-width: 600px) {
             body { padding: 1rem; align-items: flex-start; padding-top: 2rem; }
@@ -191,16 +191,15 @@
             var html = '';
 
             if (status === 'pending') {
-                html += '<div class="info-message info-pending">⏳ Su cita está <strong>pendiente de confirmación</strong>. El taller revisará su solicitud.</div>';
+                html += '<div class="info-message info-pending">⏳ Su cita está <strong>pendiente de confirmación</strong>.</div>';
                 html += '<div class="detail-grid"><div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">'+(booking.service_requested||'')+'</div></div><div class="detail-item"><div class="detail-label">Fecha</div><div class="detail-value">'+(booking.preferred_date?new Date(booking.preferred_date+'T00:00:00').toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'}):'')+'</div></div><div class="detail-item"><div class="detail-label">Hora</div><div class="detail-value">'+(booking.preferred_time||'')+'</div></div><div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">'+(booking.client_name||'')+'</div></div></div>';
             } else if (status === 'confirmed') {
                 var dateFormatted = booking.preferred_date ? new Date(booking.preferred_date+'T00:00:00').toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) : '';
-                html += '<div class="info-message info-confirmed">✅ Su cita ha sido <strong>confirmada</strong>. Preséntese al taller el <strong>'+dateFormatted+'</strong> a las <strong>'+(booking.preferred_time||'')+'</strong>.</div>';
+                html += '<div class="info-message info-confirmed">✅ Su cita ha sido <strong>confirmada</strong>. Preséntese el <strong>'+dateFormatted+'</strong> a las <strong>'+(booking.preferred_time||'')+'</strong>.</div>';
                 html += '<div class="detail-grid"><div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">'+(booking.service_requested||'')+'</div></div><div class="detail-item"><div class="detail-label">Fecha</div><div class="detail-value">'+dateFormatted+'</div></div><div class="detail-item"><div class="detail-label">Hora</div><div class="detail-value">'+(booking.preferred_time||'')+'</div></div><div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">'+(booking.client_name||'')+'</div></div></div>';
             } else if (status === 'en_taller' || status === 'en_progreso') {
                 var progressOrder = ['en_taller','en_progreso','completado','entregado'];
-                var currentIndex = progressOrder.indexOf(status);
-                if (currentIndex < 0) currentIndex = 0;
+                var currentIndex = progressOrder.indexOf(status); if (currentIndex < 0) currentIndex = 0;
                 var steps = [{label:'En Taller',icon:'🔧'},{label:'En Progreso',icon:'⚙'},{label:'Completado',icon:'✓'},{label:'Entregado',icon:'🎉'}];
                 html += '<div class="progress-tracker">';
                 for (var i=0; i<steps.length; i++) { var cls = i<currentIndex?'completed':(i===currentIndex?'active':''); html += '<div class="progress-step '+cls+'"><div class="step-circle">'+(cls==='completed'?'✓':steps[i].icon)+'</div><div class="step-label">'+steps[i].label+'</div></div>'; }
@@ -212,12 +211,11 @@
                 html += '</div>';
                 html += '<div class="notes-section"><h3>Historial de Trabajos</h3><div id="worklogClient"></div></div>';
             } else if (status === 'completado') {
-                html += '<div class="info-message info-success">✅ Su vehículo está <strong>listo</strong>. Puede pasar a retirarlo.</div>';
-                html += '<div class="detail-grid"><div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">'+(booking.service_requested||'')+'</div></div><div class="detail-item"><div class="detail-label">Ingreso</div><div class="detail-value">'+new Date(booking.created_at).toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})+'</div></div><div class="detail-item"><div class="detail-label">Estado</div><div class="detail-value">Listo para entrega</div></div><div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">'+(booking.client_name||'')+'</div></div></div>';
+                html += '<div class="info-message info-success">✅ Su vehículo está <strong>listo</strong>. Puede retirarlo.</div>';
+                html += '<div class="detail-grid"><div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">'+(booking.service_requested||'')+'</div></div><div class="detail-item"><div class="detail-label">Ingreso</div><div class="detail-value">'+new Date(booking.created_at).toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})+'</div></div><div class="detail-item"><div class="detail-label">Estado</div><div class="detail-value">Listo</div></div><div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">'+(booking.client_name||'')+'</div></div></div>';
                 html += '<div class="notes-section"><h3>Historial de Trabajos</h3><div id="worklogClient"></div></div>';
             } else if (status === 'entregado') {
                 html += '<div class="info-message info-success">🎉 Vehículo <strong>entregado</strong>. Gracias por confiar en Matts Motor Workshop.</div>';
-                html += '<div class="detail-grid"><div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">'+(booking.service_requested||'')+'</div></div><div class="detail-item"><div class="detail-label">Ingreso</div><div class="detail-value">'+new Date(booking.created_at).toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})+'</div></div><div class="detail-item"><div class="detail-label">Estado</div><div class="detail-value">Entregado</div></div><div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">'+(booking.client_name||'')+'</div></div></div>';
             } else if (status === 'cancelled') {
                 html += '<div class="info-message info-cancelled">❌ Esta cita ha sido <strong>cancelada</strong>.</div>';
             }
@@ -232,12 +230,11 @@
         }
 
         async function loadWorkLogClient(bookingId) {
-            var container = document.getElementById('worklogClient');
-            if (!container) return;
+            var container = document.getElementById('worklogClient'); if (!container) return;
             var result = await supabase.from('work_log').select('*').eq('booking_id',bookingId).order('created_at',{ascending:false});
             if (!result.data || result.data.length===0) { container.innerHTML = '<p class="no-notes">Sin registros aún.</p>'; return; }
             var html = '<div class="worklog-client-grid">';
-            for (var i=0; i<result.data.length; i++) { var log = result.data[i]; html += '<div class="worklog-client-item"><div class="wl-header"><span style="color:var(--text-secondary);">'+log.description+'</span><span style="color:var(--text-muted);font-size:0.7rem;">'+new Date(log.created_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></div>'+(log.photo_url?'<img src="'+log.photo_url+'" onclick="window.open(\''+log.photo_url+'\')">':'')+'</div>'; }
+            for (var i=0; i<result.data.length; i++) { var log = result.data[i]; html += '<div class="worklog-client-item"><div class="wl-header"><span style="color:var(--text-secondary);">'+log.description+'</span><span style="color:var(--text-muted);font-size:0.7rem;">'+new Date(log.created_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></div>'+(log.photo_url?'<img src="'+log.photo_url+'" loading="lazy">':'')+'</div>'; }
             html += '</div>'; container.innerHTML = html;
         }
 
