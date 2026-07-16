@@ -148,24 +148,7 @@
             background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 40%, #a8882e 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
-        .hero p { font-size: 1.2rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto 2.5rem; font-weight: 400; line-height: 1.8; animation: fadeInUp 1s ease-out 0.3s both; }
-        .hero-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; animation: fadeInUp 1s ease-out 0.4s both; }
-
-        .btn-primary {
-            display: inline-flex; align-items: center; gap: 8px; background: var(--red);
-            color: white; padding: 1rem 2rem; border-radius: 50px; text-decoration: none;
-            font-weight: 600; font-size: 0.95rem; letter-spacing: 0.5px;
-            transition: var(--transition); box-shadow: 0 8px 30px rgba(220,38,38,0.35);
-            border: none; cursor: pointer;
-        }
-        .btn-primary:hover { background: var(--red-light); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(220,38,38,0.5); }
-        .btn-secondary {
-            display: inline-flex; align-items: center; gap: 8px; background: transparent;
-            color: var(--text-primary); padding: 1rem 2rem; border-radius: 50px;
-            text-decoration: none; font-weight: 600; font-size: 0.95rem; letter-spacing: 0.5px;
-            transition: var(--transition); border: 1px solid var(--border-light);
-        }
-        .btn-secondary:hover { border-color: var(--text-secondary); background: var(--glass); transform: translateY(-3px); }
+        .hero p { font-size: 1.2rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto 1rem; font-weight: 400; line-height: 1.8; animation: fadeInUp 1s ease-out 0.3s both; }
 
         .hero-scroll { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 2; animation: bounce 2s infinite; opacity: 0.5; }
         @keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-10px)} }
@@ -258,11 +241,15 @@
         .testimonial-info strong { display: block; font-weight: 600; }
         .testimonial-info span { color: var(--text-muted); font-size: 0.85rem; }
 
-        .cta-section { text-align: center; position: relative; overflow: hidden; }
-        .cta-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(220,38,38,0.15) 0%, transparent 70%); z-index: 0; }
-        .cta-content { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
-        .cta-content h2 { font-family: 'Montserrat', sans-serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; letter-spacing: -1px; margin-bottom: 1rem; }
-        .cta-content p { color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 2.5rem; line-height: 1.7; }
+        /* Mapa */
+        .map-section { padding: 0; }
+        .map-section .section-header { margin-bottom: 2rem; }
+        .map-container {
+            width: 100%; height: 400px; border: 1px solid var(--border);
+            border-radius: var(--radius-xl); overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+        .map-container iframe { width: 100%; height: 100%; border: none; filter: invert(90%) hue-rotate(180deg) brightness(0.9) contrast(0.9); }
 
         footer { background: var(--bg-card); border-top: 1px solid var(--border); padding: 5rem 2rem 2rem; }
         .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1.5fr; gap: 3rem; max-width: 1100px; margin: 0 auto 4rem; }
@@ -279,6 +266,7 @@
             .why-us-grid { grid-template-columns: 1fr; gap: 3rem; }
             .footer-grid { grid-template-columns: 1fr 1fr; }
             .trust-bar { grid-template-columns: repeat(3, 1fr); max-width: 700px; }
+            .map-container { height: 350px; }
         }
         @media (max-width: 768px) {
             .nav-links { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10,10,10,0.98); backdrop-filter: blur(20px); flex-direction: column; justify-content: center; align-items: center; gap: 2rem; z-index: 999; }
@@ -290,11 +278,11 @@
             section { padding: 4rem 1.5rem; }
             .hero h1 { font-size: 2.5rem; }
             .footer-bottom { flex-direction: column; text-align: center; }
+            .map-container { height: 300px; }
         }
         @media (max-width: 480px) {
             .services-grid { grid-template-columns: 1fr; }
             .testimonials-grid { grid-template-columns: 1fr; }
-            .hero-buttons { flex-direction: column; align-items: center; }
         }
     </style>
 </head>
@@ -314,6 +302,7 @@
                 <li><a href="#servicios">Servicios</a></li>
                 <li><a href="#galeria">Galería</a></li>
                 <li><a href="#testimonios">Testimonios</a></li>
+                <li><a href="#ubicacion">Ubicación</a></li>
                 <li><a href="/tracking">Estado del Vehículo</a></li>
                 <li><a href="/booking" class="btn-nav">Agendar Cita</a></li>
             </ul>
@@ -326,10 +315,6 @@
             <div class="hero-badge"><span class="dot"></span> Taller Abierto · Lunes a Sábado</div>
             <h1>Ingeniería de<br><span class="gold">Precisión</span> para<br>su Vehículo</h1>
             <p>Combinamos tecnología de diagnóstico avanzada con artesanía mecánica experta. Cada reparación ejecutada con los más altos estándares de calidad.</p>
-            <div class="hero-buttons">
-                <a href="/booking" class="btn-primary">Diagnóstico Gratuito<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-                <a href="/tracking" class="btn-secondary">🔍 Consultar Estado del Vehículo</a>
-            </div>
         </div>
         <div class="hero-scroll"><span></span></div>
     </section>
@@ -402,13 +387,24 @@
         </div>
     </section>
 
-    <section class="cta-section" id="contacto">
+    <!-- Mapa de Ubicación -->
+    <section class="map-section" id="ubicacion">
         <div class="container">
-            <div class="cta-content">
-                <span class="section-label">Agende Su Cita</span>
-                <h2>¿Listo para devolverle la vida a su vehículo?</h2>
-                <p>Complete el formulario y nos pondremos en contacto en menos de 24 horas con un diagnóstico inicial sin costo.</p>
-                <a href="/booking" class="btn-primary" style="font-size:1.1rem; padding:1.2rem 3rem;">📅 Agendar Cita Ahora</a>
+            <div class="section-header">
+                <span class="section-label">Ubicación</span>
+                <h2 class="section-title">Encuéntranos</h2>
+                <p class="section-subtitle">Visítanos en nuestro taller. Estamos estratégicamente ubicados para servirte mejor.</p>
+            </div>
+            <div class="map-container">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3929.123456789!2d-84.123456!3d9.987654!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOcKwNTknMTUuNiJOIDg0wrAwNycyNC40Ilc!5e0!3m2!1ses!2scr!4v1234567890" 
+                    width="100%" 
+                    height="400" 
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
             </div>
         </div>
     </section>
@@ -427,6 +423,7 @@
                 <ul class="footer-links">
                     <li><a href="/tracking">🔍 Consultar Estado del Vehículo</a></li>
                     <li><a href="/booking">📅 Agendar Cita</a></li>
+                    <li><a href="#ubicacion">📍 Ubicación</a></li>
                 </ul>
             </div>
             <div class="footer-section">
