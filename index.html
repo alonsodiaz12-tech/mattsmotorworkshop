@@ -287,7 +287,6 @@
 
         @media (max-width: 768px) {
             .menu-toggle { display: block !important; }
-
             .nav-links {
                 display: none;
                 position: fixed;
@@ -455,88 +454,101 @@
     </footer>
 
     <script>
-        const SUPABASE_URL = 'https://pupfxetbnpgqikzhnjts.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        (function() {
+            var SUPABASE_URL = 'https://pupfxetbnpgqikzhnjts.supabase.co';
+            var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
+            var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        var headerEl = document.getElementById('header');
-        window.addEventListener('scroll', function() {
-            if (window.scrollY > 50) headerEl.classList.add('scrolled');
-            else headerEl.classList.remove('scrolled');
-        });
+            var headerEl = document.getElementById('header');
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) headerEl.classList.add('scrolled');
+                else headerEl.classList.remove('scrolled');
+            });
 
-          // Menú hamburguesa
-var menuBtn = document.getElementById('menuToggle');
-var menu = document.getElementById('navLinks');
+            // Menú hamburguesa
+            var menuBtn = document.getElementById('menuToggle');
+            var menu = document.getElementById('navLinks');
 
-menuBtn.onclick = function() {
-    if (menu.classList.contains('active')) {
-        menu.classList.remove('active');
-    } else {
-        menu.classList.add('active');
-    }
-};
+            menuBtn.onclick = function() {
+                if (menu.className.indexOf('active') > -1) {
+                    menu.className = 'nav-links';
+                } else {
+                    menu.className = 'nav-links active';
+                }
+            };
 
-var links = menu.getElementsByTagName('a');
-for (var i = 0; i < links.length; i++) {
-    links[i].onclick = function() {
-        menu.classList.remove('active');
-    };
-}
-
-        async function loadServices() {
-            var { data, error } = await supabase.from('services').select('*').order('display_order');
-            if (error) { console.error(error); return []; }
-            return data;
-        }
-
-        async function loadGallery() {
-            var { data, error } = await supabase.from('gallery').select('*').order('created_at', { ascending: false });
-            if (error) { console.error(error); return []; }
-            return data;
-        }
-
-        async function loadTestimonials() {
-            var { data, error } = await supabase.from('testimonials').select('*').order('created_at', { ascending: false });
-            if (error) { console.error(error); return []; }
-            return data;
-        }
-
-        async function renderServices() {
-            var services = await loadServices();
-            var container = document.getElementById('servicesContainer');
-            if (services.length === 0) {
-                container.innerHTML = '<p style="text-align:center;color:var(--text-muted);">Cargando servicios...</p>';
-                return;
+            var links = menu.getElementsByTagName('a');
+            for (var i = 0; i < links.length; i++) {
+                links[i].onclick = function() {
+                    menu.className = 'nav-links';
+                };
             }
-            container.innerHTML = services.map(function(s) {
-                return '<div class="service-card"><div class="service-icon-wrap">' + (s.icon || '🔧') + '</div><h3>' + s.title + '</h3><p>' + (s.description || '') + '</p><a href="/booking" class="service-link">Solicitar servicio<span class="arrow">→</span></a></div>';
-            }).join('');
-        }
 
-        async function renderGallery() {
-            var gallery = await loadGallery();
-            var container = document.getElementById('galleryContainer');
-            container.innerHTML = gallery.map(function(g) {
-                return '<div class="gallery-item"><img src="' + g.image_url + '" alt="' + (g.alt_text || '') + '" loading="lazy"><span class="gallery-label">' + (g.alt_text || '') + '</span></div>';
-            }).join('');
-        }
+            async function loadServices() {
+                var result = await supabase.from('services').select('*').order('display_order');
+                if (result.error) { console.error(result.error); return []; }
+                return result.data;
+            }
 
-        async function renderTestimonials() {
-            var testimonials = await loadTestimonials();
-            var container = document.getElementById('testimonialsContainer');
-            container.innerHTML = testimonials.map(function(t) {
-                var stars = '';
-                for (var i = 0; i < t.stars; i++) stars += '★';
-                return '<div class="testimonial-card"><div class="testimonial-stars">' + stars + '</div><p class="testimonial-text">' + t.testimonial_text + '</p><div class="testimonial-author"><div class="testimonial-avatar">' + t.client_name.charAt(0) + '</div><div class="testimonial-info"><strong>' + t.client_name + '</strong><span>Cliente Verificado</span></div></div></div>';
-            }).join('');
-        }
+            async function loadGallery() {
+                var result = await supabase.from('gallery').select('*').order('created_at', { ascending: false });
+                if (result.error) { console.error(result.error); return []; }
+                return result.data;
+            }
 
-        async function init() {
-            await Promise.all([renderServices(), renderGallery(), renderTestimonials()]);
-        }
+            async function loadTestimonials() {
+                var result = await supabase.from('testimonials').select('*').order('created_at', { ascending: false });
+                if (result.error) { console.error(result.error); return []; }
+                return result.data;
+            }
 
-        init();
+            async function renderServices() {
+                var services = await loadServices();
+                var container = document.getElementById('servicesContainer');
+                if (services.length === 0) {
+                    container.innerHTML = '<p style="text-align:center;color:var(--text-muted);">Cargando servicios...</p>';
+                    return;
+                }
+                var html = '';
+                for (var i = 0; i < services.length; i++) {
+                    var s = services[i];
+                    html += '<div class="service-card"><div class="service-icon-wrap">' + (s.icon || '🔧') + '</div><h3>' + s.title + '</h3><p>' + (s.description || '') + '</p><a href="/booking" class="service-link">Solicitar servicio<span class="arrow">→</span></a></div>';
+                }
+                container.innerHTML = html;
+            }
+
+            async function renderGallery() {
+                var gallery = await loadGallery();
+                var container = document.getElementById('galleryContainer');
+                var html = '';
+                for (var i = 0; i < gallery.length; i++) {
+                    var g = gallery[i];
+                    html += '<div class="gallery-item"><img src="' + g.image_url + '" alt="' + (g.alt_text || '') + '" loading="lazy"><span class="gallery-label">' + (g.alt_text || '') + '</span></div>';
+                }
+                container.innerHTML = html;
+            }
+
+            async function renderTestimonials() {
+                var testimonials = await loadTestimonials();
+                var container = document.getElementById('testimonialsContainer');
+                var html = '';
+                for (var i = 0; i < testimonials.length; i++) {
+                    var t = testimonials[i];
+                    var stars = '';
+                    for (var j = 0; j < t.stars; j++) stars += '★';
+                    html += '<div class="testimonial-card"><div class="testimonial-stars">' + stars + '</div><p class="testimonial-text">' + t.testimonial_text + '</p><div class="testimonial-author"><div class="testimonial-avatar">' + t.client_name.charAt(0) + '</div><div class="testimonial-info"><strong>' + t.client_name + '</strong><span>Cliente Verificado</span></div></div></div>';
+                }
+                container.innerHTML = html;
+            }
+
+            async function init() {
+                await renderServices();
+                await renderGallery();
+                await renderTestimonials();
+            }
+
+            init();
+        })();
     </script>
 </body>
 </html>
