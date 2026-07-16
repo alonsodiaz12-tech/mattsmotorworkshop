@@ -396,19 +396,22 @@
         </div>
     </div>
 
-    <script>
+        <script>
         var SUPABASE_URL = 'https://pupfxetbnpgqikzhnjts.supabase.co';
         var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
         var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // Verificar modo mantenimiento
+        document.documentElement.style.display = 'none';
         (async function() {
             try {
                 var result = await supabase.from('site_settings').select('setting_value').eq('setting_key', 'maintenance_mode').single();
                 if (result.data && result.data.setting_value === 'true') {
-                    window.location.href = '/maintenance';
+                    window.location.replace('/maintenance');
+                    return;
                 }
             } catch(e) {}
+            document.documentElement.style.display = '';
         })();
 
         async function loadServices() {
@@ -427,15 +430,93 @@
             select.innerHTML = html;
         }
 
+        // Actualizar selector de hora según la fecha seleccionada
+        document.getElementById('bookingDate').addEventListener('change', async function() {
+            var dateValue = this.value;
+            var timeSelect = document.getElementById('bookingTime');
+            
+            if (!dateValue) {
+                timeSelect.innerHTML = '<option value="">Primero seleccione una fecha</option>';
+                return;
+            }
+
+            var selectedDate = new Date(dateValue + 'T00:00:00');
+            var dayOfWeek = selectedDate.getDay();
+            var isSaturday = dayOfWeek === 6;
+            var isSunday = dayOfWeek === 0;
+
+            if (isSunday) {
+                timeSelect.innerHTML = '<option value="">Domingos no hay servicio</option>';
+                return;
+            }
+
+            // Cargar horarios disponibles
+            var dayType = isSaturday ? 'saturday' : 'weekday';
+            var slotsResult = await supabase.from('time_slots').select('*').eq('day_type', dayType).order('time_slot');
+            
+            if (slotsResult.error || !slotsResult.data || slotsResult.data.length === 0) {
+                timeSelect.innerHTML = '<option value="">No hay horarios disponibles</option>';
+                return;
+            }
+
+            // Verificar cupos ocupados para esta fecha
+            var bookedResult = await supabase.from('booking_slots').select('time_slot').eq('booking_date', dateValue);
+            var bookedSlots = {};
+            if (bookedResult.data) {
+                for (var i = 0; i < bookedResult.data.length; i++) {
+                    var slot = bookedResult.data[i].time_slot;
+                    bookedSlots[slot] = (bookedSlots[slot] || 0) + 1;
+                }
+            }
+
+            var html = '<option value="">Seleccione horario</option>';
+            for (var i = 0; i < slotsResult.data.length; i++) {
+                var slot = slotsResult.data[i];
+                var ocupados = bookedSlots[slot.time_slot] || 0;
+                var disponibles = slot.max_bookings - ocupados;
+                
+                if (disponibles > 0) {
+                    html += '<option value="' + slot.time_slot + '">' + slot.time_slot + ' (' + disponibles + ' cupos)</option>';
+                } else {
+                    html += '<option value="' + slot.time_slot + '" disabled>' + slot.time_slot + ' (agotado)</option>';
+                }
+            }
+            timeSelect.innerHTML = html;
+        });
+
         async function submitBooking(e) {
             e.preventDefault();
             
             var submitBtn = document.getElementById('submitBtn');
             var errorMsg = document.getElementById('errorMessage');
+            var dateValue = document.getElementById('bookingDate').value;
+            var timeValue = document.getElementById('bookingTime').value;
             
+            if (!timeValue) {
+                errorMsg.textContent = 'Seleccione un horario disponible.';
+                errorMsg.style.display = 'block';
+                return;
+            }
+
             submitBtn.disabled = true;
             submitBtn.textContent = 'Agendando...';
             errorMsg.style.display = 'none';
+
+            // Verificar disponibilidad una última vez antes de guardar
+            var dayType = new Date(dateValue + 'T00:00:00').getDay() === 6 ? 'saturday' : 'weekday';
+            var slotResult = await supabase.from('time_slots').select('max_bookings').eq('day_type', dayType).eq('time_slot', timeValue).single();
+            var maxBookings = slotResult.data ? slotResult.data.max_bookings : 4;
+            
+            var bookedResult = await supabase.from('booking_slots').select('id').eq('booking_date', dateValue).eq('time_slot', timeValue);
+            var currentBookings = bookedResult.data ? bookedResult.data.length : 0;
+            
+            if (currentBookings >= maxBookings) {
+                errorMsg.textContent = 'Este horario ya no está disponible. Seleccione otro.';
+                errorMsg.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Confirmar y Agendar Cita';
+                return;
+            }
 
             var booking = {
                 client_name: document.getElementById('bookingName').value.trim(),
@@ -445,44 +526,59 @@
                 vehicle: document.getElementById('bookingVehicle').value.trim(),
                 service_requested: document.getElementById('bookingService').value,
                 problem_description: document.getElementById('bookingDesc').value.trim() || null,
-                preferred_date: document.getElementById('bookingDate').value,
-                preferred_time: document.getElementById('bookingTime').value || null,
+                preferred_date: dateValue,
+                preferred_time: timeValue,
                 status: 'pending'
             };
 
-            var result = await supabase.from('bookings').insert([booking]).select();
+            var insertResult = await supabase.from('bookings').insert([booking]).select();
 
-            if (result.error) {
-                errorMsg.textContent = 'Error al agendar la cita. Por favor intente nuevamente.';
+            if (insertResult.error) {
+                errorMsg.textContent = 'Error al agendar. Intente nuevamente.';
                 errorMsg.style.display = 'block';
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Confirmar y Agendar Cita';
                 return;
             }
 
+            var newBooking = insertResult.data[0];
+
+            // Reservar el cupo
+            await supabase.from('booking_slots').insert([{
+                booking_date: dateValue,
+                time_slot: timeValue,
+                booking_id: newBooking.id
+            }]);
+
+            // Mostrar éxito con mensaje de espera de confirmación
             document.getElementById('bookingForm').style.display = 'none';
             document.getElementById('successScreen').style.display = 'block';
 
-            var dateFormatted = new Date(booking.preferred_date + 'T00:00:00').toLocaleDateString('es-MX', {
+            var dateFormatted = new Date(dateValue + 'T00:00:00').toLocaleDateString('es-MX', {
                 weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
             });
 
-            var detailsHtml = '<p><strong>Nombre:</strong> ' + booking.client_name + '</p>';
-            detailsHtml += '<p><strong>Teléfono:</strong> ' + booking.phone + '</p>';
-            if (booking.email) detailsHtml += '<p><strong>Email:</strong> ' + booking.email + '</p>';
-            detailsHtml += '<p><strong>Placa:</strong> ' + booking.plate_number + '</p>';
-            detailsHtml += '<p><strong>Fecha:</strong> ' + dateFormatted + '</p>';
-            if (booking.preferred_time) detailsHtml += '<p><strong>Hora:</strong> ' + booking.preferred_time + '</p>';
-            detailsHtml += '<p><strong>Vehículo:</strong> ' + booking.vehicle + '</p>';
-            detailsHtml += '<p><strong>Servicio:</strong> ' + booking.service_requested + '</p>';
-            
-            document.getElementById('bookingDetails').innerHTML = detailsHtml;
+            document.getElementById('bookingDetails').innerHTML = `
+                <p><strong>Nombre:</strong> ${booking.client_name}</p>
+                <p><strong>Teléfono:</strong> ${booking.phone}</p>
+                ${booking.email ? `<p><strong>Email:</strong> ${booking.email}</p>` : ''}
+                <p><strong>Placa:</strong> ${booking.plate_number}</p>
+                <p><strong>Fecha:</strong> ${dateFormatted}</p>
+                <p><strong>Hora:</strong> ${booking.preferred_time}</p>
+                <p><strong>Vehículo:</strong> ${booking.vehicle}</p>
+                <p><strong>Servicio:</strong> ${booking.service_requested}</p>
+                <p style="margin-top:1rem;padding:1rem;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:8px;color:#fbbf24;font-size:0.9rem;">
+                    ⚠️ Su fecha y hora han sido reservadas temporalmente. 
+                    Espere la confirmación del taller. Si no recibe confirmación en 24 horas, 
+                    el cupo se liberará automáticamente.
+                </p>
+            `;
+
             document.getElementById('successScreen').scrollIntoView({ behavior: 'smooth' });
         }
 
         var today = new Date().toISOString().split('T')[0];
         document.getElementById('bookingDate').setAttribute('min', today);
-
         populateServiceSelect();
     </script>
 </body>
