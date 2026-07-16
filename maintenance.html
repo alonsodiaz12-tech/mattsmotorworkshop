@@ -153,7 +153,7 @@
         </div>
     </div>
 
-    <script>
+        <script>
         (function() {
             var SUPABASE_URL = 'https://pupfxetbnpgqikzhnjts.supabase.co';
             var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
@@ -164,12 +164,13 @@
                     var result = await supabase.from('site_settings').select('setting_value').eq('setting_key', 'maintenance_mode').single();
                     if (result.data && result.data.setting_value === 'false') {
                         window.location.replace('/home');
+                        return;
                     }
                 } catch(e) {}
-                setTimeout(checkAvailability, 600000);
+                setTimeout(checkAvailability, 5000);
             }
 
-            setTimeout(checkAvailability, 600000);
+            setTimeout(checkAvailability, 5000);
         })();
     </script>
 </body>
