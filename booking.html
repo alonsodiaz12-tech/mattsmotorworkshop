@@ -3,29 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalle de Cita | Matts Motor Workshop</title>
+    <title>Agendar Cita | Matts Motor Workshop</title>
     <link rel="icon" type="image/jpeg" href="logo.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --bg-dark: #0a0a0a;
             --bg-card: #111111;
             --bg-elevated: #1a1a1a;
-            --bg-input: #0f0f0f;
             --red: #dc2626;
-            --red-hover: #b91c1c;
+            --red-light: #ef4444;
+            --red-dark: #991b1b;
+            --gold: #c9a84c;
+            --gold-light: #e2c970;
             --text-primary: #ffffff;
             --text-secondary: #a3a3a3;
-            --text-muted: #6b7280;
+            --text-muted: #737373;
             --border: #262626;
             --border-light: #333333;
-            --radius-sm: 6px;
-            --radius: 10px;
-            --radius-lg: 16px;
-            --transition: 0.2s ease;
+            --radius: 12px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+            --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -35,238 +37,549 @@
             background: var(--bg-dark);
             color: var(--text-primary);
             min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 2rem;
             -webkit-font-smoothing: antialiased;
+            background-image:
+                radial-gradient(ellipse at 20% 50%, rgba(220,38,38,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 50%, rgba(201,168,76,0.04) 0%, transparent 50%);
         }
 
-        .container { max-width: 900px; margin: 0 auto; }
+        .booking-container {
+            width: 100%;
+            max-width: 700px;
+            display: grid;
+            gap: 2rem;
+        }
 
-        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; margin-bottom: 1.5rem; transition: var(--transition); }
-        .back-link:hover { color: var(--text-secondary); }
+        .booking-header {
+            text-align: center;
+        }
 
-        .page-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; }
-        .page-header h1 { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; font-weight: 700; }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+            margin-bottom: 1.5rem;
+        }
 
-        .status-badge { padding: 0.4rem 1rem; border-radius: 50px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
-        .status-pending { background: rgba(245,158,11,0.12); color: #fbbf24; }
-        .status-confirmed { background: rgba(59,130,246,0.12); color: #60a5fa; }
-        .status-in_progress { background: rgba(139,92,246,0.12); color: #a78bfa; }
-        .status-completed { background: rgba(34,197,94,0.12); color: #4ade80; }
-        .status-cancelled { background: rgba(239,68,68,0.12); color: #f87171; }
+        .back-link:hover {
+            color: var(--red-light);
+        }
 
-        .info-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 1.5rem; }
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .info-item { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; }
-        .info-item .label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 0.25rem; }
-        .info-item .value { font-weight: 600; font-size: 0.95rem; }
-        .info-item input, .info-item select { padding: 0.4rem 0.6rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; color: var(--text-primary); font-size: 0.85rem; outline: none; width: 100%; font-family: inherit; }
-        .info-item select { cursor: pointer; }
-        .info-item input:focus, .info-item select:focus { border-color: var(--red); }
+        .booking-header .logo {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
 
-        .section-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 1.5rem; }
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem; }
-        .section-header h2 { font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 700; }
+        .booking-header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 0.5rem;
+        }
 
-        .btn { padding: 0.5rem 1rem; border: none; border-radius: var(--radius-sm); cursor: pointer; font-weight: 500; font-size: 0.82rem; font-family: inherit; transition: var(--transition); }
-        .btn-primary { background: var(--red); color: white; }
-        .btn-primary:hover { background: var(--red-hover); }
-        .btn-secondary { background: transparent; color: var(--text-secondary); border: 1px solid var(--border); }
-        .btn-secondary:hover { border-color: var(--border-light); color: var(--text-primary); }
-        .btn-sm { padding: 0.3rem 0.6rem; font-size: 0.72rem; }
+        .booking-header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
 
-        .note-list { display: grid; gap: 0.5rem; }
-        .note-item { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.75rem 1rem; display: flex; justify-content: space-between; gap: 0.5rem; font-size: 0.85rem; }
-        .note-item .note-time { color: var(--text-muted); font-size: 0.7rem; white-space: nowrap; }
+        .booking-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem;
+        }
 
-        .worklog-grid { display: grid; gap: 0.75rem; }
-        .worklog-card { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; }
-        .worklog-card .worklog-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.25rem; font-size: 0.8rem; }
-        .worklog-card .worklog-header span { color: var(--text-muted); }
-        .worklog-card p { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 0.5rem; }
-        .worklog-card img { width: 100%; max-width: 300px; border-radius: var(--radius-sm); cursor: pointer; }
+        .booking-form {
+            display: grid;
+            gap: 1.5rem;
+        }
 
-        .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.85rem; }
-        .loading-state { text-align: center; padding: 2rem; color: var(--text-muted); }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
 
-        .add-worklog-form { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1.25rem; margin-top: 1rem; display: none; }
-        .add-worklog-form textarea { width: 100%; padding: 0.7rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.85rem; font-family: inherit; outline: none; resize: vertical; min-height: 60px; margin-bottom: 0.75rem; }
-        .add-worklog-form textarea:focus { border-color: var(--red); }
-        .add-worklog-form .form-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
-        .add-worklog-form input[type="file"] { flex: 1; padding: 0.4rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.8rem; }
+        .form-group {
+            display: grid;
+            gap: 0.4rem;
+        }
 
-        .success-toast { position: fixed; bottom: 2rem; right: 2rem; background: #166534; color: #bbf7d0; padding: 0.75rem 1.25rem; border-radius: var(--radius); font-weight: 500; font-size: 0.85rem; display: none; z-index: 9999; border: 1px solid #22c55e; }
+        .form-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+        }
 
-        @media (max-width: 768px) {
-            body { padding: 1rem; }
-            .info-grid { grid-template-columns: 1fr; }
-            .page-header { flex-direction: column; align-items: flex-start; }
+        .form-group label .required {
+            color: var(--red-light);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.9rem 1.2rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .form-group input:hover,
+        .form-group select:hover,
+        .form-group textarea:hover {
+            border-color: var(--border-light);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--red);
+            box-shadow: 0 0 0 3px rgba(220,38,38,0.12);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' stroke='%23a3a3a3' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+
+        .form-group input[type="date"] {
+            color-scheme: dark;
+            cursor: pointer;
+        }
+
+        .btn-submit {
+            background: var(--red);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 8px 30px rgba(220,38,38,0.3);
+            margin-top: 0.5rem;
+        }
+
+        .btn-submit:hover {
+            background: var(--red-light);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(220,38,38,0.45);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-screen {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .success-screen .icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            animation: popIn 0.5s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .success-screen h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .success-screen p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+
+        .success-screen .booking-details {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+
+        .success-screen .booking-details p {
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .success-screen .booking-details strong {
+            color: var(--text-primary);
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-light);
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .btn-back:hover {
+            border-color: var(--text-secondary);
+            background: rgba(255,255,255,0.02);
+        }
+
+        .error-message {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.3);
+            color: #fca5a5;
+            padding: 1rem;
+            border-radius: var(--radius);
+            text-align: center;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 1rem;
+                align-items: flex-start;
+                padding-top: 2rem;
+            }
+            .booking-card {
+                padding: 1.5rem;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <a href="/admin" class="back-link">← Volver al panel</a>
-
-        <div class="page-header">
-            <h1 id="pageTitle">Cargando cita...</h1>
-            <span class="status-badge" id="pageStatus"></span>
+    <div class="booking-container">
+        <div class="booking-header">
+            <a href="/home" class="back-link">← Volver al taller</a>
+            <div class="logo">🔧</div>
+            <h1>Agendar Cita</h1>
+            <p>Complete el formulario y nos pondremos en contacto para confirmar su cita.</p>
         </div>
 
-        <div class="info-card">
-            <div class="info-grid" id="infoGrid">
-                <div class="loading-state">Cargando información...</div>
-            </div>
-        </div>
-
-        <div class="section-card">
-            <div class="section-header">
-                <h2>Notas del Taller</h2>
-                <button class="btn btn-primary btn-sm" onclick="addNote()">Agregar nota</button>
-            </div>
-            <div id="notesContainer"><div class="loading-state">Cargando notas...</div></div>
-        </div>
-
-        <div class="section-card">
-            <div class="section-header">
-                <h2>Registro de Trabajos</h2>
-                <button class="btn btn-primary btn-sm" onclick="toggleWorklogForm()">Agregar trabajo</button>
-            </div>
-            <div id="worklogContainer"><div class="loading-state">Cargando trabajos...</div></div>
-            <div class="add-worklog-form" id="worklogForm">
-                <textarea id="worklogDesc" placeholder="Describa el trabajo realizado..."></textarea>
+        <div class="booking-card">
+            <div class="error-message" id="errorMessage"></div>
+            
+            <form class="booking-form" id="bookingForm" onsubmit="submitBooking(event)">
                 <div class="form-row">
-                    <input type="file" id="worklogPhoto" accept="image/*">
-                    <button class="btn btn-primary" onclick="saveWorklog()">Guardar</button>
-                    <button class="btn btn-secondary" onclick="toggleWorklogForm()">Cancelar</button>
+                    <div class="form-group">
+                        <label>Nombre Completo <span class="required">*</span></label>
+                        <input type="text" id="bookingName" placeholder="Ingrese su nombre completo" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono <span class="required">*</span></label>
+                        <input type="tel" id="bookingPhone" placeholder="(506) 4444-4444" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="bookingEmail" placeholder="correo@ejemplo.com">
+                </div>
+
+                <div class="form-group">
+                    <label>Número de Placa <span class="required">*</span></label>
+                    <input type="text" id="bookingPlate" placeholder="ABC-1234" required maxlength="10" style="text-transform:uppercase; letter-spacing:1px; font-family:monospace;">
+                    <span style="font-size:0.7rem; color:var(--text-muted);">Necesario para consultar el estado de su vehículo</span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fecha Deseada <span class="required">*</span></label>
+                        <input type="date" id="bookingDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Hora Preferida</label>
+                        <select id="bookingTime">
+                            <option value="">Seleccione horario</option>
+                            <option value="8:00 AM">8:00 AM</option>
+                            <option value="9:00 AM">9:00 AM</option>
+                            <option value="10:00 AM">10:00 AM</option>
+                            <option value="11:00 AM">11:00 AM</option>
+                            <option value="12:00 PM">12:00 PM</option>
+                            <option value="2:00 PM">2:00 PM</option>
+                            <option value="3:00 PM">3:00 PM</option>
+                            <option value="4:00 PM">4:00 PM</option>
+                            <option value="5:00 PM">5:00 PM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Vehículo <span class="required">*</span></label>
+                    <input type="text" id="bookingVehicle" placeholder="Marca, Modelo y Año" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Servicio Requerido <span class="required">*</span></label>
+                    <select id="bookingService" required>
+                        <option value="">Cargando servicios...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Descripción del Problema</label>
+                    <textarea id="bookingDesc" placeholder="Describa brevemente el problema o trabajo que necesita realizar..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">✅ Confirmar y Agendar Cita</button>
+            </form>
+
+            <div class="success-screen" id="successScreen">
+                <div class="icon">✅</div>
+                <h2>¡Cita Agendada!</h2>
+                <p>Hemos recibido su solicitud exitosamente.</p>
+                <div class="booking-details" id="bookingDetails"></div>
+                <p style="color:var(--text-muted); font-size:0.9rem;">
+                    Guarde su número de placa. Con él podrá consultar el estado de su vehículo en cualquier momento.
+                </p>
+                <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+                    <a href="/tracking" class="btn-back">🔍 Consultar Estado</a>
+                    <a href="/home" class="btn-back">← Volver al inicio</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="success-toast" id="successMsg">Cambios guardados</div>
+        <script>
+        var SUPABASE_URL = 'https://pupfxetbnpgqikzhnjts.supabase.co';
+        var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
+        var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    <script>
-        (function() {
-            var SUPABASE_URL = 'https://pupfxetbnpgqikzhnjts.supabase.co';
-            var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
-            var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            var bookingId = null;
-            var booking = null;
-
-            function showSuccess() { var msg = document.getElementById('successMsg'); msg.style.display = 'block'; setTimeout(function() { msg.style.display = 'none'; }, 2500); }
-
-            function getBookingIdFromURL() { var params = new URLSearchParams(window.location.search); return params.get('id'); }
-
-            async function init() {
-                bookingId = getBookingIdFromURL();
-                if (!bookingId) { window.location.href = '/admin'; return; }
-                var sessionResult = await supabase.auth.getSession();
-                if (!sessionResult.data || !sessionResult.data.session) { window.location.href = '/admin'; return; }
-                await loadBooking();
-            }
-
-            async function loadBooking() {
-                var result = await supabase.from('bookings').select('*').eq('id', bookingId).single();
-                if (result.error || !result.data) { window.location.href = '/admin'; return; }
-                booking = result.data;
-                renderBooking();
-                loadNotes();
-                loadWorkLogs();
-            }
-
-            function renderBooking() {
-                var statusMap = { pending:{text:'Pendiente',cls:'status-pending'}, confirmed:{text:'Confirmada',cls:'status-confirmed'}, en_taller:{text:'En Taller',cls:'status-in_progress'}, en_progreso:{text:'En Progreso',cls:'status-in_progress'}, completado:{text:'Completada',cls:'status-completed'}, entregado:{text:'Entregado',cls:'status-completed'}, cancelled:{text:'Cancelada',cls:'status-cancelled'} };
-                var st = statusMap[booking.status] || statusMap.pending;
-                document.getElementById('pageTitle').textContent = 'Cita #' + booking.id + ' - ' + (booking.plate_number || 'Sin placa');
-                var badge = document.getElementById('pageStatus'); badge.textContent = st.text; badge.className = 'status-badge ' + st.cls;
-                var dateStr = booking.preferred_date ? new Date(booking.preferred_date+'T00:00:00').toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) : 'Sin fecha';
-                var html = '';
-                html += '<div class="info-item"><div class="label">Cliente</div><div class="value">'+booking.client_name+'</div></div>';
-                html += '<div class="info-item"><div class="label">Teléfono</div><div class="value">'+booking.phone+'</div></div>';
-                html += '<div class="info-item"><div class="label">Email</div><div class="value">'+(booking.email||'No registrado')+'</div></div>';
-                html += '<div class="info-item"><div class="label">Placa</div><div class="value" style="font-family:monospace;letter-spacing:1px;">'+(booking.plate_number||'Sin placa')+'</div></div>';
-                html += '<div class="info-item"><div class="label">Vehículo</div><div class="value">'+booking.vehicle+'</div></div>';
-                html += '<div class="info-item"><div class="label">Servicio</div><div class="value">'+booking.service_requested+'</div></div>';
-                html += '<div class="info-item"><div class="label">Fecha</div><div class="value">'+dateStr+'</div></div>';
-                html += '<div class="info-item"><div class="label">Hora</div><div class="value">'+(booking.preferred_time||'No especificada')+'</div></div>';
-                html += '<div class="info-item"><div class="label">Descripción</div><div class="value">'+(booking.problem_description||'Sin descripción')+'</div></div>';
-                html += '<div class="info-item"><div class="label">Cambiar Estado</div><div class="value"><select onchange="updateStatus(this.value)"><option value="pending"'+(booking.status==='pending'?' selected':'')+'>Pendiente</option><option value="confirmed"'+(booking.status==='confirmed'?' selected':'')+'>Confirmar</option><option value="en_taller"'+(booking.status==='en_taller'?' selected':'')+'>Ingresó al taller</option><option value="en_progreso"'+(booking.status==='en_progreso'?' selected':'')+'>En progreso</option><option value="completado"'+(booking.status==='completado'?' selected':'')+'>Completar</option><option value="entregado"'+(booking.status==='entregado'?' selected':'')+'>Entregado</option><option value="cancelled"'+(booking.status==='cancelled'?' selected':'')+'>Cancelar</option></select></div></div>';
-                html += '<div class="info-item"><div class="label">Editar Placa</div><div class="value"><input type="text" value="'+(booking.plate_number||'')+'" onchange="updatePlate(this.value)" style="font-family:monospace;letter-spacing:1px;text-transform:uppercase;"></div></div>';
-                html += '<div class="info-item"><div class="label">Entrega Estimada</div><div class="value"><input type="date" value="'+(booking.estimated_delivery||'')+'" onchange="updateEstimate(this.value)" style="color-scheme:dark;"></div></div>';
-                document.getElementById('infoGrid').innerHTML = html;
-            }
-
-            function loadNotes() {
-                var notes = booking.notes || [];
-                if (typeof notes === 'string') notes = JSON.parse(notes);
-                var container = document.getElementById('notesContainer');
-                if (notes.length === 0) { container.innerHTML = '<div class="empty-state">Sin notas</div>'; return; }
-                var html = '<div class="note-list">';
-                for (var i = notes.length-1; i >= 0; i--) { html += '<div class="note-item"><span>'+notes[i].text+'</span><span class="note-time">'+new Date(notes[i].time).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></div>'; }
-                html += '</div>'; container.innerHTML = html;
-            }
-
-            async function addNote() {
-                var note = prompt('Agregar nota:');
-                if (!note || !note.trim()) return;
-                var notes = booking.notes || [];
-                if (typeof notes === 'string') notes = JSON.parse(notes);
-                notes.push({text:note.trim(),time:new Date().toISOString()});
-                await supabase.from('bookings').update({notes:notes}).eq('id',bookingId);
-                booking.notes = notes; loadNotes(); showSuccess();
-            }
-
-            async function updateStatus(newStatus) {
-                await supabase.from('bookings').update({status:newStatus}).eq('id',bookingId);
-                booking.status = newStatus; renderBooking(); showSuccess();
-            }
-
-            async function updatePlate(plate) {
-                await supabase.from('bookings').update({plate_number:plate.toUpperCase()}).eq('id',bookingId);
-                booking.plate_number = plate.toUpperCase(); showSuccess();
-            }
-
-            async function updateEstimate(date) {
-                await supabase.from('bookings').update({estimated_delivery:date}).eq('id',bookingId);
-                booking.estimated_delivery = date; showSuccess();
-            }
-
-            async function loadWorkLogs() {
-                var container = document.getElementById('worklogContainer');
-                var result = await supabase.from('work_log').select('*').eq('booking_id',bookingId).order('created_at',{ascending:false});
-                if (!result.data || result.data.length===0) { container.innerHTML = '<div class="empty-state">Sin registros de trabajo</div>'; return; }
-                var html = '<div class="worklog-grid">';
-                for (var i=0; i<result.data.length; i++) { var log = result.data[i]; html += '<div class="worklog-card"><div class="worklog-header"><strong>'+log.description+'</strong><span>'+new Date(log.created_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></div>'+(log.photo_url?'<img src="'+log.photo_url+'" onclick="window.open(\''+log.photo_url+'\')">':'')+'</div>'; }
-                html += '</div>'; container.innerHTML = html;
-            }
-
-            function toggleWorklogForm() {
-                var form = document.getElementById('worklogForm');
-                form.style.display = form.style.display === 'block' ? 'none' : 'block';
-                if (form.style.display === 'block') document.getElementById('worklogDesc').focus();
-            }
-
-            async function saveWorklog() {
-                var desc = document.getElementById('worklogDesc').value.trim();
-                if (!desc) { alert('Describa el trabajo'); return; }
-                var photoUrl = null;
-                var fileInput = document.getElementById('worklogPhoto');
-                if (fileInput.files && fileInput.files[0]) {
-                    var file = fileInput.files[0];
-                    var fileName = 'booking-'+bookingId+'-'+Date.now()+'.'+file.name.split('.').pop();
-                    var uploadResult = await supabase.storage.from('workshop-photos').upload(fileName, file);
-                    if (uploadResult.error) { alert('Error al subir la foto: ' + uploadResult.error.message); }
-                    else { var publicUrlResult = supabase.storage.from('workshop-photos').getPublicUrl(fileName); photoUrl = publicUrlResult.data.publicUrl; }
+        // Verificar modo mantenimiento
+        document.documentElement.style.display = 'none';
+        (async function() {
+            try {
+                var result = await supabase.from('site_settings').select('setting_value').eq('setting_key', 'maintenance_mode').single();
+                if (result.data && result.data.setting_value === 'true') {
+                    window.location.replace('/maintenance');
+                    return;
                 }
-                var insertResult = await supabase.from('work_log').insert([{booking_id:parseInt(bookingId),description:desc,photo_url:photoUrl}]);
-                if (insertResult.error) { alert('Error al guardar: ' + insertResult.error.message); }
-                else { document.getElementById('worklogDesc').value = ''; document.getElementById('worklogPhoto').value = ''; toggleWorklogForm(); loadWorkLogs(); showSuccess(); }
+            } catch(e) {}
+            document.documentElement.style.display = '';
+        })();
+
+        async function loadServices() {
+            var result = await supabase.from('services').select('*').order('display_order');
+            if (result.error) { console.error(result.error); return []; }
+            return result.data;
+        }
+
+        async function populateServiceSelect() {
+            var select = document.getElementById('bookingService');
+            var services = await loadServices();
+            var html = '<option value="">Seleccione el servicio</option>';
+            for (var i = 0; i < services.length; i++) {
+                html += '<option value="' + services[i].title + '">' + (services[i].icon || '') + ' ' + services[i].title + '</option>';
+            }
+            select.innerHTML = html;
+        }
+
+        // Actualizar selector de hora según la fecha seleccionada
+        document.getElementById('bookingDate').addEventListener('change', async function() {
+            var dateValue = this.value;
+            var timeSelect = document.getElementById('bookingTime');
+            
+            if (!dateValue) {
+                timeSelect.innerHTML = '<option value="">Primero seleccione una fecha</option>';
+                return;
             }
 
-            window.addNote = addNote; window.toggleWorklogForm = toggleWorklogForm; window.saveWorklog = saveWorklog;
-            window.updateStatus = updateStatus; window.updatePlate = updatePlate; window.updateEstimate = updateEstimate;
-            init();
-        })();
+            var selectedDate = new Date(dateValue + 'T00:00:00');
+            var dayOfWeek = selectedDate.getDay();
+            var isSaturday = dayOfWeek === 6;
+            var isSunday = dayOfWeek === 0;
+
+            if (isSunday) {
+                timeSelect.innerHTML = '<option value="">Domingos no hay servicio</option>';
+                return;
+            }
+
+            // Cargar horarios disponibles
+            var dayType = isSaturday ? 'saturday' : 'weekday';
+            var slotsResult = await supabase.from('time_slots').select('*').eq('day_type', dayType).order('time_slot');
+            
+            if (slotsResult.error || !slotsResult.data || slotsResult.data.length === 0) {
+                timeSelect.innerHTML = '<option value="">No hay horarios disponibles</option>';
+                return;
+            }
+
+            // Verificar cupos ocupados para esta fecha
+            var bookedResult = await supabase.from('booking_slots').select('time_slot').eq('booking_date', dateValue);
+            var bookedSlots = {};
+            if (bookedResult.data) {
+                for (var i = 0; i < bookedResult.data.length; i++) {
+                    var slot = bookedResult.data[i].time_slot;
+                    bookedSlots[slot] = (bookedSlots[slot] || 0) + 1;
+                }
+            }
+
+            var html = '<option value="">Seleccione horario</option>';
+            for (var i = 0; i < slotsResult.data.length; i++) {
+                var slot = slotsResult.data[i];
+                var ocupados = bookedSlots[slot.time_slot] || 0;
+                var disponibles = slot.max_bookings - ocupados;
+                
+                if (disponibles > 0) {
+                    html += '<option value="' + slot.time_slot + '">' + slot.time_slot + ' (' + disponibles + ' cupos)</option>';
+                } else {
+                    html += '<option value="' + slot.time_slot + '" disabled>' + slot.time_slot + ' (agotado)</option>';
+                }
+            }
+            timeSelect.innerHTML = html;
+        });
+
+        async function submitBooking(e) {
+            e.preventDefault();
+            
+            var submitBtn = document.getElementById('submitBtn');
+            var errorMsg = document.getElementById('errorMessage');
+            var dateValue = document.getElementById('bookingDate').value;
+            var timeValue = document.getElementById('bookingTime').value;
+            
+            if (!timeValue) {
+                errorMsg.textContent = 'Seleccione un horario disponible.';
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Agendando...';
+            errorMsg.style.display = 'none';
+
+            // Verificar disponibilidad una última vez antes de guardar
+            var dayType = new Date(dateValue + 'T00:00:00').getDay() === 6 ? 'saturday' : 'weekday';
+            var slotResult = await supabase.from('time_slots').select('max_bookings').eq('day_type', dayType).eq('time_slot', timeValue).single();
+            var maxBookings = slotResult.data ? slotResult.data.max_bookings : 4;
+            
+            var bookedResult = await supabase.from('booking_slots').select('id').eq('booking_date', dateValue).eq('time_slot', timeValue);
+            var currentBookings = bookedResult.data ? bookedResult.data.length : 0;
+            
+            if (currentBookings >= maxBookings) {
+                errorMsg.textContent = 'Este horario ya no está disponible. Seleccione otro.';
+                errorMsg.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Confirmar y Agendar Cita';
+                return;
+            }
+
+            var booking = {
+                client_name: document.getElementById('bookingName').value.trim(),
+                phone: document.getElementById('bookingPhone').value.trim(),
+                email: document.getElementById('bookingEmail').value.trim() || null,
+                plate_number: document.getElementById('bookingPlate').value.trim().toUpperCase(),
+                vehicle: document.getElementById('bookingVehicle').value.trim(),
+                service_requested: document.getElementById('bookingService').value,
+                problem_description: document.getElementById('bookingDesc').value.trim() || null,
+                preferred_date: dateValue,
+                preferred_time: timeValue,
+                status: 'pending'
+            };
+
+            var insertResult = await supabase.from('bookings').insert([booking]).select();
+
+            if (insertResult.error) {
+                errorMsg.textContent = 'Error al agendar. Intente nuevamente.';
+                errorMsg.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Confirmar y Agendar Cita';
+                return;
+            }
+
+            var newBooking = insertResult.data[0];
+
+            // Reservar el cupo
+            await supabase.from('booking_slots').insert([{
+                booking_date: dateValue,
+                time_slot: timeValue,
+                booking_id: newBooking.id
+            }]);
+
+            // Mostrar éxito con mensaje de espera de confirmación
+            document.getElementById('bookingForm').style.display = 'none';
+            document.getElementById('successScreen').style.display = 'block';
+
+            var dateFormatted = new Date(dateValue + 'T00:00:00').toLocaleDateString('es-MX', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            });
+
+            document.getElementById('bookingDetails').innerHTML = `
+                <p><strong>Nombre:</strong> ${booking.client_name}</p>
+                <p><strong>Teléfono:</strong> ${booking.phone}</p>
+                ${booking.email ? `<p><strong>Email:</strong> ${booking.email}</p>` : ''}
+                <p><strong>Placa:</strong> ${booking.plate_number}</p>
+                <p><strong>Fecha:</strong> ${dateFormatted}</p>
+                <p><strong>Hora:</strong> ${booking.preferred_time}</p>
+                <p><strong>Vehículo:</strong> ${booking.vehicle}</p>
+                <p><strong>Servicio:</strong> ${booking.service_requested}</p>
+                <p style="margin-top:1rem;padding:1rem;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:8px;color:#fbbf24;font-size:0.9rem;">
+                    ⚠️ Su fecha y hora han sido reservadas temporalmente. 
+                    Espere la confirmación del taller. Si no recibe confirmación en 24 horas, 
+                    el cupo se liberará automáticamente.
+                </p>
+            `;
+
+            document.getElementById('successScreen').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        var today = new Date().toISOString().split('T')[0];
+        document.getElementById('bookingDate').setAttribute('min', today);
+        populateServiceSelect();
     </script>
 </body>
 </html>
