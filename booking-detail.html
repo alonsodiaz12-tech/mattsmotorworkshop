@@ -83,7 +83,7 @@
         .worklog-card .worklog-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.25rem; font-size: 0.8rem; }
         .worklog-card .worklog-header span { color: var(--text-muted); }
         .worklog-card p { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 0.5rem; }
-        .worklog-card img { width: 100%; max-width: 300px; border-radius: var(--radius-sm); cursor: pointer; }
+        .worklog-card img { width: 100%; max-width: 100%; border-radius: var(--radius-sm); margin-top: 0.5rem; display: block; }
 
         .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.85rem; }
         .loading-state { text-align: center; padding: 2rem; color: var(--text-muted); }
@@ -197,8 +197,7 @@
             }
 
             function loadNotes() {
-                var notes = booking.notes || [];
-                if (typeof notes === 'string') notes = JSON.parse(notes);
+                var notes = booking.notes || []; if (typeof notes === 'string') notes = JSON.parse(notes);
                 var container = document.getElementById('notesContainer');
                 if (notes.length === 0) { container.innerHTML = '<div class="empty-state">Sin notas</div>'; return; }
                 var html = '<div class="note-list">';
@@ -207,53 +206,34 @@
             }
 
             async function addNote() {
-                var note = prompt('Agregar nota:');
-                if (!note || !note.trim()) return;
-                var notes = booking.notes || [];
-                if (typeof notes === 'string') notes = JSON.parse(notes);
+                var note = prompt('Agregar nota:'); if (!note || !note.trim()) return;
+                var notes = booking.notes || []; if (typeof notes === 'string') notes = JSON.parse(notes);
                 notes.push({text:note.trim(),time:new Date().toISOString()});
                 await supabase.from('bookings').update({notes:notes}).eq('id',bookingId);
                 booking.notes = notes; loadNotes(); showSuccess();
             }
 
-            async function updateStatus(newStatus) {
-                await supabase.from('bookings').update({status:newStatus}).eq('id',bookingId);
-                booking.status = newStatus; renderBooking(); showSuccess();
-            }
-
-            async function updatePlate(plate) {
-                await supabase.from('bookings').update({plate_number:plate.toUpperCase()}).eq('id',bookingId);
-                booking.plate_number = plate.toUpperCase(); showSuccess();
-            }
-
-            async function updateEstimate(date) {
-                await supabase.from('bookings').update({estimated_delivery:date}).eq('id',bookingId);
-                booking.estimated_delivery = date; showSuccess();
-            }
+            async function updateStatus(newStatus) { await supabase.from('bookings').update({status:newStatus}).eq('id',bookingId); booking.status = newStatus; renderBooking(); showSuccess(); }
+            async function updatePlate(plate) { await supabase.from('bookings').update({plate_number:plate.toUpperCase()}).eq('id',bookingId); booking.plate_number = plate.toUpperCase(); showSuccess(); }
+            async function updateEstimate(date) { await supabase.from('bookings').update({estimated_delivery:date}).eq('id',bookingId); booking.estimated_delivery = date; showSuccess(); }
 
             async function loadWorkLogs() {
                 var container = document.getElementById('worklogContainer');
                 var result = await supabase.from('work_log').select('*').eq('booking_id',bookingId).order('created_at',{ascending:false});
                 if (!result.data || result.data.length===0) { container.innerHTML = '<div class="empty-state">Sin registros de trabajo</div>'; return; }
                 var html = '<div class="worklog-grid">';
-                for (var i=0; i<result.data.length; i++) { var log = result.data[i]; html += '<div class="worklog-card"><div class="worklog-header"><strong>'+log.description+'</strong><span>'+new Date(log.created_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></div>'+(log.photo_url?'<img src="'+log.photo_url+'" onclick="window.open(\''+log.photo_url+'\')">':'')+'</div>'; }
+                for (var i=0; i<result.data.length; i++) { var log = result.data[i]; html += '<div class="worklog-card"><div class="worklog-header"><strong>'+log.description+'</strong><span>'+new Date(log.created_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></div>'+(log.photo_url?'<img src="'+log.photo_url+'" loading="lazy">':'')+'</div>'; }
                 html += '</div>'; container.innerHTML = html;
             }
 
-            function toggleWorklogForm() {
-                var form = document.getElementById('worklogForm');
-                form.style.display = form.style.display === 'block' ? 'none' : 'block';
-                if (form.style.display === 'block') document.getElementById('worklogDesc').focus();
-            }
+            function toggleWorklogForm() { var form = document.getElementById('worklogForm'); form.style.display = form.style.display === 'block' ? 'none' : 'block'; if (form.style.display === 'block') document.getElementById('worklogDesc').focus(); }
 
             async function saveWorklog() {
-                var desc = document.getElementById('worklogDesc').value.trim();
-                if (!desc) { alert('Describa el trabajo'); return; }
+                var desc = document.getElementById('worklogDesc').value.trim(); if (!desc) { alert('Describa el trabajo'); return; }
                 var photoUrl = null;
                 var fileInput = document.getElementById('worklogPhoto');
                 if (fileInput.files && fileInput.files[0]) {
-                    var file = fileInput.files[0];
-                    var fileName = 'booking-'+bookingId+'-'+Date.now()+'.'+file.name.split('.').pop();
+                    var file = fileInput.files[0]; var fileName = 'booking-'+bookingId+'-'+Date.now()+'.'+file.name.split('.').pop();
                     var uploadResult = await supabase.storage.from('workshop-photos').upload(fileName, file);
                     if (uploadResult.error) { alert('Error al subir la foto: ' + uploadResult.error.message); }
                     else { var publicUrlResult = supabase.storage.from('workshop-photos').getPublicUrl(fileName); photoUrl = publicUrlResult.data.publicUrl; }
