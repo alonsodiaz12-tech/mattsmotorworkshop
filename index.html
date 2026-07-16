@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --bg-dark: #0a0a0a;
@@ -268,14 +269,8 @@
         }
 
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .hero-badge {
@@ -304,13 +299,8 @@
         }
 
         @keyframes pulse {
-            0%,
-            100% {
-                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
-            }
-            50% {
-                box-shadow: 0 0 0 12px rgba(34, 197, 94, 0);
-            }
+            0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+            50% { box-shadow: 0 0 0 12px rgba(34, 197, 94, 0); }
         }
 
         .hero h1 {
@@ -405,13 +395,8 @@
         }
 
         @keyframes bounce {
-            0%,
-            100% {
-                transform: translateX(-50%) translateY(0);
-            }
-            50% {
-                transform: translateX(-50%) translateY(-10px);
-            }
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
         }
 
         .hero-scroll span {
@@ -437,14 +422,8 @@
         }
 
         @keyframes scrollDown {
-            0% {
-                opacity: 1;
-                top: 8px;
-            }
-            100% {
-                opacity: 0;
-                top: 28px;
-            }
+            0% { opacity: 1; top: 8px; }
+            100% { opacity: 0; top: 28px; }
         }
 
         .trust-bar {
@@ -949,26 +928,16 @@
         }
 
         @media (max-width: 1024px) {
-            .why-us-grid {
-                grid-template-columns: 1fr;
-                gap: 3rem;
-            }
-            .footer-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-            .trust-bar {
-                grid-template-columns: repeat(2, 1fr);
-            }
+            .why-us-grid { grid-template-columns: 1fr; gap: 3rem; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .trust-bar { grid-template-columns: repeat(2, 1fr); }
         }
 
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
                 position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
+                top: 0; left: 0; right: 0; bottom: 0;
                 background: rgba(10, 10, 10, 0.98);
                 backdrop-filter: blur(20px);
                 flex-direction: column;
@@ -977,49 +946,21 @@
                 gap: 2rem;
                 z-index: 999;
             }
-            .nav-links.active {
-                display: flex;
-            }
-            .nav-links a {
-                font-size: 1.2rem;
-            }
-            .menu-toggle {
-                display: block;
-            }
-            .footer-grid {
-                grid-template-columns: 1fr;
-            }
-            .trust-bar {
-                grid-template-columns: 1fr 1fr;
-                gap: 1rem;
-                padding: 2rem 1rem;
-            }
-            section {
-                padding: 4rem 1.5rem;
-            }
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            .footer-bottom {
-                flex-direction: column;
-                text-align: center;
-            }
+            .nav-links.active { display: flex; }
+            .nav-links a { font-size: 1.2rem; }
+            .menu-toggle { display: block; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .trust-bar { grid-template-columns: 1fr 1fr; gap: 1rem; padding: 2rem 1rem; }
+            section { padding: 4rem 1.5rem; }
+            .hero h1 { font-size: 2.5rem; }
+            .footer-bottom { flex-direction: column; text-align: center; }
         }
 
         @media (max-width: 480px) {
-            .trust-bar {
-                grid-template-columns: 1fr;
-            }
-            .services-grid {
-                grid-template-columns: 1fr;
-            }
-            .testimonials-grid {
-                grid-template-columns: 1fr;
-            }
-            .hero-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
+            .trust-bar { grid-template-columns: 1fr; }
+            .services-grid { grid-template-columns: 1fr; }
+            .testimonials-grid { grid-template-columns: 1fr; }
+            .hero-buttons { flex-direction: column; align-items: center; }
         }
     </style>
 </head>
@@ -1029,10 +970,7 @@
         <nav>
             <a href="#inicio" class="logo-container">
                 <img src="logo.jpg" alt="Matts Motor Workshop" class="logo-img">
-                <div class="logo-text">
-                    MATTS MOTOR
-                    <span>WORKSHOP</span>
-                </div>
+                <div class="logo-text">MATTS MOTOR<span>WORKSHOP</span></div>
             </a>
             <button class="menu-toggle" id="menuToggle" aria-label="Menú">
                 <span></span><span></span><span></span>
@@ -1049,54 +987,24 @@
     </header>
 
     <section class="hero" id="inicio">
-        <div class="hero-bg">
-            <div class="hero-pattern"></div>
-        </div>
+        <div class="hero-bg"><div class="hero-pattern"></div></div>
         <div class="hero-content">
-            <div class="hero-badge">
-                <span class="dot"></span> Taller Abierto · Lunes a Sábado
-            </div>
-            <h1>
-                Ingeniería de<br>
-                <span class="gold">Precisión</span> para<br>
-                su Vehículo
-            </h1>
-            <p>
-                Combinamos tecnología de diagnóstico avanzada con artesanía mecánica experta.
-                Cada reparación ejecutada con los más altos estándares de calidad.
-            </p>
+            <div class="hero-badge"><span class="dot"></span> Taller Abierto · Lunes a Sábado</div>
+            <h1>Ingeniería de<br><span class="gold">Precisión</span> para<br>su Vehículo</h1>
+            <p>Combinamos tecnología de diagnóstico avanzada con artesanía mecánica experta. Cada reparación ejecutada con los más altos estándares de calidad.</p>
             <div class="hero-buttons">
-                <a href="/booking" class="btn-primary">
-                    Diagnóstico Gratuito
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </a>
-                <a href="/tracking" class="btn-secondary">
-                    🔍 Consultar Estado del Vehículo
-                </a>
+                <a href="/booking" class="btn-primary">Diagnóstico Gratuito<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                <a href="/tracking" class="btn-secondary">🔍 Consultar Estado del Vehículo</a>
             </div>
         </div>
-        <div class="hero-scroll">
-            <span></span>
-        </div>
+        <div class="hero-scroll"><span></span></div>
     </section>
 
     <div class="trust-bar">
-        <div class="trust-item">
-            <span class="trust-number">15+</span>
-            <p>Años de Experiencia</p>
-        </div>
-        <div class="trust-item">
-            <span class="trust-number">3,500+</span>
-            <p>Vehículos Reparados</p>
-        </div>
-        <div class="trust-item">
-            <span class="trust-number">100%</span>
-            <p>Garantía de Servicio</p>
-        </div>
-        <div class="trust-item">
-            <span class="trust-number">24/7</span>
-            <p>Soporte Técnico</p>
-        </div>
+        <div class="trust-item"><span class="trust-number">15+</span><p>Años de Experiencia</p></div>
+        <div class="trust-item"><span class="trust-number">3,500+</span><p>Vehículos Reparados</p></div>
+        <div class="trust-item"><span class="trust-number">100%</span><p>Garantía de Servicio</p></div>
+        <div class="trust-item"><span class="trust-number">24/7</span><p>Soporte Técnico</p></div>
     </div>
 
     <section id="servicios">
@@ -1114,41 +1022,16 @@
         <div class="container">
             <div class="why-us-grid">
                 <div class="why-us-image-wrap">
-                    <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 500'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%231a1a1a'/><stop offset='100%25' style='stop-color:%230d0d0d'/></linearGradient></defs><rect fill='url(%23g)' width='600' height='500'/><rect fill='%23222' x='150' y='100' width='300' height='300' rx='20'/><text fill='%23dc2626' x='300' y='260' text-anchor='middle' font-size='60' font-weight='bold'>MMW</text></svg>"
-                    alt="Matts Motor Workshop" class="why-us-image">
+                    <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 500'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%231a1a1a'/><stop offset='100%25' style='stop-color:%230d0d0d'/></linearGradient></defs><rect fill='url(%23g)' width='600' height='500'/><rect fill='%23222' x='150' y='100' width='300' height='300' rx='20'/><text fill='%23dc2626' x='300' y='260' text-anchor='middle' font-size='60' font-weight='bold'>MMW</text></svg>" alt="Matts Motor Workshop" class="why-us-image">
                 </div>
                 <div>
                     <span class="section-label">¿Por Qué Elegirnos?</span>
                     <h2 class="section-title" style="margin-bottom:2rem;">Excelencia que nos distingue</h2>
                     <ul class="why-us-list">
-                        <li>
-                            <div class="why-us-icon">🔬</div>
-                            <div class="why-us-text">
-                                <h4>Diagnóstico Computarizado Avanzado</h4>
-                                <p>Equipos de última generación para un diagnóstico preciso y eficiente.</p>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="why-us-icon">⭐</div>
-                            <div class="why-us-text">
-                                <h4>Repuestos de Calidad Premium</h4>
-                                <p>Trabajamos con las mejores marcas para garantizar durabilidad y rendimiento.</p>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="why-us-icon">⚡</div>
-                            <div class="why-us-text">
-                                <h4>Entrega en Tiempo Récord</h4>
-                                <p>Optimizamos procesos sin comprometer la calidad. Su tiempo es valioso.</p>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="why-us-icon">🛡️</div>
-                            <div class="why-us-text">
-                                <h4>Garantía por Escrito</h4>
-                                <p>Todos nuestros trabajos cuentan con garantía documentada para su tranquilidad.</p>
-                            </div>
-                        </li>
+                        <li><div class="why-us-icon">🔬</div><div class="why-us-text"><h4>Diagnóstico Computarizado Avanzado</h4><p>Equipos de última generación para un diagnóstico preciso y eficiente.</p></div></li>
+                        <li><div class="why-us-icon">⭐</div><div class="why-us-text"><h4>Repuestos de Calidad Premium</h4><p>Trabajamos con las mejores marcas para garantizar durabilidad y rendimiento.</p></div></li>
+                        <li><div class="why-us-icon">⚡</div><div class="why-us-text"><h4>Entrega en Tiempo Récord</h4><p>Optimizamos procesos sin comprometer la calidad. Su tiempo es valioso.</p></div></li>
+                        <li><div class="why-us-icon">🛡️</div><div class="why-us-text"><h4>Garantía por Escrito</h4><p>Todos nuestros trabajos cuentan con garantía documentada para su tranquilidad.</p></div></li>
                     </ul>
                 </div>
             </div>
@@ -1183,9 +1066,7 @@
                 <span class="section-label">Agende Su Cita</span>
                 <h2>¿Listo para devolverle la vida a su vehículo?</h2>
                 <p>Complete el formulario y nos pondremos en contacto en menos de 24 horas con un diagnóstico inicial sin costo.</p>
-                <a href="/booking" class="btn-primary" style="font-size:1.1rem; padding:1.2rem 3rem;">
-                    📅 Agendar Cita Ahora
-                </a>
+                <a href="/booking" class="btn-primary" style="font-size:1.1rem; padding:1.2rem 3rem;">📅 Agendar Cita Ahora</a>
             </div>
         </div>
     </section>
@@ -1195,10 +1076,7 @@
             <div class="footer-brand">
                 <a href="#inicio" class="logo-container" style="margin-bottom:0.5rem;">
                     <img src="logo.jpg" alt="Matts Motor Workshop" class="logo-img">
-                    <div class="logo-text">
-                        MATTS MOTOR
-                        <span>WORKSHOP</span>
-                    </div>
+                    <div class="logo-text">MATTS MOTOR<span>WORKSHOP</span></div>
                 </a>
                 <p>Ingeniería de precisión para su vehículo. Combinamos tecnología avanzada con experiencia artesanal para ofrecer el mejor servicio automotriz.</p>
             </div>
@@ -1229,69 +1107,83 @@
     </footer>
 
     <script>
+        // Configuración de Supabase
+        const SUPABASE_URL = 'https://pupfxetbnpgqikzhnjts.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Header scroll
         const header = document.getElementById('header');
         window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
+            header.classList.toggle('scrolled', window.scrollY > 50);
         });
 
+        // Menú móvil
         const menuToggle = document.getElementById('menuToggle');
         const navLinks = document.getElementById('navLinks');
-        menuToggle.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-        });
+        menuToggle.addEventListener('click', () => navLinks.classList.toggle('active'));
         navLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                navLinks.classList.remove('active');
-            });
+            link.addEventListener('click', () => navLinks.classList.remove('active'));
         });
 
-        const defaultServices = [
-            { id: 1, title: 'Mecánica General', desc: 'Reparación completa de motor, transmisión y sistemas mecánicos con precisión experta.', icon: '🔧', order: 1 },
-            { id: 2, title: 'Diagnóstico Electrónico', desc: 'Análisis computarizado avanzado para identificar fallas con exactitud milimétrica.', icon: '⚡', order: 2 },
-            { id: 3, title: 'Scanner Automotriz', desc: 'Tecnología OBD-II de última generación para lecturas precisas del sistema.', icon: '🖥️', order: 3 },
-            { id: 4, title: 'Frenos de Alto Rendimiento', desc: 'Sistemas de frenado inspeccionados y reparados con componentes premium.', icon: '🛑', order: 4 },
-            { id: 5, title: 'Climatización', desc: 'Servicio completo de aire acondicionado con refrigerantes ecológicos.', icon: '❄️', order: 5 },
-            { id: 6, title: 'Lubricación Express', desc: 'Cambio de aceite sintético y filtros originales. Servicio rápido y eficiente.', icon: '🛢️', order: 6 },
-        ];
-
-        const defaultGallery = [
-            { id: 1, url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect fill="%231a1a1a" width="400" height="300"/><rect fill="%23222" x="50" y="50" width="300" height="200" rx="10"/><text fill="%23dc2626" x="200" y="160" text-anchor="middle" font-size="20">Motor Repair</text></svg>', alt: 'Reparación de motor' },
-            { id: 2, url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect fill="%231a1a1a" width="400" height="300"/><rect fill="%23222" x="50" y="50" width="300" height="200" rx="10"/><text fill="%23dc2626" x="200" y="160" text-anchor="middle" font-size="20">Brake System</text></svg>', alt: 'Sistema de frenos' },
-            { id: 3, url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect fill="%231a1a1a" width="400" height="300"/><rect fill="%23222" x="50" y="50" width="300" height="200" rx="10"/><text fill="%23dc2626" x="200" y="160" text-anchor="middle" font-size="20">Diagnostics</text></svg>', alt: 'Diagnóstico computarizado' },
-        ];
-
-        const defaultTestimonials = [
-            { id: 1, name: 'Carlos Mendoza', stars: 5, text: 'El nivel de profesionalismo es excepcional. Diagnosticaron el problema en minutos y la reparación fue impecable. Mi auto nunca había funcionado tan bien.' },
-            { id: 2, name: 'Ana Gabriela R.', stars: 5, text: 'Finalmente encontré un taller donde la transparencia y la calidad van de la mano. Presupuesto detallado, sin sorpresas y trabajo garantizado.' },
-            { id: 3, name: 'Roberto Linares', stars: 5, text: 'La tecnología que utilizan marca la diferencia. Detalles que otros talleres pasan por alto, ellos los detectan. Totalmente recomendado.' },
-        ];
-
-        function loadData() {
-            if (!localStorage.getItem('services')) localStorage.setItem('services', JSON.stringify(defaultServices));
-            if (!localStorage.getItem('gallery')) localStorage.setItem('gallery', JSON.stringify(defaultGallery));
-            if (!localStorage.getItem('testimonials')) localStorage.setItem('testimonials', JSON.stringify(defaultTestimonials));
+        // Cargar servicios desde Supabase
+        async function loadServices() {
+            const { data, error } = await supabase
+                .from('services')
+                .select('*')
+                .order('display_order');
+            
+            if (error) {
+                console.error('Error cargando servicios:', error);
+                return [];
+            }
+            return data;
         }
 
-        function getServices() { return JSON.parse(localStorage.getItem('services')) || []; }
-        function getGallery() { return JSON.parse(localStorage.getItem('gallery')) || []; }
-        function getTestimonials() { return JSON.parse(localStorage.getItem('testimonials')) || []; }
+        // Cargar galería desde Supabase
+        async function loadGallery() {
+            const { data, error } = await supabase
+                .from('gallery')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            if (error) {
+                console.error('Error cargando galería:', error);
+                return [];
+            }
+            return data;
+        }
 
-        function renderServices() {
+        // Cargar testimonios desde Supabase
+        async function loadTestimonials() {
+            const { data, error } = await supabase
+                .from('testimonials')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            if (error) {
+                console.error('Error cargando testimonios:', error);
+                return [];
+            }
+            return data;
+        }
+
+        // Renderizar servicios
+        async function renderServices() {
+            const services = await loadServices();
             const container = document.getElementById('servicesContainer');
-            const services = getServices().sort((a, b) => a.order - b.order);
+            
+            if (services.length === 0) {
+                container.innerHTML = '<p style="text-align:center;color:var(--text-muted);">Cargando servicios...</p>';
+                return;
+            }
+
             container.innerHTML = services.map(s => `
                 <div class="service-card">
-                    <div class="service-icon-wrap">${s.icon}</div>
+                    <div class="service-icon-wrap">${s.icon || '🔧'}</div>
                     <h3>${s.title}</h3>
-                    <p>${s.desc}</p>
-                    <a href="/booking" class="service-link">
-                        Solicitar servicio
-                        <span class="arrow">→</span>
-                    </a>
+                    <p>${s.description || ''}</p>
+                    <a href="/booking" class="service-link">Solicitar servicio<span class="arrow">→</span></a>
                 </div>
             `).join('');
 
@@ -1303,28 +1195,32 @@
             }
         }
 
-        function renderGallery() {
+        // Renderizar galería
+        async function renderGallery() {
+            const gallery = await loadGallery();
             const container = document.getElementById('galleryContainer');
-            const gallery = getGallery();
+            
             container.innerHTML = gallery.map(g => `
                 <div class="gallery-item">
-                    <img src="${g.url}" alt="${g.alt}" loading="lazy">
-                    <span class="gallery-label">${g.alt}</span>
+                    <img src="${g.image_url}" alt="${g.alt_text || ''}" loading="lazy">
+                    <span class="gallery-label">${g.alt_text || ''}</span>
                 </div>
             `).join('');
         }
 
-        function renderTestimonials() {
+        // Renderizar testimonios
+        async function renderTestimonials() {
+            const testimonials = await loadTestimonials();
             const container = document.getElementById('testimonialsContainer');
-            const testimonials = getTestimonials();
+            
             container.innerHTML = testimonials.map(t => `
                 <div class="testimonial-card">
                     <div class="testimonial-stars">${'★'.repeat(t.stars)}</div>
-                    <p class="testimonial-text">${t.text}</p>
+                    <p class="testimonial-text">${t.testimonial_text}</p>
                     <div class="testimonial-author">
-                        <div class="testimonial-avatar">${t.name.charAt(0)}</div>
+                        <div class="testimonial-avatar">${t.client_name.charAt(0)}</div>
                         <div class="testimonial-info">
-                            <strong>${t.name}</strong>
+                            <strong>${t.client_name}</strong>
                             <span>Cliente Verificado</span>
                         </div>
                     </div>
@@ -1332,10 +1228,16 @@
             `).join('');
         }
 
-        loadData();
-        renderServices();
-        renderGallery();
-        renderTestimonials();
+        // Iniciar
+        async function init() {
+            await Promise.all([
+                renderServices(),
+                renderGallery(),
+                renderTestimonials()
+            ]);
+        }
+
+        init();
     </script>
 </body>
 </html>
