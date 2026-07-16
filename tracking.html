@@ -196,7 +196,6 @@
             display: none;
         }
 
-        /* Resultados */
         .result-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -252,222 +251,46 @@
             text-transform: uppercase;
         }
 
-        .status-pending {
-            background: rgba(245,158,11,0.15);
-            color: #fbbf24;
-            border: 1px solid rgba(245,158,11,0.3);
-        }
-        .status-confirmed {
-            background: rgba(59,130,246,0.15);
-            color: #60a5fa;
-            border: 1px solid rgba(59,130,246,0.3);
-        }
-        .status-in_progress {
-            background: rgba(139,92,246,0.15);
-            color: #a78bfa;
-            border: 1px solid rgba(139,92,246,0.3);
-        }
-        .status-completed {
-            background: rgba(34,197,94,0.15);
-            color: #4ade80;
-            border: 1px solid rgba(34,197,94,0.3);
-        }
-        .status-cancelled {
-            background: rgba(239,68,68,0.15);
-            color: #f87171;
-            border: 1px solid rgba(239,68,68,0.3);
-        }
+        .status-pending { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+        .status-confirmed { background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+        .status-in_progress { background: rgba(139,92,246,0.15); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); }
+        .status-completed { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+        .status-cancelled { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
 
-        .progress-tracker {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 0.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .progress-step {
-            text-align: center;
-            position: relative;
-        }
-
+        .progress-tracker { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 2rem; }
+        .progress-step { text-align: center; position: relative; }
         .progress-step .step-circle {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 0.5rem;
-            font-weight: 700;
-            font-size: 0.9rem;
-            background: var(--bg-elevated);
-            border: 2px solid var(--border-light);
-            color: var(--text-muted);
-            transition: var(--transition);
+            width: 40px; height: 40px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; margin: 0 auto 0.5rem;
+            font-weight: 700; font-size: 0.9rem; background: var(--bg-elevated);
+            border: 2px solid var(--border-light); color: var(--text-muted); transition: var(--transition);
         }
+        .progress-step.completed .step-circle { background: var(--green-dark); border-color: var(--green); color: white; }
+        .progress-step.active .step-circle { background: var(--blue); border-color: #60a5fa; color: white; animation: pulse-step 2s infinite; }
+        @keyframes pulse-step { 0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,0.4)} 50%{box-shadow:0 0 0 12px rgba(59,130,246,0)} }
+        .progress-step .step-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .progress-step.completed .step-label, .progress-step.active .step-label { color: var(--text-secondary); }
 
-        .progress-step.completed .step-circle {
-            background: var(--green-dark);
-            border-color: var(--green);
-            color: white;
-        }
-        .progress-step.active .step-circle {
-            background: var(--blue);
-            border-color: #60a5fa;
-            color: white;
-            animation: pulse-step 2s infinite;
-        }
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+        .detail-item { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; }
+        .detail-item .detail-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 0.25rem; }
+        .detail-item .detail-value { font-weight: 600; font-size: 0.95rem; }
 
-        @keyframes pulse-step {
-            0%,100% { box-shadow: 0 0 0 0 rgba(59,130,246,0.4); }
-            50% { box-shadow: 0 0 0 12px rgba(59,130,246,0); }
-        }
-
-        .progress-step .step-label {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .progress-step.completed .step-label,
-        .progress-step.active .step-label {
-            color: var(--text-secondary);
-        }
-
-        .detail-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .detail-item {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1rem;
-        }
-
-        .detail-item .detail-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--text-muted);
-            margin-bottom: 0.25rem;
-        }
-
-        .detail-item .detail-value {
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        .notes-section {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1.2rem;
-        }
-
-        .notes-section h3 {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--text-muted);
-            margin-bottom: 0.75rem;
-        }
-
-        .notes-list {
-            list-style: none;
-            display: grid;
-            gap: 0.75rem;
-        }
-
-        .notes-list li {
-            display: flex;
-            gap: 0.75rem;
-            padding: 0.75rem;
-            background: var(--bg-dark);
-            border-radius: 8px;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        .notes-list li .note-time {
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            white-space: nowrap;
-            min-width: 50px;
-        }
-
-        .no-notes {
-            color: var(--text-muted);
-            font-style: italic;
-            font-size: 0.9rem;
-        }
-
-        .new-search-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: transparent;
-            color: var(--text-secondary);
-            border: 1px solid var(--border-light);
-            padding: 0.7rem 1.5rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            margin-top: 1rem;
-        }
-
-        .new-search-btn:hover {
-            border-color: var(--text-secondary);
-            color: var(--text-primary);
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 2rem;
-        }
-
-        .no-results .icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-        }
-
-        .no-results h3 {
-            font-family: 'Montserrat', sans-serif;
-            margin-bottom: 0.5rem;
-        }
-
-        .no-results p {
-            color: var(--text-secondary);
-            margin-bottom: 1.5rem;
-        }
+        .notes-section { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem; }
+        .notes-section h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 0.75rem; }
+        .notes-list { list-style: none; display: grid; gap: 0.75rem; }
+        .notes-list li { display: flex; gap: 0.75rem; padding: 0.75rem; background: var(--bg-dark); border-radius: 8px; font-size: 0.9rem; color: var(--text-secondary); }
+        .notes-list li .note-time { color: var(--text-muted); font-size: 0.75rem; white-space: nowrap; min-width: 50px; }
+        .no-notes { color: var(--text-muted); font-style: italic; font-size: 0.9rem; }
+        .new-search-btn { display: inline-flex; align-items: center; gap: 0.5rem; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-light); padding: 0.7rem 1.5rem; border-radius: 50px; text-decoration: none; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: var(--transition); margin-top: 1rem; }
+        .new-search-btn:hover { border-color: var(--text-secondary); color: var(--text-primary); }
 
         @media (max-width: 600px) {
-            body {
-                padding: 1rem;
-                align-items: flex-start;
-                padding-top: 2rem;
-            }
-            .search-card,
-            .result-card {
-                padding: 1.5rem;
-            }
-            .detail-grid {
-                grid-template-columns: 1fr;
-            }
-            .progress-tracker {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1rem;
-            }
-            .result-header {
-                flex-direction: column;
-            }
+            body { padding: 1rem; align-items: flex-start; padding-top: 2rem; }
+            .search-card, .result-card { padding: 1.5rem; }
+            .detail-grid { grid-template-columns: 1fr; }
+            .progress-tracker { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+            .result-header { flex-direction: column; }
         }
     </style>
 </head>
@@ -502,149 +325,110 @@
                 </div>
                 <span class="status-badge" id="resultStatus"></span>
             </div>
-
             <div class="progress-tracker" id="progressTracker"></div>
-
             <div class="detail-grid">
-                <div class="detail-item">
-                    <div class="detail-label">Servicio Solicitado</div>
-                    <div class="detail-value" id="resultService"></div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Fecha de Ingreso</div>
-                    <div class="detail-value" id="resultDate"></div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Fecha Estimada de Entrega</div>
-                    <div class="detail-value" id="resultEstimate"></div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Cliente</div>
-                    <div class="detail-value" id="resultClient"></div>
-                </div>
+                <div class="detail-item"><div class="detail-label">Servicio Solicitado</div><div class="detail-value" id="resultService"></div></div>
+                <div class="detail-item"><div class="detail-label">Fecha de Ingreso</div><div class="detail-value" id="resultDate"></div></div>
+                <div class="detail-item"><div class="detail-label">Fecha Estimada de Entrega</div><div class="detail-value" id="resultEstimate"></div></div>
+                <div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value" id="resultClient"></div></div>
             </div>
-
-            <div class="notes-section">
-                <h3>📝 Notas del Taller</h3>
-                <div id="resultNotes"></div>
-            </div>
-
+            <div class="notes-section"><h3>📝 Notas del Taller</h3><div id="resultNotes"></div></div>
             <button class="new-search-btn" onclick="newSearch()">← Nueva consulta</button>
         </div>
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://pupfxetbnpgqikzhnjts.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        var SUPABASE_URL = 'https://pupfxetbnpgqikzhnjts.supabase.co';
+        var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
+        var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Verificar modo mantenimiento
+        (async function() {
+            try {
+                var result = await supabase.from('site_settings').select('setting_value').eq('setting_key', 'maintenance_mode').single();
+                if (result.data && result.data.setting_value === 'true') {
+                    window.location.href = '/maintenance';
+                }
+            } catch(e) {}
+        })();
 
         async function searchVehicle(e) {
             e.preventDefault();
+            var plate = document.getElementById('plateInput').value.trim().toUpperCase();
+            var errorMsg = document.getElementById('errorMessage');
+            var resultCard = document.getElementById('resultCard');
+            var searchBtn = document.getElementById('searchBtn');
 
-            const plate = document.getElementById('plateInput').value.trim().toUpperCase();
-            const errorMsg = document.getElementById('errorMessage');
-            const resultCard = document.getElementById('resultCard');
-            const searchBtn = document.getElementById('searchBtn');
-
-            if (!plate) {
-                errorMsg.style.display = 'block';
-                errorMsg.textContent = 'Ingrese un número de placa válido.';
-                return;
-            }
+            if (!plate) { errorMsg.style.display = 'block'; errorMsg.textContent = 'Ingrese un número de placa válido.'; return; }
 
             searchBtn.disabled = true;
-            searchBtn.textContent = '⏳ Buscando...';
+            searchBtn.textContent = 'Buscando...';
             errorMsg.style.display = 'none';
             resultCard.style.display = 'none';
 
-            const { data, error } = await supabase
-                .from('bookings')
-                .select('*')
-                .eq('plate_number', plate)
-                .order('created_at', { ascending: false })
-                .limit(1);
+            var result = await supabase.from('bookings').select('*').eq('plate_number', plate).order('created_at', { ascending: false }).limit(1);
 
             searchBtn.disabled = false;
             searchBtn.textContent = '🔍 Consultar Estado';
 
-            if (error) {
-                errorMsg.style.display = 'block';
-                errorMsg.textContent = 'Error al consultar. Intente nuevamente.';
-                console.error('Error:', error);
-                return;
-            }
+            if (result.error) { errorMsg.style.display = 'block'; errorMsg.textContent = 'Error al consultar.'; return; }
+            if (!result.data || result.data.length === 0) { errorMsg.style.display = 'block'; errorMsg.textContent = 'No se encontró ningún vehículo con esa placa.'; return; }
 
-            if (!data || data.length === 0) {
-                errorMsg.style.display = 'block';
-                errorMsg.textContent = 'No se encontró ningún vehículo con esa placa. Verifique e intente nuevamente.';
-                return;
-            }
-
-            displayResult(data[0]);
+            displayResult(result.data[0]);
         }
 
         function displayResult(booking) {
-            const resultCard = document.getElementById('resultCard');
-
+            var resultCard = document.getElementById('resultCard');
             document.getElementById('resultVehicle').textContent = booking.vehicle || 'No especificado';
             document.getElementById('resultPlate').textContent = booking.plate_number || 'N/A';
 
-            const statusMap = {
+            var statusMap = {
                 'pending': { text: 'Pendiente', class: 'status-pending' },
                 'confirmed': { text: 'Confirmada', class: 'status-confirmed' },
                 'in_progress': { text: 'En Progreso', class: 'status-in_progress' },
                 'completed': { text: 'Completado', class: 'status-completed' },
                 'cancelled': { text: 'Cancelado', class: 'status-cancelled' }
             };
-            const status = statusMap[booking.status] || statusMap.pending;
-            const statusBadge = document.getElementById('resultStatus');
+            var status = statusMap[booking.status] || statusMap.pending;
+            var statusBadge = document.getElementById('resultStatus');
             statusBadge.textContent = status.text;
             statusBadge.className = 'status-badge ' + status.class;
 
-            const progressOrder = ['pending', 'confirmed', 'in_progress', 'completed'];
-            const currentIndex = progressOrder.indexOf(booking.status);
-
-            const progressSteps = [
+            var progressOrder = ['pending', 'confirmed', 'in_progress', 'completed'];
+            var currentIndex = progressOrder.indexOf(booking.status);
+            var progressSteps = [
                 { id: 'confirmed', label: 'Confirmado', icon: '✓' },
                 { id: 'in_progress', label: 'En Progreso', icon: '⚙' },
                 { id: 'completed', label: 'Completado', icon: '✓' },
                 { id: 'delivered', label: 'Entregado', icon: '🎉' }
             ];
-
-            const tracker = document.getElementById('progressTracker');
-            tracker.innerHTML = progressSteps.map((step, i) => {
-                let stepClass = '';
+            var tracker = document.getElementById('progressTracker');
+            var stepsHtml = '';
+            for (var i = 0; i < progressSteps.length; i++) {
+                var stepClass = '';
                 if (i < currentIndex) stepClass = 'completed';
                 else if (i === currentIndex && booking.status !== 'pending') stepClass = 'active';
-                return `
-                    <div class="progress-step ${stepClass}">
-                        <div class="step-circle">${stepClass === 'completed' ? '✓' : step.icon}</div>
-                        <div class="step-label">${step.label}</div>
-                    </div>
-                `;
-            }).join('');
+                stepsHtml += '<div class="progress-step ' + stepClass + '"><div class="step-circle">' + (stepClass === 'completed' ? '✓' : progressSteps[i].icon) + '</div><div class="step-label">' + progressSteps[i].label + '</div></div>';
+            }
+            tracker.innerHTML = stepsHtml;
 
             document.getElementById('resultService').textContent = booking.service_requested || 'No especificado';
-            document.getElementById('resultDate').textContent = new Date(booking.created_at).toLocaleDateString('es-MX', {
-                year: 'numeric', month: 'long', day: 'numeric'
-            });
-            document.getElementById('resultEstimate').textContent = booking.estimated_delivery 
-                ? new Date(booking.estimated_delivery + 'T00:00:00').toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' })
-                : 'Por definir';
+            document.getElementById('resultDate').textContent = new Date(booking.created_at).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('resultEstimate').textContent = booking.estimated_delivery ? new Date(booking.estimated_delivery + 'T00:00:00').toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Por definir';
             document.getElementById('resultClient').textContent = booking.client_name || 'No especificado';
 
-            const notes = booking.notes || [];
-            const notesContainer = document.getElementById('resultNotes');
+            var notes = booking.notes || [];
+            var notesContainer = document.getElementById('resultNotes');
             if (!notes || notes.length === 0) {
-                notesContainer.innerHTML = '<p class="no-notes">Aún no hay notas del taller. Se agregarán conforme avance el servicio.</p>';
+                notesContainer.innerHTML = '<p class="no-notes">Aún no hay notas del taller.</p>';
             } else {
-                const notesArray = typeof notes === 'string' ? JSON.parse(notes) : notes;
-                notesContainer.innerHTML = `<ul class="notes-list">${notesArray.map(n => `
-                    <li>
-                        <span class="note-time">${new Date(n.time).toLocaleString('es-MX', {hour:'2-digit',minute:'2-digit', day:'2-digit', month:'2-digit'})}</span>
-                        <span>${n.text}</span>
-                    </li>
-                `).join('')}</ul>`;
+                var notesArray = typeof notes === 'string' ? JSON.parse(notes) : notes;
+                var notesHtml = '<ul class="notes-list">';
+                for (var n = 0; n < notesArray.length; n++) {
+                    notesHtml += '<li><span class="note-time">' + new Date(notesArray[n].time).toLocaleString('es-MX', {hour:'2-digit',minute:'2-digit', day:'2-digit', month:'2-digit'}) + '</span><span>' + notesArray[n].text + '</span></li>';
+                }
+                notesHtml += '</ul>';
+                notesContainer.innerHTML = notesHtml;
             }
 
             resultCard.style.display = 'block';
