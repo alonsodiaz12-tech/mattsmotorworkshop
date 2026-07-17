@@ -572,7 +572,6 @@
                 } else { alert('Producto no encontrado con el codigo: ' + code); }
             }
 
-            // ============ GENERADOR DE ETIQUETAS ============
             function viewLabel(id) {
                 supabase.from('inventory').select('*').eq('id', id).single().then(function(result) {
                     if (!result.data) return;
@@ -584,23 +583,23 @@
                     var content = document.createElement('div');
                     content.style.cssText = 'background:#111;border:1px solid #333;border-radius:16px;padding:2rem;text-align:center;max-width:400px;width:100%;position:relative;';
                     var closeBtn = document.createElement('button');
-                    closeBtn.textContent = '✕'; closeBtn.style.cssText = 'position:absolute;top:1rem;right:1rem;background:none;border:none;color:#fff;font-size:1.5rem;cursor:pointer;';
+                    closeBtn.textContent = 'X'; closeBtn.style.cssText = 'position:absolute;top:1rem;right:1rem;background:none;border:none;color:#fff;font-size:1.5rem;cursor:pointer;';
                     closeBtn.onclick = function() { document.body.removeChild(modal); };
                     content.appendChild(closeBtn);
-                    var title = document.createElement('h2');
-                    title.textContent = product.name; title.style.cssText = 'font-family:Montserrat,sans-serif;font-size:1.2rem;margin-bottom:0.5rem;color:#fff;';
-                    content.appendChild(title);
-                    var subtitle = document.createElement('p');
-                    subtitle.textContent = (product.brand||'') + ' | ' + (product.category||''); subtitle.style.cssText = 'font-size:0.85rem;color:#a3a3a3;margin-bottom:1.5rem;';
-                    content.appendChild(subtitle);
+                    var titleEl = document.createElement('h2');
+                    titleEl.textContent = product.name; titleEl.style.cssText = 'font-family:Montserrat,sans-serif;font-size:1.2rem;margin-bottom:0.5rem;color:#fff;';
+                    content.appendChild(titleEl);
+                    var subtitleEl = document.createElement('p');
+                    subtitleEl.textContent = (product.brand||'') + ' | ' + (product.category||''); subtitleEl.style.cssText = 'font-size:0.85rem;color:#a3a3a3;margin-bottom:1.5rem;';
+                    content.appendChild(subtitleEl);
                     var canvas = document.createElement('canvas');
                     try {
                         JsBarcode(canvas, code, { format: "CODE128", width: 2, height: 60, displayValue: true, fontSize: 14, margin: 10, background: '#ffffff', lineColor: '#000000' });
                         canvas.style.maxWidth = '100%'; content.appendChild(canvas);
                     } catch(e) {}
-                    var codeText = document.createElement('p');
-                    codeText.textContent = code; codeText.style.cssText = 'font-size:1rem;font-weight:bold;color:#fff;margin-top:1rem;font-family:monospace;';
-                    content.appendChild(codeText);
+                    var codeTextEl = document.createElement('p');
+                    codeTextEl.textContent = code; codeTextEl.style.cssText = 'font-size:1rem;font-weight:bold;color:#fff;margin-top:1rem;font-family:monospace;';
+                    content.appendChild(codeTextEl);
                     var printBtn = document.createElement('button');
                     printBtn.textContent = 'Imprimir etiqueta'; printBtn.style.cssText = 'margin-top:1.5rem;padding:0.6rem 1.5rem;background:#dc2626;color:white;border:none;border-radius:6px;cursor:pointer;font-family:inherit;font-size:0.85rem;';
                     printBtn.onclick = function() { printLabel(id); };
@@ -618,11 +617,11 @@
                     var canvas = document.createElement('canvas');
                     var barcodeImg = '';
                     try { JsBarcode(canvas, code, { format: "CODE128", width: 2, height: 60, displayValue: true, fontSize: 14, margin: 10 }); barcodeImg = canvas.toDataURL('image/png'); } catch(e) {}
-                    printWindow.document.write('<!DOCTYPE html><html><head><title>Etiqueta - ' + product.name + '</title><style>body{font-family:Arial,sans-serif;text-align:center;padding:20px;}h2{font-size:16px;margin-bottom:5px;}p{font-size:12px;color:#666;margin-bottom:15px;}img{max-width:100%;}@media print{body{margin:0;padding:10px;}}</style></head><body>');
+                    printWindow.document.write('<!DOCTYPE html><html><head><title>Etiqueta - ' + product.name + '</title><style>body{font-family:Arial,sans-serif;text-align:center;padding:20px;}h2{font-size:16px;margin-bottom:5px;}p{font-size:12px;color:#666;margin-bottom:15px;}img{max-width:100%;}@media print{body{margin:0;padding:10px;}}<' + '/style></head><body>');
                     printWindow.document.write('<h2>' + product.name + '</h2><p>' + (product.brand||'') + ' | ' + (product.category||'') + '</p>');
                     if (barcodeImg) printWindow.document.write('<img src="' + barcodeImg + '" alt="Codigo de barras">');
                     printWindow.document.write('<p style="font-size:14px;font-weight:bold;margin-top:10px;">' + code + '</p>');
-                    printWindow.document.write('<script>setTimeout(function(){window.print();},500);</script></body></html>');
+                    printWindow.document.write('<script>setTimeout(function(){window.print();},500);<' + '/script></body></html>');
                     printWindow.document.close();
                 });
             }
