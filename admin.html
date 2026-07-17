@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
     <style>
         :root {
             --bg-dark: #0a0a0a;
@@ -99,6 +100,7 @@
         .btn-primary:hover { background: var(--red-hover); }
         .btn-secondary { padding: 0.55rem 1.2rem; background: transparent; color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); font-weight: 500; font-size: 0.82rem; cursor: pointer; font-family: inherit; transition: var(--transition); }
         .btn-secondary:hover { border-color: var(--border-light); color: var(--text-primary); }
+        .btn-label { background: #2563eb; } .btn-label:hover { background: #1d4ed8; }
         .inline-form { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-top: 1rem; display: grid; gap: 0.85rem; }
         .inline-form input, .inline-form textarea, .inline-form select { padding: 0.7rem 1rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.9rem; font-family: inherit; outline: none; transition: var(--transition); width: 100%; }
         .inline-form input:focus, .inline-form textarea:focus, .inline-form select:focus { border-color: var(--red); }
@@ -266,8 +268,8 @@
                         <input type="text" id="invBrand" placeholder="Marca">
                     </div>
                     <div class="form-row">
-                        <input type="text" id="invBarcode" placeholder="Codigo de barras">
-                        <input type="text" id="invNumericCode" placeholder="Codigo numerico (ej: 0115)">
+                        <input type="text" id="invBarcode" placeholder="Codigo de barras (opcional, se autogenera)">
+                        <input type="text" id="invNumericCode" placeholder="Codigo numerico (opcional, se autogenera)">
                     </div>
                     <div class="form-row">
                         <input type="number" id="invStock" placeholder="Cantidad en stock" min="0" value="0">
@@ -395,13 +397,7 @@
                     html += '<div class="booking-header-row"><div class="booking-meta"><strong>'+dateStr+'</strong>'+(b.preferred_time?' <span style="color:var(--text-muted);">'+b.preferred_time+'</span>':'')+(b.plate_number?'<span class="plate-badge">'+b.plate_number+'</span>':'')+'</div><span class="status-badge '+st.cls+'">'+st.text+'</span></div>';
                     html += '<div class="booking-detail-grid"><div><strong>Cliente:</strong> '+b.client_name+'</div><div><strong>Telefono:</strong> '+b.phone+'</div><div><strong>Vehiculo:</strong> '+b.vehicle+'</div><div><strong>Servicio:</strong> '+b.service_requested+'</div></div>';
                     html += '<div class="booking-actions"><a href="/booking-detail?id='+b.id+'" class="btn-open">Abrir cita</a><select onchange="window._updateStatus('+b.id+',this.value)">';
-                    html += '<option value="pending"'+(b.status==='pending'?' selected':'')+'>Pendiente</option>';
-                    html += '<option value="confirmed"'+(b.status==='confirmed'?' selected':'')+'>Confirmar</option>';
-                    html += '<option value="en_taller"'+(b.status==='en_taller'?' selected':'')+'>Ingreso al taller</option>';
-                    html += '<option value="en_progreso"'+(b.status==='en_progreso'?' selected':'')+'>En progreso</option>';
-                    html += '<option value="completado"'+(b.status==='completado'?' selected':'')+'>Completar</option>';
-                    html += '<option value="entregado"'+(b.status==='entregado'?' selected':'')+'>Entregado</option>';
-                    html += '<option value="cancelled"'+(b.status==='cancelled'?' selected':'')+'>Cancelar</option>';
+                    html += '<option value="pending"'+(b.status==='pending'?' selected':'')+'>Pendiente</option><option value="confirmed"'+(b.status==='confirmed'?' selected':'')+'>Confirmar</option><option value="en_taller"'+(b.status==='en_taller'?' selected':'')+'>Ingreso al taller</option><option value="en_progreso"'+(b.status==='en_progreso'?' selected':'')+'>En progreso</option><option value="completado"'+(b.status==='completado'?' selected':'')+'>Completar</option><option value="entregado"'+(b.status==='entregado'?' selected':'')+'>Entregado</option><option value="cancelled"'+(b.status==='cancelled'?' selected':'')+'>Cancelar</option>';
                     html += '</select><button class="btn-sm btn-delete" onclick="window._deleteBooking('+b.id+')">Eliminar</button></div></div>';
                 }
                 container.innerHTML = html;
@@ -444,6 +440,7 @@
                     html += '<div style="font-size:0.78rem;color:var(--text-muted);">Compra: ' + parseFloat(p.purchase_price||0).toLocaleString('es-CR',{minimumFractionDigits:2}) + ' CRC | Venta: ' + parseFloat(p.sale_price||0).toLocaleString('es-CR',{minimumFractionDigits:2}) + ' CRC</div>';
                     html += '<div style="display:flex;gap:0.25rem;">';
                     html += '<button class="btn-sm btn-edit" onclick="editInventory(' + p.id + ')">Editar</button>';
+                    html += '<button class="btn-sm btn-label" onclick="viewLabel(' + p.id + ')">Etiqueta</button>';
                     html += '<button class="btn-sm btn-edit" onclick="quickDiscount(' + p.id + ')" style="background:#f59e0b;">Usar</button>';
                     html += '<button class="btn-sm btn-delete" onclick="deleteInventory(' + p.id + ')">Eliminar</button>';
                     html += '</div></div></div>';
@@ -485,8 +482,16 @@
                     sale_price: parseFloat(document.getElementById('invSalePrice').value) || 0
                 };
                 if (!data.name) { alert('El nombre es obligatorio'); return; }
-                if (editId) { await supabase.from('inventory').update(data).eq('id', editId); }
-                else { await supabase.from('inventory').insert([data]); }
+                if (editId) { 
+                    await supabase.from('inventory').update(data).eq('id', editId); 
+                } else { 
+                    if (!data.barcode && !data.numeric_code) {
+                        var allProducts = await supabase.from('inventory').select('id').order('id', {ascending: false}).limit(1);
+                        var nextId = allProducts.data && allProducts.data.length > 0 ? allProducts.data[0].id + 1 : 1;
+                        data.numeric_code = 'MMW-' + String(nextId).padStart(3, '0');
+                    }
+                    await supabase.from('inventory').insert([data]); 
+                }
                 document.getElementById('inventoryForm').style.display = 'none';
                 renderInventory(); showSuccess();
             }
@@ -531,50 +536,25 @@
             }
 
             function startScanner() {
-                if (html5QrCode) {
-                    try { html5QrCode.stop().catch(function(){}); html5QrCode.clear(); } catch(e) {}
-                    html5QrCode = null;
-                }
+                if (html5QrCode) { try { html5QrCode.stop().catch(function(){}); html5QrCode.clear(); } catch(e) {} html5QrCode = null; }
                 document.getElementById('scannerContainer').style.display = 'block';
                 document.getElementById('scannerManualInput').value = '';
                 document.querySelector('.tab-btn[data-tab="inventory"]').click();
-                if (typeof Html5Qrcode === 'undefined') {
-                    var script = document.createElement('script');
-                    script.src = 'https://unpkg.com/html5-qrcode';
-                    script.onload = function() { initScanner(); };
-                    document.head.appendChild(script);
-                } else {
-                    initScanner();
-                }
+                if (typeof Html5Qrcode === 'undefined') { var script = document.createElement('script'); script.src = 'https://unpkg.com/html5-qrcode'; script.onload = function() { initScanner(); }; document.head.appendChild(script); }
+                else { initScanner(); }
             }
 
             function initScanner() {
-                if (html5QrCode) {
-                    try { html5QrCode.stop().catch(function(){}); html5QrCode.clear(); } catch(e) {}
-                    html5QrCode = null;
-                }
+                if (html5QrCode) { try { html5QrCode.stop().catch(function(){}); html5QrCode.clear(); } catch(e) {} html5QrCode = null; }
                 html5QrCode = new Html5Qrcode("scannerReader");
-                html5QrCode.start(
-                    { facingMode: "environment" },
-                    { fps: 10, qrbox: { width: 250, height: 150 } },
+                html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 150 } },
                     function(decodedText) { searchByBarcode(decodedText); stopScanner(); },
                     function(error) {}
                 ).catch(function(err) { console.log('Error al iniciar escaner:', err); });
             }
 
             function stopScanner() {
-                if (html5QrCode) {
-                    try {
-                        html5QrCode.stop().then(function() {
-                            html5QrCode.clear();
-                            html5QrCode = null;
-                        }).catch(function() {
-                            html5QrCode = null;
-                        });
-                    } catch(e) {
-                        html5QrCode = null;
-                    }
-                }
+                if (html5QrCode) { try { html5QrCode.stop().then(function() { html5QrCode.clear(); html5QrCode = null; }).catch(function() { html5QrCode = null; }); } catch(e) { html5QrCode = null; } }
                 document.getElementById('scannerContainer').style.display = 'none';
             }
 
@@ -592,6 +572,61 @@
                 } else { alert('Producto no encontrado con el codigo: ' + code); }
             }
 
+            // ============ GENERADOR DE ETIQUETAS ============
+            function viewLabel(id) {
+                supabase.from('inventory').select('*').eq('id', id).single().then(function(result) {
+                    if (!result.data) return;
+                    var product = result.data;
+                    var code = product.barcode || product.numeric_code || ('MMW-' + String(product.id).padStart(3, '0'));
+                    var modal = document.createElement('div');
+                    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:10001;display:flex;align-items:center;justify-content:center;padding:2rem;';
+                    modal.onclick = function(e) { if(e.target===modal) document.body.removeChild(modal); };
+                    var content = document.createElement('div');
+                    content.style.cssText = 'background:#111;border:1px solid #333;border-radius:16px;padding:2rem;text-align:center;max-width:400px;width:100%;position:relative;';
+                    var closeBtn = document.createElement('button');
+                    closeBtn.textContent = '✕'; closeBtn.style.cssText = 'position:absolute;top:1rem;right:1rem;background:none;border:none;color:#fff;font-size:1.5rem;cursor:pointer;';
+                    closeBtn.onclick = function() { document.body.removeChild(modal); };
+                    content.appendChild(closeBtn);
+                    var title = document.createElement('h2');
+                    title.textContent = product.name; title.style.cssText = 'font-family:Montserrat,sans-serif;font-size:1.2rem;margin-bottom:0.5rem;color:#fff;';
+                    content.appendChild(title);
+                    var subtitle = document.createElement('p');
+                    subtitle.textContent = (product.brand||'') + ' | ' + (product.category||''); subtitle.style.cssText = 'font-size:0.85rem;color:#a3a3a3;margin-bottom:1.5rem;';
+                    content.appendChild(subtitle);
+                    var canvas = document.createElement('canvas');
+                    try {
+                        JsBarcode(canvas, code, { format: "CODE128", width: 2, height: 60, displayValue: true, fontSize: 14, margin: 10, background: '#ffffff', lineColor: '#000000' });
+                        canvas.style.maxWidth = '100%'; content.appendChild(canvas);
+                    } catch(e) {}
+                    var codeText = document.createElement('p');
+                    codeText.textContent = code; codeText.style.cssText = 'font-size:1rem;font-weight:bold;color:#fff;margin-top:1rem;font-family:monospace;';
+                    content.appendChild(codeText);
+                    var printBtn = document.createElement('button');
+                    printBtn.textContent = 'Imprimir etiqueta'; printBtn.style.cssText = 'margin-top:1.5rem;padding:0.6rem 1.5rem;background:#dc2626;color:white;border:none;border-radius:6px;cursor:pointer;font-family:inherit;font-size:0.85rem;';
+                    printBtn.onclick = function() { printLabel(id); };
+                    content.appendChild(printBtn);
+                    modal.appendChild(content); document.body.appendChild(modal);
+                });
+            }
+
+            function printLabel(id) {
+                supabase.from('inventory').select('*').eq('id', id).single().then(function(result) {
+                    if (!result.data) return;
+                    var product = result.data;
+                    var code = product.barcode || product.numeric_code || ('MMW-' + String(product.id).padStart(3, '0'));
+                    var printWindow = window.open('', '_blank', 'width=400,height=400');
+                    var canvas = document.createElement('canvas');
+                    var barcodeImg = '';
+                    try { JsBarcode(canvas, code, { format: "CODE128", width: 2, height: 60, displayValue: true, fontSize: 14, margin: 10 }); barcodeImg = canvas.toDataURL('image/png'); } catch(e) {}
+                    printWindow.document.write('<!DOCTYPE html><html><head><title>Etiqueta - ' + product.name + '</title><style>body{font-family:Arial,sans-serif;text-align:center;padding:20px;}h2{font-size:16px;margin-bottom:5px;}p{font-size:12px;color:#666;margin-bottom:15px;}img{max-width:100%;}@media print{body{margin:0;padding:10px;}}</style></head><body>');
+                    printWindow.document.write('<h2>' + product.name + '</h2><p>' + (product.brand||'') + ' | ' + (product.category||'') + '</p>');
+                    if (barcodeImg) printWindow.document.write('<img src="' + barcodeImg + '" alt="Codigo de barras">');
+                    printWindow.document.write('<p style="font-size:14px;font-weight:bold;margin-top:10px;">' + code + '</p>');
+                    printWindow.document.write('<script>setTimeout(function(){window.print();},500);</script></body></html>');
+                    printWindow.document.close();
+                });
+            }
+
             window.showAddInventoryForm = showAddInventoryForm;
             window.startScanner = startScanner;
             window.stopScanner = stopScanner;
@@ -603,6 +638,8 @@
             window.closeScannedModal = closeScannedModal;
             window.discountScannedProduct = discountScannedProduct;
             window.saveInventory = saveInventory;
+            window.viewLabel = viewLabel;
+            window.printLabel = printLabel;
             window._editService = editService;
             window._deleteService = deleteService;
             window._deleteGallery = deleteGalleryItem;
