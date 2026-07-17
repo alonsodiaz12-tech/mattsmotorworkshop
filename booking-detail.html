@@ -315,18 +315,30 @@
             }
 
             function togglePartForm() { var f=document.getElementById('partForm'); f.style.display=f.style.display==='block'?'none':'block'; if(f.style.display==='block'){populateWorklogSelect();document.getElementById('partName').focus();} }
+            
             async function savePart() {
-                var name=document.getElementById('partName').value.trim(); if(!name){alert('Ingrese el nombre del repuesto');return;}
-                var wlId=document.getElementById('partWorklog').value || null;
-                var oldPhoto=null, newPhoto=null;
-                var oldFile=document.getElementById('partOldPhoto').files[0];
-                var newFile=document.getElementById('partNewPhoto').files[0];
-                if(oldFile){var fn='part-old-'+bookingId+'-'+Date.now()+'.'+oldFile.name.split('.').pop();var up=await supabase.storage.from('workshop-photos').upload(fn,oldFile); if(!up.error){var pu=supabase.storage.from('workshop-photos').getPublicUrl(fn);oldPhoto=pu.data.publicUrl;}}
-                if(newFile){var fn='part-new-'+bookingId+'-'+Date.now()+'.'+newFile.name.split('.').pop();var up=await supabase.storage.from('workshop-photos').upload(fn,newFile); if(!up.error){var pu=supabase.storage.from('workshop-photos').getPublicUrl(fn);newPhoto=pu.data.publicUrl;}}
-                await supabase.from('replaced_parts').insert([{booking_id:parseInt(bookingId),work_log_id:wlId?parseInt(wlId):null,part_name:name,old_part_photo:oldPhoto,new_part_photo:newPhoto}]);
-                document.getElementById('partName').value=''; document.getElementById('partWorklog').value=''; document.getElementById('partOldPhoto').value=''; document.getElementById('partNewPhoto').value='';
+                var name = document.getElementById('partName').value.trim(); if (!name) { alert('Ingrese el nombre del repuesto'); return; }
+                var wlId = document.getElementById('partWorklog').value || null;
+                var oldPhoto = null, newPhoto = null;
+                var oldFile = document.getElementById('partOldPhoto').files[0];
+                var newFile = document.getElementById('partNewPhoto').files[0];
+                if (oldFile) { var fn = 'part-old-' + bookingId + '-' + Date.now() + '.' + oldFile.name.split('.').pop(); var up = await supabase.storage.from('workshop-photos').upload(fn, oldFile); if (!up.error) { var pu = supabase.storage.from('workshop-photos').getPublicUrl(fn); oldPhoto = pu.data.publicUrl; } }
+                if (newFile) { var fn = 'part-new-' + bookingId + '-' + Date.now() + '.' + newFile.name.split('.').pop(); var up = await supabase.storage.from('workshop-photos').upload(fn, newFile); if (!up.error) { var pu = supabase.storage.from('workshop-photos').getPublicUrl(fn); newPhoto = pu.data.publicUrl; } }
+                
+                await supabase.from('replaced_parts').insert([{booking_id: parseInt(bookingId), work_log_id: wlId ? parseInt(wlId) : null, part_name: name, old_part_photo: oldPhoto, new_part_photo: newPhoto}]);
+                
+                // Descontar del inventario si coincide
+                var invResult = await supabase.from('inventory').select('*').or('name.ilike.' + name + ',barcode.eq.' + name + ',numeric_code.eq.' + name).single();
+                if (invResult.data && invResult.data.stock > 0) {
+                    await supabase.from('inventory').update({stock: invResult.data.stock - 1}).eq('id', invResult.data.id);
+                    await supabase.from('inventory_movements').insert([{inventory_id: invResult.data.id, booking_id: parseInt(bookingId), movement_type: 'salida', quantity: 1, notes: 'Usado en repuesto: ' + name}]);
+                }
+                
+                document.getElementById('partName').value = ''; document.getElementById('partWorklog').value = '';
+                document.getElementById('partOldPhoto').value = ''; document.getElementById('partNewPhoto').value = '';
                 togglePartForm(); loadParts(); showSuccess();
             }
+            
             async function deletePart(partId) { if(!confirm('Eliminar este repuesto?'))return; await supabase.from('replaced_parts').delete().eq('id',partId); loadParts(); showSuccess(); }
             window.deletePart = deletePart;
 
