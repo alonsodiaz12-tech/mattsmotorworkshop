@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expediente de Trabajo | Matts Motor Workshop</title>
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg-dark: #0a0a0a; --bg-card: #111111; --bg-elevated: #1a1a1a; --bg-input: #0f0f0f;
+            --red: #dc2626; --red-hover: #b91c1c; --text-primary: #ffffff;
+            --text-secondary: #a3a3a3; --text-muted: #6b7280; --border: #262626; --border-light: #333333;
+            --radius-sm: 6px; --radius: 10px; --radius-lg: 16px; --transition: 0.2s ease;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: var(--text-primary); min-height: 100vh; padding: 2rem; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; margin-bottom: 1.5rem; }
+        .back-link:hover { color: var(--text-secondary); }
+        .page-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; }
+        .page-header h1 { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; font-weight: 700; }
+        .status-badge { padding: 0.4rem 1rem; border-radius: 50px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; }
+        .status-in_progress { background: rgba(139,92,246,0.12); color: #a78bfa; }
+        .status-completed { background: rgba(34,197,94,0.12); color: #4ade80; }
+        .info-card, .section-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 1.5rem; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .info-item { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; }
+        .info-item .label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 0.25rem; }
+        .info-item .value { font-weight: 600; font-size: 0.95rem; }
+        .info-item input, .info-item select { padding: 0.4rem 0.6rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; color: var(--text-primary); font-size: 0.85rem; outline: none; width: 100%; font-family: inherit; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem; }
+        .section-header h2 { font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 700; }
+        .btn { padding: 0.5rem 1rem; border: none; border-radius: var(--radius-sm); cursor: pointer; font-weight: 500; font-size: 0.82rem; font-family: inherit; transition: var(--transition); white-space: nowrap; }
+        .btn-primary { background: var(--red); color: white; } .btn-primary:hover { background: var(--red-hover); }
+        .btn-secondary { background: transparent; color: var(--text-secondary); border: 1px solid var(--border); } .btn-secondary:hover { border-color: var(--border-light); color: var(--text-primary); }
+        .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.7rem; }
+        .btn-danger { background: #dc2626; color: white; } .btn-danger:hover { background: #b91c1c; }
+        .btn-edit { background: #4b5563; color: white; } .btn-edit:hover { background: #6b7280; }
+        .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.85rem; }
+        .loading-state { text-align: center; padding: 2rem; color: var(--text-muted); }
+        .success-toast { position: fixed; bottom: 2rem; right: 2rem; background: #166534; color: #bbf7d0; padding: 0.75rem 1.25rem; border-radius: var(--radius); font-weight: 500; font-size: 0.85rem; display: none; z-index: 9999; border: 1px solid #22c55e; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+
+        .collapsible-grid { display: grid; gap: 0.5rem; }
+        .collapsible-item { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+        .collapsible-header { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; cursor: pointer; transition: var(--transition); user-select: none; }
+        .collapsible-header:hover { background: rgba(255,255,255,0.02); }
+        .collapsible-header .cl-title { font-weight: 600; font-size: 0.9rem; color: var(--text-primary); flex: 1; margin-right: 0.5rem; }
+        .collapsible-header .cl-badges { display: flex; gap: 0.3rem; flex-shrink: 0; margin-right: 0.5rem; }
+        .collapsible-header .cl-actions { display: flex; gap: 0.25rem; flex-shrink: 0; margin-right: 0.5rem; }
+        .collapsible-header .cl-arrow { color: var(--text-muted); font-size: 0.65rem; transition: var(--transition); flex-shrink: 0; }
+        .collapsible-item.open .collapsible-header .cl-arrow { transform: rotate(180deg); }
+        .badge { padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.65rem; font-weight: 500; white-space: nowrap; }
+        .badge-time { background: rgba(59,130,246,0.12); color: #60a5fa; }
+        .badge-price { background: rgba(34,197,94,0.12); color: #4ade80; font-weight: 600; }
+        .collapsible-body { display: none; padding: 0 1rem 1rem 1rem; }
+        .collapsible-item.open .collapsible-body { display: block; }
+        .collapsible-body .cl-date { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .collapsible-body .cl-meta { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.3rem; }
+        .collapsible-body img { width: 100%; max-width: 100%; border-radius: var(--radius-sm); margin-top: 0.5rem; display: block; }
+        .edit-form { display: none; padding: 0 1rem 1rem 1rem; }
+        .edit-form textarea { width: 100%; padding: 0.5rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.85rem; font-family: inherit; outline: none; resize: vertical; min-height: 50px; margin-bottom: 0.5rem; }
+        .edit-form .form-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.5rem; }
+        .edit-form .form-row input { padding: 0.4rem 0.5rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.8rem; font-family: inherit; outline: none; width: 65px; text-align: center; }
+        .edit-form .form-row label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
+        .edit-form .form-actions { display: flex; gap: 0.5rem; }
+        .add-form { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1.25rem; margin-top: 1rem; display: none; }
+        .add-form textarea, .add-form input[type="text"] { width: 100%; padding: 0.7rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.85rem; font-family: inherit; outline: none; resize: vertical; min-height: 40px; margin-bottom: 0.75rem; }
+        .add-form .form-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.75rem; }
+        .add-form .form-row label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); white-space: nowrap; }
+        .add-form .form-row input[type="file"] { flex: 1; padding: 0.4rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.8rem; }
+        .add-form .form-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+        .add-form .input-group { display: flex; align-items: center; gap: 0.25rem; }
+        .add-form .input-group input { width: 60px; text-align: center; }
+        .part-photos { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+        .part-photo-item { text-align: center; }
+        .part-photo-item .photo-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 0.3rem; }
+        .part-photo-item img { width: 100%; max-width: 100%; border-radius: var(--radius-sm); display: block; }
+        .part-photo-item .no-photo { padding: 2rem; background: var(--bg-dark); border-radius: var(--radius-sm); color: var(--text-muted); font-size: 0.75rem; }
+
+        @media (max-width: 768px) { body { padding: 1rem; } .info-grid { grid-template-columns: 1fr; } .part-photos { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/admin" class="back-link">Volver al panel</a>
+        <div class="page-header"><h1 id="pageTitle">Cargando expediente...</h1><span class="status-badge" id="pageStatus"></span></div>
+        
+        <div class="info-card"><div class="info-grid" id="infoGrid"><div class="loading-state">Cargando informacion...</div></div></div>
+        
+        <div class="section-card">
+            <div class="section-header"><h2>Registro de Trabajos</h2><button class="btn btn-primary btn-sm" onclick="toggleWorklogForm()">Agregar trabajo</button></div>
+            <div id="worklogContainer"><div class="loading-state">Cargando trabajos...</div></div>
+            <div class="add-form" id="worklogForm">
+                <textarea id="worklogDesc" placeholder="Describa el trabajo realizado..."></textarea>
+                <div class="form-row">
+                    <div class="input-group"><label>Horas</label><input type="number" id="worklogHours" placeholder="0" value="0" min="0"></div>
+                    <div class="input-group"><label>Minutos</label><input type="number" id="worklogMinutes" placeholder="0" value="0" min="0" max="59"></div>
+                    <div class="input-group" style="flex:1;"><label>Precio (CRC)</label><input type="number" id="worklogPrice" placeholder="0" value="0" min="0" step="0.01" style="width:100px;"></div>
+                </div>
+                <div class="form-row"><label>Foto (opcional)</label><input type="file" id="worklogPhoto" accept="image/*" style="flex:1;"></div>
+                <div class="form-actions"><button class="btn btn-primary" onclick="saveWorklog()">Guardar trabajo</button><button class="btn btn-secondary" onclick="toggleWorklogForm()">Cancelar</button></div>
+            </div>
+        </div>
+        
+        <div class="section-card">
+            <div class="section-header"><h2>Repuestos Reemplazados</h2><button class="btn btn-primary btn-sm" onclick="togglePartForm()">Agregar repuesto</button></div>
+            <div id="partsContainer"><div class="loading-state">Cargando repuestos...</div></div>
+            <div class="add-form" id="partForm">
+                <input type="text" id="partName" placeholder="Nombre del repuesto">
+                <div class="form-row"><label>Vincular a trabajo (opcional)</label><select id="partWorklog" style="padding:0.5rem;background:var(--bg-dark);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:0.85rem;font-family:inherit;flex:1;"><option value="">Sin vincular</option></select></div>
+                <div class="form-row"><label>Foto ANTIGUO</label><input type="file" id="partOldPhoto" accept="image/*"></div>
+                <div class="form-row"><label>Foto NUEVO</label><input type="file" id="partNewPhoto" accept="image/*"></div>
+                <div class="form-actions"><button class="btn btn-primary" onclick="savePart()">Guardar repuesto</button><button class="btn btn-secondary" onclick="togglePartForm()">Cancelar</button></div>
+            </div>
+        </div>
+    </div>
+    <div class="success-toast" id="successMsg">Cambios guardados</div>
+
+    <script>
+        (function() {
+            var SUPABASE_URL = 'https://pupfxetbnpgqikzhnjts.supabase.co';
+            var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
+            var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            var workOrderId = null;
+            var workOrder = null;
+
+            function showSuccess() { var msg = document.getElementById('successMsg'); msg.style.display = 'block'; setTimeout(function() { msg.style.display = 'none'; }, 2500); }
+            function getWorkOrderIdFromURL() { var params = new URLSearchParams(window.location.search); return params.get('id'); }
+
+            async function init() {
+                workOrderId = getWorkOrderIdFromURL();
+                if (!workOrderId) { window.location.href = '/admin'; return; }
+                var sessionResult = await supabase.auth.getSession();
+                if (!sessionResult.data || !sessionResult.data.session) { window.location.href = '/admin'; return; }
+                await loadWorkOrder();
+            }
+
+            async function loadWorkOrder() {
+                var result = await supabase.from('work_orders').select('*').eq('id', workOrderId).single();
+                if (result.error || !result.data) { window.location.href = '/admin'; return; }
+                workOrder = result.data;
+                renderWorkOrder();
+                loadWorkLogs();
+                loadParts();
+            }
+
+            function renderWorkOrder() {
+                var statusMap = { en_progreso:{text:'En Progreso',cls:'status-in_progress'}, completado:{text:'Completado',cls:'status-completed'}, entregado:{text:'Entregado',cls:'status-completed'} };
+                var st = statusMap[workOrder.status] || statusMap.en_progreso;
+                document.getElementById('pageTitle').textContent = 'Expediente #' + workOrder.id + ' - ' + (workOrder.plate_number || '');
+                document.getElementById('pageStatus').textContent = st.text; document.getElementById('pageStatus').className = 'status-badge ' + st.cls;
+                var html = '';
+                html += '<div class="info-item"><div class="label">Cliente</div><div class="value">'+workOrder.client_name+'</div></div>';
+                html += '<div class="info-item"><div class="label">Telefono</div><div class="value">'+workOrder.phone+'</div></div>';
+                html += '<div class="info-item"><div class="label">Placa</div><div class="value" style="font-family:monospace;">'+workOrder.plate_number+'</div></div>';
+                html += '<div class="info-item"><div class="label">Vehiculo</div><div class="value">'+(workOrder.vehicle||'No especificado')+'</div></div>';
+                html += '<div class="info-item"><div class="label">Fecha Ingreso</div><div class="value">'+new Date(workOrder.created_at).toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})+'</div></div>';
+                html += '<div class="info-item"><div class="label">Estado</div><div class="value"><select onchange="updateWOStatus(this.value)"><option value="en_progreso"'+(workOrder.status==='en_progreso'?' selected':'')+'>En Progreso</option><option value="completado"'+(workOrder.status==='completado'?' selected':'')+'>Completado</option><option value="entregado"'+(workOrder.status==='entregado'?' selected':'')+'>Entregado</option></select></div></div>';
+                document.getElementById('infoGrid').innerHTML = html;
+            }
+
+            async function updateWOStatus(s) { await supabase.from('work_orders').update({status:s}).eq('id',workOrderId); workOrder.status = s; renderWorkOrder(); showSuccess(); }
+
+            // ============ WORK LOGS ============
+            async function loadWorkLogs() {
+                var container = document.getElementById('worklogContainer');
+                var result = await supabase.from('work_log').select('*').eq('work_order_id',workOrderId).order('created_at',{ascending:false});
+                if (!result.data || result.data.length===0) { container.innerHTML = '<div class="empty-state">Sin registros de trabajo</div>'; return; }
+                var html = '<div class="collapsible-grid">';
+                for (var i=0; i<result.data.length; i++) { 
+                    var log = result.data[i];
+                    var badgesHtml = '';
+                    if (log.hours > 0 || log.minutes > 0) { var ts = ''; if (log.hours>0) ts+=log.hours+'h '; if (log.minutes>0) ts+=log.minutes+'min'; badgesHtml += '<span class="badge badge-time">'+ts.trim()+'</span>'; }
+                    if (log.price > 0) { badgesHtml += '<span class="badge badge-price">'+parseFloat(log.price).toLocaleString('es-CR',{minimumFractionDigits:2,maximumFractionDigits:2})+' CRC</span>'; }
+                    var detailHtml = '<div class="cl-date">'+new Date(log.created_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</div>';
+                    if (log.hours>0||log.minutes>0) { var d='Duracion: '; if(log.hours>0)d+=log.hours+' hora'+(log.hours>1?'s':'')+' '; if(log.minutes>0)d+=(log.hours>0?'con ':'')+log.minutes+' minuto'+(log.minutes>1?'s':''); detailHtml+='<div class="cl-meta"><span>'+d+'</span></div>'; }
+                    if (log.price>0) { detailHtml+='<div class="cl-meta"><span>Costo: <span style="color:#4ade80;font-weight:600;">'+parseFloat(log.price).toLocaleString('es-CR',{minimumFractionDigits:2,maximumFractionDigits:2})+' CRC</span></span></div>'; }
+                    if (log.photo_url) { detailHtml+='<img src="'+log.photo_url+'" onerror="this.style.display=\'none\'" loading="lazy">'; }
+                    html += '<div class="collapsible-item">';
+                    html += '<div class="collapsible-header" onclick="toggleItem(this.parentElement)">';
+                    html += '<span class="cl-title">'+log.description+'</span><span class="cl-badges">'+badgesHtml+'</span>';
+                    html += '<span class="cl-actions" onclick="event.stopPropagation()"><button class="btn btn-edit btn-sm" onclick="showEditForm('+log.id+')">Editar</button><button class="btn btn-danger btn-sm" onclick="deleteWorklog('+log.id+')">Eliminar</button></span>';
+                    html += '<span class="cl-arrow">&#9660;</span></div>';
+                    html += '<div class="collapsible-body">'+detailHtml+'</div>';
+                    html += '<div class="edit-form" id="editForm-'+log.id+'"><textarea id="editDesc-'+log.id+'">'+log.description+'</textarea><div class="form-row"><label>Horas</label><input type="number" id="editHours-'+log.id+'" value="'+(log.hours||0)+'" min="0"><label>Minutos</label><input type="number" id="editMinutes-'+log.id+'" value="'+(log.minutes||0)+'" min="0" max="59"><label>Precio</label><input type="number" id="editPrice-'+log.id+'" value="'+(log.price||0)+'" min="0" step="0.01" style="width:90px;"></div><div class="form-actions"><button class="btn btn-primary btn-sm" onclick="saveEdit('+log.id+')">Guardar</button><button class="btn btn-secondary btn-sm" onclick="cancelEdit('+log.id+')">Cancelar</button></div></div>';
+                    html += '</div>';
+                }
+                html += '</div>'; container.innerHTML = html;
+                populateWorklogSelect();
+            }
+
+            function toggleItem(item) { if(item.classList.contains('open')){item.classList.remove('open')}else{item.classList.add('open')} }
+
+            function showEditForm(logId) { var item = document.getElementById('worklog-'+logId); if(!item) return; item.querySelector('.collapsible-body').style.display='none'; document.getElementById('editForm-'+logId).style.display='block'; if(!item.classList.contains('open'))item.classList.add('open'); item.setAttribute('data-opened-by-edit','true'); }
+            function cancelEdit(logId) { var item = document.getElementById('worklog-'+logId); if(!item) return; document.getElementById('editForm-'+logId).style.display='none'; item.querySelector('.collapsible-body').style.display='block'; if(item.getAttribute('data-opened-by-edit')==='true'){item.classList.remove('open');item.removeAttribute('data-opened-by-edit');} }
+            async function saveEdit(logId) { var desc=document.getElementById('editDesc-'+logId).value.trim(); var h=parseInt(document.getElementById('editHours-'+logId).value)||0; var m=parseInt(document.getElementById('editMinutes-'+logId).value)||0; var p=parseFloat(document.getElementById('editPrice-'+logId).value)||0; if(!desc){alert('Descripcion obligatoria');return;} await supabase.from('work_log').update({description:desc,hours:h,minutes:m,price:p}).eq('id',logId); loadWorkLogs(); showSuccess(); }
+            async function deleteWorklog(logId) { if(!confirm('Eliminar este trabajo?'))return; await supabase.from('work_log').delete().eq('id',logId); loadWorkLogs(); showSuccess(); }
+
+            async function populateWorklogSelect() {
+                var select = document.getElementById('partWorklog');
+                var result = await supabase.from('work_log').select('id,description').eq('work_order_id',workOrderId).order('created_at',{ascending:false});
+                var html = '<option value="">Sin vincular</option>';
+                if(result.data) { for(var i=0;i<result.data.length;i++){ html+='<option value="'+result.data[i].id+'">'+result.data[i].description+'</option>'; } }
+                select.innerHTML = html;
+            }
+
+            function toggleWorklogForm() { var f=document.getElementById('worklogForm'); f.style.display=f.style.display==='block'?'none':'block'; if(f.style.display==='block')document.getElementById('worklogDesc').focus(); }
+            async function saveWorklog() {
+                var desc=document.getElementById('worklogDesc').value.trim(); if(!desc){alert('Describa el trabajo');return;}
+                var h=parseInt(document.getElementById('worklogHours').value)||0; var m=parseInt(document.getElementById('worklogMinutes').value)||0; var p=parseFloat(document.getElementById('worklogPrice').value)||0;
+                var photoUrl=null; var fi=document.getElementById('worklogPhoto');
+                if(fi.files&&fi.files[0]){var file=fi.files[0];var fn='wo-'+workOrderId+'-'+Date.now()+'.'+file.name.split('.').pop();var up=await supabase.storage.from('workshop-photos').upload(fn,file); if(!up.error){var pu=supabase.storage.from('workshop-photos').getPublicUrl(fn);photoUrl=pu.data.publicUrl;}}
+                await supabase.from('work_log').insert([{work_order_id:parseInt(workOrderId),description:desc,hours:h,minutes:m,price:p,photo_url:photoUrl}]);
+                document.getElementById('worklogDesc').value=''; document.getElementById('worklogHours').value='0'; document.getElementById('worklogMinutes').value='0'; document.getElementById('worklogPrice').value='0'; document.getElementById('worklogPhoto').value='';
+                toggleWorklogForm(); loadWorkLogs(); loadParts(); showSuccess();
+            }
+
+            // ============ PARTS ============
+            async function loadParts() {
+                var container = document.getElementById('partsContainer');
+                var result = await supabase.from('replaced_parts').select('*,work_log(description)').eq('work_order_id',workOrderId).order('created_at',{ascending:false});
+                if (!result.data || result.data.length===0) { container.innerHTML = '<div class="empty-state">Sin repuestos registrados</div>'; return; }
+                var html = '<div class="collapsible-grid">';
+                for (var i=0; i<result.data.length; i++) {
+                    var part = result.data[i];
+                    var workDesc = part.work_log ? part.work_log.description : null;
+                    var detailHtml = '<div class="cl-date">'+new Date(part.created_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</div>';
+                    if (workDesc) { detailHtml += '<div class="cl-meta">Trabajo: ' + workDesc + '</div>'; }
+                    detailHtml += '<div class="part-photos" style="margin-top:0.5rem;">';
+                    detailHtml += '<div class="part-photo-item"><div class="photo-label">Antiguo</div>';
+                    detailHtml += part.old_part_photo ? '<img src="'+part.old_part_photo+'" onerror="this.style.display=\'none\'" loading="lazy">' : '<div class="no-photo">Sin foto</div>';
+                    detailHtml += '</div><div class="part-photo-item"><div class="photo-label">Nuevo</div>';
+                    detailHtml += part.new_part_photo ? '<img src="'+part.new_part_photo+'" onerror="this.style.display=\'none\'" loading="lazy">' : '<div class="no-photo">Sin foto</div>';
+                    detailHtml += '</div></div>';
+                    html += '<div class="collapsible-item">';
+                    html += '<div class="collapsible-header" onclick="toggleItem(this.parentElement)">';
+                    html += '<span class="cl-title">'+part.part_name+'</span>';
+                    html += '<span class="cl-actions" onclick="event.stopPropagation()"><button class="btn btn-danger btn-sm" onclick="deletePart('+part.id+')">Eliminar</button></span>';
+                    html += '<span class="cl-arrow">&#9660;</span></div>';
+                    html += '<div class="collapsible-body">'+detailHtml+'</div></div>';
+                }
+                html += '</div>'; container.innerHTML = html;
+                populateWorklogSelect();
+            }
+
+            function togglePartForm() { var f=document.getElementById('partForm'); f.style.display=f.style.display==='block'?'none':'block'; if(f.style.display==='block'){populateWorklogSelect();document.getElementById('partName').focus();} }
+            async function savePart() {
+                var name = document.getElementById('partName').value.trim(); if (!name) { alert('Ingrese el nombre del repuesto'); return; }
+                var wlId = document.getElementById('partWorklog').value || null;
+                var oldPhoto = null, newPhoto = null;
+                var oldFile = document.getElementById('partOldPhoto').files[0];
+                var newFile = document.getElementById('partNewPhoto').files[0];
+                if (oldFile) { var fn = 'part-old-wo-'+workOrderId+'-'+Date.now()+'.'+oldFile.name.split('.').pop(); var up = await supabase.storage.from('workshop-photos').upload(fn, oldFile); if (!up.error) { var pu = supabase.storage.from('workshop-photos').getPublicUrl(fn); oldPhoto = pu.data.publicUrl; } }
+                if (newFile) { var fn = 'part-new-wo-'+workOrderId+'-'+Date.now()+'.'+newFile.name.split('.').pop(); var up = await supabase.storage.from('workshop-photos').upload(fn, newFile); if (!up.error) { var pu = supabase.storage.from('workshop-photos').getPublicUrl(fn); newPhoto = pu.data.publicUrl; } }
+                await supabase.from('replaced_parts').insert([{work_order_id:parseInt(workOrderId),work_log_id:wlId?parseInt(wlId):null,part_name:name,old_part_photo:oldPhoto,new_part_photo:newPhoto}]);
+                var invResult = await supabase.from('inventory').select('*').or('name.ilike.'+name+',barcode.eq.'+name+',numeric_code.eq.'+name).single();
+                if (invResult.data && invResult.data.stock > 0) {
+                    await supabase.from('inventory').update({stock:invResult.data.stock-1}).eq('id',invResult.data.id);
+                    await supabase.from('inventory_movements').insert([{inventory_id:invResult.data.id,work_order_id:parseInt(workOrderId),movement_type:'salida',quantity:1,notes:'Usado en repuesto: '+name}]);
+                }
+                document.getElementById('partName').value=''; document.getElementById('partWorklog').value=''; document.getElementById('partOldPhoto').value=''; document.getElementById('partNewPhoto').value='';
+                togglePartForm(); loadParts(); showSuccess();
+            }
+            async function deletePart(partId) { if(!confirm('Eliminar este repuesto?'))return; await supabase.from('replaced_parts').delete().eq('id',partId); loadParts(); showSuccess(); }
+
+            window.toggleItem = toggleItem;
+            window.showEditForm = showEditForm;
+            window.cancelEdit = cancelEdit;
+            window.saveEdit = saveEdit;
+            window.deleteWorklog = deleteWorklog;
+            window.toggleWorklogForm = toggleWorklogForm;
+            window.saveWorklog = saveWorklog;
+            window.togglePartForm = togglePartForm;
+            window.savePart = savePart;
+            window.deletePart = deletePart;
+            window.updateWOStatus = updateWOStatus;
+            init();
+        })();
+    </script>
+</body>
+</html>
