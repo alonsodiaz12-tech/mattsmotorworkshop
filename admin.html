@@ -534,20 +534,41 @@
                 document.getElementById('scannerContainer').style.display = 'block';
                 document.getElementById('scannerManualInput').value = '';
                 document.querySelector('.tab-btn[data-tab="inventory"]').click();
-                if (typeof Html5Qrcode === 'undefined') { var script = document.createElement('script'); script.src = 'https://unpkg.com/html5-qrcode'; script.onload = function() { initScanner(); }; document.head.appendChild(script); }
-                else { initScanner(); }
+                if (typeof Html5Qrcode === 'undefined') {
+                    var script = document.createElement('script');
+                    script.src = 'https://unpkg.com/html5-qrcode';
+                    script.onload = function() { initScanner(); };
+                    document.head.appendChild(script);
+                } else {
+                    initScanner();
+                }
             }
 
             function initScanner() {
-                if (html5QrCode) { html5QrCode.stop().then(function() { html5QrCode.clear(); }); }
+                if (html5QrCode) {
+                    html5QrCode.stop().then(function() { html5QrCode.clear(); }).catch(function() {});
+                    html5QrCode = null;
+                }
                 html5QrCode = new Html5Qrcode("scannerReader");
-                html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 150 } },
+                html5QrCode.start(
+                    { facingMode: "environment" },
+                    { fps: 10, qrbox: { width: 250, height: 150 } },
                     function(decodedText) { searchByBarcode(decodedText); stopScanner(); },
                     function(error) {}
                 ).catch(function(err) { console.log(err); });
             }
 
-            function stopScanner() { if (html5QrCode) { html5QrCode.stop().then(function() { html5QrCode.clear(); }); } document.getElementById('scannerContainer').style.display = 'none'; }
+            function stopScanner() {
+                if (html5QrCode) {
+                    html5QrCode.stop().then(function() {
+                        html5QrCode.clear();
+                        html5QrCode = null;
+                    }).catch(function() {
+                        html5QrCode = null;
+                    });
+                }
+                document.getElementById('scannerContainer').style.display = 'none';
+            }
 
             async function searchByBarcode(code) {
                 if (!code || !code.trim()) return;
@@ -563,7 +584,6 @@
                 } else { alert('Producto no encontrado con el codigo: ' + code); }
             }
 
-            // Exponer funciones al scope global
             window.showAddInventoryForm = showAddInventoryForm;
             window.startScanner = startScanner;
             window.stopScanner = stopScanner;
