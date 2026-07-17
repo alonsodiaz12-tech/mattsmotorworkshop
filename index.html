@@ -82,7 +82,7 @@
         }
         .logo-text span { display: block; font-size: 0.7rem; letter-spacing: 4px; color: var(--red-light); font-weight: 600; }
 
-        .nav-links { display: flex; list-style: none; gap: 2.5rem; align-items: center; }
+        .nav-links { display: flex; list-style: none; gap: 2rem; align-items: center; }
         .nav-links a {
             color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;
             font-weight: 500; letter-spacing: 0.3px; transition: var(--transition);
@@ -249,17 +249,6 @@
         .gallery-item .gallery-label { position: absolute; bottom: 1rem; left: 1rem; color: white; font-weight: 600; font-size: 0.9rem; z-index: 2; opacity: 0; transform: translateY(10px); transition: var(--transition); }
         .gallery-item:hover .gallery-label { opacity: 1; transform: translateY(0); }
 
-        .testimonials { background: var(--bg-card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-        .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; }
-        .testimonial-card { background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2.5rem; transition: var(--transition); }
-        .testimonial-card:hover { border-color: var(--border-light); box-shadow: var(--shadow-lg); }
-        .testimonial-stars { color: var(--gold); font-size: 1rem; letter-spacing: 2px; margin-bottom: 1.5rem; }
-        .testimonial-text { font-size: 1.05rem; line-height: 1.8; color: var(--text-secondary); font-style: italic; margin-bottom: 1.5rem; position: relative; padding-left: 1.5rem; border-left: 3px solid var(--red-dark); }
-        .testimonial-author { display: flex; align-items: center; gap: 1rem; }
-        .testimonial-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--red-dark), var(--red)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; color: white; }
-        .testimonial-info strong { display: block; font-weight: 600; }
-        .testimonial-info span { color: var(--text-muted); font-size: 0.85rem; }
-
         .map-section { padding: 7rem 2rem; }
         .map-container {
             width: 100%; max-width: 1300px; margin: 0 auto;
@@ -312,7 +301,6 @@
 
         @media (max-width: 480px) {
             .services-grid { grid-template-columns: 1fr; }
-            .testimonials-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -331,7 +319,6 @@
                 <li><a href="#inicio">Inicio</a></li>
                 <li><a href="#servicios">Servicios</a></li>
                 <li><a href="#galeria">Galería</a></li>
-                <li><a href="#testimonios">Testimonios</a></li>
                 <li><a href="#ubicacion">Ubicación</a></li>
                 <li><a href="/tracking">Estado del Vehículo</a></li>
                 <li><a href="/booking" class="btn-nav">Agendar Cita</a></li>
@@ -397,17 +384,6 @@
         </div>
     </section>
 
-    <section class="testimonials" id="testimonios">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-label">Testimonios</span>
-                <h2 class="section-title">Lo Que Dicen Nuestros Clientes</h2>
-                <p class="section-subtitle" style="margin:0 auto;">La satisfacción de nuestros clientes es nuestro mayor logro.</p>
-            </div>
-            <div class="testimonials-grid" id="testimonialsContainer"></div>
-        </div>
-    </section>
-
     <section class="map-section" id="ubicacion">
         <div class="container">
             <div class="section-header">
@@ -433,9 +409,9 @@
             <div class="footer-section">
                 <h4>Enlaces</h4>
                 <ul class="footer-links">
-                    <li><a href="/tracking">🔍 Consultar Estado del Vehículo</a></li>
-                    <li><a href="/booking">📅 Agendar Cita</a></li>
-                    <li><a href="#ubicacion">📍 Ubicación</a></li>
+                    <li><a href="/tracking">Consultar Estado del Vehículo</a></li>
+                    <li><a href="/booking">Agendar Cita</a></li>
+                    <li><a href="#ubicacion">Ubicación</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -459,7 +435,6 @@
             var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
             var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-            // Verificar modo mantenimiento (inmediato, sin flash)
             document.documentElement.style.display = 'none';
             (async function() {
                 try {
@@ -501,12 +476,6 @@
                 return result.data;
             }
 
-            async function loadTestimonials() {
-                var result = await supabase.from('testimonials').select('*').order('created_at', { ascending: false });
-                if (result.error) { console.error(result.error); return []; }
-                return result.data;
-            }
-
             async function renderServices() {
                 var services = await loadServices();
                 var container = document.getElementById('servicesContainer');
@@ -530,23 +499,9 @@
                 container.innerHTML = html;
             }
 
-            async function renderTestimonials() {
-                var testimonials = await loadTestimonials();
-                var container = document.getElementById('testimonialsContainer');
-                var html = '';
-                for (var i = 0; i < testimonials.length; i++) {
-                    var t = testimonials[i];
-                    var stars = '';
-                    for (var j = 0; j < t.stars; j++) stars += '★';
-                    html += '<div class="testimonial-card"><div class="testimonial-stars">' + stars + '</div><p class="testimonial-text">' + t.testimonial_text + '</p><div class="testimonial-author"><div class="testimonial-avatar">' + t.client_name.charAt(0) + '</div><div class="testimonial-info"><strong>' + t.client_name + '</strong><span>Cliente Verificado</span></div></div></div>';
-                }
-                container.innerHTML = html;
-            }
-
             async function init() {
                 await renderServices();
                 await renderGallery();
-                await renderTestimonials();
             }
 
             init();
