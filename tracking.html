@@ -85,12 +85,13 @@
         .no-notes { color: var(--text-muted); font-style: italic; font-size: 0.9rem; }
         .new-search-btn { display: inline-flex; align-items: center; gap: 0.5rem; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-light); padding: 0.7rem 1.5rem; border-radius: 50px; text-decoration: none; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: var(--transition); margin-top: 1rem; }
         .new-search-btn:hover { border-color: var(--text-secondary); color: var(--text-primary); }
-        .worklog-client-grid { display: grid; gap: 0.5rem; }
-        .worklog-client-item { background: var(--bg-dark); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; font-size: 0.85rem; }
-        .worklog-client-item .wl-header { display: flex; justify-content: space-between; margin-bottom: 0.25rem; flex-wrap: wrap; gap: 0.5rem; }
-        .worklog-client-item .wl-meta { display: grid; gap: 0.15rem; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+        .worklog-client-grid { display: grid; gap: 0.75rem; }
+        .worklog-client-item { background: var(--bg-dark); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
+        .worklog-client-item .wl-title { font-weight: 600; font-size: 0.95rem; color: var(--text-primary); margin-bottom: 0.4rem; }
+        .worklog-client-item .wl-date { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .worklog-client-item .wl-meta { display: grid; gap: 0.2rem; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
         .worklog-client-item .wl-price { color: #4ade80; font-weight: 600; }
-        .worklog-client-item img { width: 100%; max-width: 100%; border-radius: 6px; margin-top: 0.5rem; display: block; }
+        .worklog-client-item img { width: 100%; max-width: 400px; border-radius: 6px; margin-top: 0.5rem; display: block; }
 
         @media (max-width: 600px) {
             body { padding: 1rem; align-items: flex-start; padding-top: 2rem; }
@@ -98,6 +99,7 @@
             .detail-grid { grid-template-columns: 1fr; }
             .progress-tracker { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
             .result-header { flex-direction: column; }
+            .worklog-client-item img { max-width: 100%; }
         }
     </style>
 </head>
@@ -106,12 +108,12 @@
         <div class="tracking-header">
             <a href="/home" class="back-link">Volver al taller</a>
             <div class="icon">&#9881;</div>
-            <h1>Estado del Vehículo</h1>
-            <p>Ingrese el número de placa de su vehículo para consultar el estado actual de su servicio.</p>
+            <h1>Estado del Vehiculo</h1>
+            <p>Ingrese el numero de placa de su vehiculo para consultar el estado actual de su servicio.</p>
         </div>
         <div class="search-card" id="searchCard">
             <form class="search-form" onsubmit="searchVehicle(event)">
-                <div class="form-group"><label>Número de Placa</label><div class="input-with-icon"><span class="input-icon">&#128663;</span><input type="text" id="plateInput" placeholder="ABC-1234" maxlength="10" required autofocus></div></div>
+                <div class="form-group"><label>Numero de Placa</label><div class="input-with-icon"><span class="input-icon">&#128663;</span><input type="text" id="plateInput" placeholder="ABC-1234" maxlength="10" required autofocus></div></div>
                 <div class="error-message" id="errorMessage"></div>
                 <button type="submit" class="btn-search" id="searchBtn">Consultar Estado</button>
             </form>
@@ -213,14 +215,17 @@
                     if (log.minutes > 0) durationText += (log.hours > 0 ? 'con ' : '') + log.minutes + ' minuto' + (log.minutes > 1 ? 's' : '');
                 }
                 var priceText = log.price > 0 ? 'El costo total del trabajo realizado es de: <span class="wl-price">' + parseFloat(log.price).toLocaleString('es-CR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' CRC</span>' : '';
-                var metaHtml = '';
+                html += '<div class="worklog-client-item">';
+                html += '<div class="wl-title">' + log.description + '</div>';
+                html += '<div class="wl-date">' + new Date(log.created_at).toLocaleString('es-MX', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'}) + '</div>';
                 if (durationText || priceText) {
-                    metaHtml += '<div class="wl-meta">';
-                    if (durationText) metaHtml += '<span>' + durationText + '</span>';
-                    if (priceText) metaHtml += '<span>' + priceText + '</span>';
-                    metaHtml += '</div>';
+                    html += '<div class="wl-meta">';
+                    if (durationText) html += '<span>' + durationText + '</span>';
+                    if (priceText) html += '<span>' + priceText + '</span>';
+                    html += '</div>';
                 }
-                html += '<div class="worklog-client-item"><div class="wl-header"><span style="color:var(--text-secondary);">'+log.description+'</span><span style="color:var(--text-muted);font-size:0.7rem;">'+new Date(log.created_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></div>'+metaHtml+(log.photo_url?'<img src="'+log.photo_url+'" style="width:100%;max-width:100%;border-radius:6px;display:block;margin-top:0.5rem;" onerror="this.style.display=\'none\'">':'')+'</div>';
+                html += (log.photo_url ? '<img src="' + log.photo_url + '" onerror="this.style.display=\'none\'" loading="lazy">' : '');
+                html += '</div>';
             }
             html += '</div>'; container.innerHTML = html;
         }
