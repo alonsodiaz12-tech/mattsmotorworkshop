@@ -40,6 +40,7 @@
         .btn { padding: 0.5rem 1rem; border: none; border-radius: var(--radius-sm); cursor: pointer; font-weight: 500; font-size: 0.82rem; font-family: inherit; transition: var(--transition); white-space: nowrap; }
         .btn-primary { background: var(--red); color: white; } .btn-primary:hover { background: var(--red-hover); }
         .btn-success { background: #16a34a; color: white; } .btn-success:hover { background: #15803d; }
+        .btn-danger { background: #dc2626; color: white; } .btn-danger:hover { background: #b91c1c; }
         .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.7rem; }
         .note-list { display: grid; gap: 0.5rem; }
         .note-item { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.75rem 1rem; display: flex; justify-content: space-between; gap: 0.5rem; font-size: 0.85rem; }
@@ -49,9 +50,10 @@
         .wo-list { display: grid; gap: 0.5rem; }
         .wo-item { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem 1.1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
         .wo-item:hover { border-color: var(--border-light); }
+        .wo-actions { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; }
         .success-toast { position: fixed; bottom: 2rem; right: 2rem; background: #166534; color: #bbf7d0; padding: 0.75rem 1.25rem; border-radius: var(--radius); font-weight: 500; font-size: 0.85rem; display: none; z-index: 9999; border: 1px solid #22c55e; }
 
-        @media (max-width: 768px) { body { padding: 1rem; } .info-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { body { padding: 1rem; } .info-grid { grid-template-columns: 1fr; } .wo-item { flex-direction: column; align-items: flex-start; } .wo-actions { width: 100%; justify-content: flex-end; } }
     </style>
 </head>
 <body>
@@ -102,7 +104,7 @@
             }
 
             function renderBooking() {
-                var statusMap = { pending:{text:'Pendiente',cls:'status-pending'}, confirmed:{text:'Confirmada',cls:'status-confirmed'}, en_taller:{text:'En Taller',cls:'status-in_progress'}, en_progreso:{text:'En Progreso',cls:'status-in_progress'}, completado:{text:'Completada',cls:'status-completed'}, entregado:{text:'Entregado',cls:'status-completed'}, cancelled:{text:'Cancelada',cls:'status-cancelled'} };
+                var statusMap = { pending:{text:'Pendiente',cls:'status-pending'}, confirmed:{text:'Confirmada',cls:'status-confirmed'}, en_taller:{text:'En Taller',cls:'status-in_progress'}, cancelled:{text:'Cancelada',cls:'status-cancelled'} };
                 var st = statusMap[booking.status] || statusMap.pending;
                 document.getElementById('pageTitle').textContent = 'Cita #' + booking.id + ' - ' + (booking.plate_number || 'Sin placa');
                 document.getElementById('pageStatus').textContent = st.text; document.getElementById('pageStatus').className = 'status-badge ' + st.cls;
@@ -116,7 +118,6 @@
                 html += '<div class="info-item"><div class="label">Servicio</div><div class="value">'+booking.service_requested+'</div></div>';
                 html += '<div class="info-item"><div class="label">Fecha</div><div class="value">'+dateStr+'</div></div>';
                 html += '<div class="info-item"><div class="label">Hora</div><div class="value">'+(booking.preferred_time||'No especificada')+'</div></div>';
-                html += '<div class="info-item"><div class="label">Descripcion</div><div class="value">'+(booking.problem_description||'Sin descripcion')+'</div></div>';
                 html += '<div class="info-item"><div class="label">Cambiar Estado</div><div class="value"><select onchange="updateStatus(this.value)"><option value="pending"'+(booking.status==='pending'?' selected':'')+'>Pendiente</option><option value="confirmed"'+(booking.status==='confirmed'?' selected':'')+'>Confirmar</option><option value="cancelled"'+(booking.status==='cancelled'?' selected':'')+'>Cancelar</option></select></div></div>';
                 html += '<div class="info-item"><div class="label">Editar Placa</div><div class="value"><input type="text" value="'+(booking.plate_number||'')+'" onchange="updatePlate(this.value)" style="font-family:monospace;text-transform:uppercase;"></div></div>';
                 document.getElementById('infoGrid').innerHTML = html;
@@ -150,9 +151,10 @@
                     var st = statusMap[wo.status] || statusMap.en_progreso;
                     html += '<div class="wo-item">';
                     html += '<div><strong>Expediente #'+wo.id+'</strong> <span style="color:var(--text-muted);font-size:0.75rem;">'+new Date(wo.created_at).toLocaleDateString('es-MX')+'</span></div>';
-                    html += '<div style="display:flex;gap:0.5rem;align-items:center;">';
+                    html += '<div class="wo-actions">';
                     html += '<span class="status-badge '+st.cls+'">'+st.text+'</span>';
                     html += '<a href="/work-detail?id='+wo.id+'" class="btn btn-primary btn-sm" style="text-decoration:none;">Abrir</a>';
+                    html += '<button class="btn btn-danger btn-sm" onclick="deleteWorkOrder('+wo.id+')">Eliminar</button>';
                     html += '</div></div>';
                 }
                 html += '</div>'; container.innerHTML = html;
@@ -160,24 +162,37 @@
 
             async function createWorkOrder() {
                 if (!booking.plate_number) { alert('Asigne una placa primero'); return; }
-                var result = await supabase.from('work_orders').insert([{
-                    booking_id: parseInt(bookingId),
-                    plate_number: booking.plate_number,
-                    vehicle: booking.vehicle,
-                    client_name: booking.client_name,
-                    phone: booking.phone,
-                    status: 'en_progreso'
-                }]).select();
+                var existingResult = await supabase.from('work_orders').select('*').eq('booking_id', parseInt(bookingId)).eq('status', 'en_progreso');
+                if (existingResult.data && existingResult.data.length > 0) {
+                    var woList = '';
+                    for (var i = 0; i < existingResult.data.length; i++) {
+                        woList += 'Expediente #' + existingResult.data[i].id + ' (' + new Date(existingResult.data[i].created_at).toLocaleDateString('es-MX') + ')\n';
+                    }
+                    var createNew = confirm('Ya existen expedientes en progreso para esta cita:\n\n' + woList + '\nDesea crear un nuevo expediente de todas formas?');
+                    if (!createNew) return;
+                }
+                var result = await supabase.from('work_orders').insert([{booking_id: parseInt(bookingId), plate_number: booking.plate_number, vehicle: booking.vehicle, client_name: booking.client_name, phone: booking.phone, status: 'en_progreso'}]).select();
                 if (result.error) { alert('Error al crear expediente'); return; }
                 await supabase.from('bookings').update({status: 'en_taller'}).eq('id', bookingId);
                 window.location.href = '/work-detail?id=' + result.data[0].id;
             }
 
+            function deleteWorkOrder(woId) {
+                var password = prompt('Ingrese la contrasena de administrador para eliminar este expediente:');
+                if (!password) return;
+                if (password !== 'mant1215') { alert('Contrasena incorrecta'); return; }
+                if (!confirm('Esta seguro de eliminar este expediente? Esta accion no se puede deshacer.')) return;
+                supabase.from('work_orders').delete().eq('id', woId).then(function() { loadWorkOrders(); showSuccess(); });
+            }
+
             async function updateStatus(s) { await supabase.from('bookings').update({status:s}).eq('id',bookingId); booking.status = s; renderBooking(); showSuccess(); }
             async function updatePlate(p) { await supabase.from('bookings').update({plate_number:p.toUpperCase()}).eq('id',bookingId); booking.plate_number = p.toUpperCase(); showSuccess(); }
 
-            window.addNote = addNote; window.createWorkOrder = createWorkOrder;
-            window.updateStatus = updateStatus; window.updatePlate = updatePlate;
+            window.addNote = addNote;
+            window.createWorkOrder = createWorkOrder;
+            window.deleteWorkOrder = deleteWorkOrder;
+            window.updateStatus = updateStatus;
+            window.updatePlate = updatePlate;
             init();
         })();
     </script>
