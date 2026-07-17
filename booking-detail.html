@@ -277,19 +277,26 @@
             window.toggleWorklog = toggleWorklog;
 
             function showEditForm(logId) {
-                var item = document.getElementById('worklog-' + logId);
-                item.querySelector('.worklog-body').style.display = 'none';
-                document.getElementById('editForm-' + logId).style.display = 'block';
-                if (!item.classList.contains('open')) item.classList.add('open');
-            }
-            window.showEditForm = showEditForm;
+    var item = document.getElementById('worklog-' + logId);
+    item.querySelector('.worklog-body').style.display = 'none';
+    document.getElementById('editForm-' + logId).style.display = 'block';
+    if (!item.classList.contains('open')) item.classList.add('open');
+    // Guardar referencia de que fue abierto por edición
+    item.setAttribute('data-opened-by-edit', 'true');
+}
+window.showEditForm = showEditForm;
 
-            function cancelEdit(logId) {
-                var item = document.getElementById('worklog-' + logId);
-                document.getElementById('editForm-' + logId).style.display = 'none';
-                item.querySelector('.worklog-body').style.display = 'block';
-            }
-            window.cancelEdit = cancelEdit;
+function cancelEdit(logId) {
+    var item = document.getElementById('worklog-' + logId);
+    document.getElementById('editForm-' + logId).style.display = 'none';
+    item.querySelector('.worklog-body').style.display = 'block';
+    // Si fue abierto por edición, cerrarlo
+    if (item.getAttribute('data-opened-by-edit') === 'true') {
+        item.classList.remove('open');
+        item.removeAttribute('data-opened-by-edit');
+    }
+}
+window.cancelEdit = cancelEdit;
 
             async function saveEdit(logId) {
                 var desc = document.getElementById('editDesc-' + logId).value.trim();
