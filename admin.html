@@ -429,14 +429,16 @@
 
             async function createWorkOrder(bookingId, plate, vehicle, client, phone) {
                 if (!plate || plate === 'null' || plate === '') { alert('La cita no tiene placa asignada'); return; }
-                var result = await supabase.from('work_orders').insert([{
-                    booking_id: parseInt(bookingId),
-                    plate_number: plate,
-                    vehicle: vehicle,
-                    client_name: client,
-                    phone: phone,
-                    status: 'en_progreso'
-                }]).select();
+                var existingResult = await supabase.from('work_orders').select('*').eq('booking_id', parseInt(bookingId)).eq('status', 'en_progreso');
+                if (existingResult.data && existingResult.data.length > 0) {
+                    var woList = '';
+                    for (var i = 0; i < existingResult.data.length; i++) {
+                        woList += 'Expediente #' + existingResult.data[i].id + ' (' + new Date(existingResult.data[i].created_at).toLocaleDateString('es-MX') + ')\n';
+                    }
+                    var createNew = confirm('Ya existen expedientes en progreso para esta cita:\n\n' + woList + '\nDesea crear un nuevo expediente de todas formas?');
+                    if (!createNew) return;
+                }
+                var result = await supabase.from('work_orders').insert([{booking_id: parseInt(bookingId), plate_number: plate, vehicle: vehicle, client_name: client, phone: phone, status: 'en_progreso'}]).select();
                 if (result.error) { alert('Error al crear expediente'); return; }
                 await supabase.from('bookings').update({status: 'en_taller'}).eq('id', parseInt(bookingId));
                 window.location.href = '/work-detail?id=' + result.data[0].id;
@@ -454,7 +456,6 @@
 
             // ============ INVENTARIO ============
             async function loadInventory() { var result = await supabase.from('inventory').select('*').order('name'); return result.data || []; }
-
             async function renderInventory() {
                 var products = await loadInventory();
                 var container = document.getElementById('inventoryList');
@@ -496,190 +497,20 @@
             }
 
             function filterInventory() { renderInventory(); }
-
-            function showAddInventoryForm() {
-                document.getElementById('inventoryForm').style.display = 'grid';
-                document.getElementById('invEditId').value = '';
-                document.getElementById('invName').value = ''; document.getElementById('invCategory').value = '';
-                document.getElementById('invBrand').value = ''; document.getElementById('invBarcode').value = '';
-                document.getElementById('invNumericCode').value = ''; document.getElementById('invStock').value = '';
-                document.getElementById('invMinAlert').value = '5'; document.getElementById('invPurchasePrice').value = '';
-                document.getElementById('invSalePrice').value = '';
-                document.querySelector('.tab-btn[data-tab="inventory"]').click();
-            }
-
-            async function saveInventory() {
-                var editId = document.getElementById('invEditId').value;
-                var data = {
-                    name: document.getElementById('invName').value.trim(),
-                    category: document.getElementById('invCategory').value.trim(),
-                    brand: document.getElementById('invBrand').value.trim(),
-                    barcode: document.getElementById('invBarcode').value.trim() || null,
-                    numeric_code: document.getElementById('invNumericCode').value.trim() || null,
-                    stock: parseInt(document.getElementById('invStock').value) || 0,
-                    min_stock_alert: parseInt(document.getElementById('invMinAlert').value) || 5,
-                    purchase_price: parseFloat(document.getElementById('invPurchasePrice').value) || 0,
-                    sale_price: parseFloat(document.getElementById('invSalePrice').value) || 0
-                };
-                if (!data.name) { alert('El nombre es obligatorio'); return; }
-                if (editId) { await supabase.from('inventory').update(data).eq('id', editId); } 
-                else { 
-                    if (!data.barcode && !data.numeric_code) {
-                        var allProducts = await supabase.from('inventory').select('id').order('id', {ascending: false}).limit(1);
-                        var nextId = allProducts.data && allProducts.data.length > 0 ? allProducts.data[0].id + 1 : 1;
-                        data.numeric_code = 'MMW-' + String(nextId).padStart(3, '0');
-                    }
-                    await supabase.from('inventory').insert([data]); 
-                }
-                document.getElementById('inventoryForm').style.display = 'none';
-                renderInventory(); showSuccess();
-            }
-
-            async function editInventory(id) {
-                var result = await supabase.from('inventory').select('*').eq('id', id).single();
-                if (result.data) {
-                    var p = result.data;
-                    document.getElementById('invEditId').value = p.id; document.getElementById('invName').value = p.name;
-                    document.getElementById('invCategory').value = p.category || ''; document.getElementById('invBrand').value = p.brand || '';
-                    document.getElementById('invBarcode').value = p.barcode || ''; document.getElementById('invNumericCode').value = p.numeric_code || '';
-                    document.getElementById('invStock').value = p.stock || ''; document.getElementById('invMinAlert').value = p.min_stock_alert || 5;
-                    document.getElementById('invPurchasePrice').value = p.purchase_price || ''; document.getElementById('invSalePrice').value = p.sale_price || '';
-                    document.getElementById('inventoryForm').style.display = 'grid';
-                    document.querySelector('.tab-btn[data-tab="inventory"]').click();
-                }
-            }
-
+            function showAddInventoryForm() { document.getElementById('inventoryForm').style.display = 'grid'; document.getElementById('invEditId').value = ''; document.getElementById('invName').value = ''; document.getElementById('invCategory').value = ''; document.getElementById('invBrand').value = ''; document.getElementById('invBarcode').value = ''; document.getElementById('invNumericCode').value = ''; document.getElementById('invStock').value = ''; document.getElementById('invMinAlert').value = '5'; document.getElementById('invPurchasePrice').value = ''; document.getElementById('invSalePrice').value = ''; document.querySelector('.tab-btn[data-tab="inventory"]').click(); }
+            async function saveInventory() { var editId = document.getElementById('invEditId').value; var data = { name: document.getElementById('invName').value.trim(), category: document.getElementById('invCategory').value.trim(), brand: document.getElementById('invBrand').value.trim(), barcode: document.getElementById('invBarcode').value.trim() || null, numeric_code: document.getElementById('invNumericCode').value.trim() || null, stock: parseInt(document.getElementById('invStock').value) || 0, min_stock_alert: parseInt(document.getElementById('invMinAlert').value) || 5, purchase_price: parseFloat(document.getElementById('invPurchasePrice').value) || 0, sale_price: parseFloat(document.getElementById('invSalePrice').value) || 0 }; if (!data.name) { alert('El nombre es obligatorio'); return; } if (editId) { await supabase.from('inventory').update(data).eq('id', editId); } else { if (!data.barcode && !data.numeric_code) { var allProducts = await supabase.from('inventory').select('id').order('id', {ascending: false}).limit(1); var nextId = allProducts.data && allProducts.data.length > 0 ? allProducts.data[0].id + 1 : 1; data.numeric_code = 'MMW-' + String(nextId).padStart(3, '0'); } await supabase.from('inventory').insert([data]); } document.getElementById('inventoryForm').style.display = 'none'; renderInventory(); showSuccess(); }
+            async function editInventory(id) { var result = await supabase.from('inventory').select('*').eq('id', id).single(); if (result.data) { var p = result.data; document.getElementById('invEditId').value = p.id; document.getElementById('invName').value = p.name; document.getElementById('invCategory').value = p.category || ''; document.getElementById('invBrand').value = p.brand || ''; document.getElementById('invBarcode').value = p.barcode || ''; document.getElementById('invNumericCode').value = p.numeric_code || ''; document.getElementById('invStock').value = p.stock || ''; document.getElementById('invMinAlert').value = p.min_stock_alert || 5; document.getElementById('invPurchasePrice').value = p.purchase_price || ''; document.getElementById('invSalePrice').value = p.sale_price || ''; document.getElementById('inventoryForm').style.display = 'grid'; document.querySelector('.tab-btn[data-tab="inventory"]').click(); } }
             async function deleteInventory(id) { if (!confirm('Eliminar este producto del inventario?')) return; await supabase.from('inventory').delete().eq('id', id); renderInventory(); showSuccess(); }
-
-            async function quickDiscount(id) {
-                var result = await supabase.from('inventory').select('*').eq('id', id).single();
-                if (!result.data) return;
-                scannedProductData = result.data;
-                document.getElementById('scannedAction').value = 'discount';
-                var info = document.getElementById('scannedProductInfo');
-                info.innerHTML = '<p><strong>' + scannedProductData.name + '</strong></p><p style="color:var(--text-muted);font-size:0.85rem;">' + (scannedProductData.brand||'') + ' | ' + (scannedProductData.category||'') + '</p><p style="font-size:0.85rem;">Stock actual: <strong>' + scannedProductData.stock + '</strong></p>';
-                document.getElementById('scannedQuantity').value = '1'; document.getElementById('scannedQuantity').max = scannedProductData.stock;
-                document.getElementById('scannedProductModal').classList.add('active');
-            }
-
-            async function quickAdd(id) {
-                var result = await supabase.from('inventory').select('*').eq('id', id).single();
-                if (!result.data) return;
-                scannedProductData = result.data;
-                document.getElementById('scannedAction').value = 'add';
-                var info = document.getElementById('scannedProductInfo');
-                info.innerHTML = '<p><strong>' + scannedProductData.name + '</strong></p><p style="color:var(--text-muted);font-size:0.85rem;">' + (scannedProductData.brand||'') + ' | ' + (scannedProductData.category||'') + '</p><p style="font-size:0.85rem;">Stock actual: <strong>' + scannedProductData.stock + '</strong></p>';
-                document.getElementById('scannedQuantity').value = '1'; document.getElementById('scannedQuantity').max = 999;
-                document.getElementById('scannedProductModal').classList.add('active');
-            }
-
+            async function quickDiscount(id) { var result = await supabase.from('inventory').select('*').eq('id', id).single(); if (!result.data) return; scannedProductData = result.data; document.getElementById('scannedAction').value = 'discount'; document.getElementById('scannedProductInfo').innerHTML = '<p><strong>' + scannedProductData.name + '</strong></p><p style="color:var(--text-muted);font-size:0.85rem;">' + (scannedProductData.brand||'') + ' | ' + (scannedProductData.category||'') + '</p><p style="font-size:0.85rem;">Stock actual: <strong>' + scannedProductData.stock + '</strong></p>'; document.getElementById('scannedQuantity').value = '1'; document.getElementById('scannedQuantity').max = scannedProductData.stock; document.getElementById('scannedProductModal').classList.add('active'); }
+            async function quickAdd(id) { var result = await supabase.from('inventory').select('*').eq('id', id).single(); if (!result.data) return; scannedProductData = result.data; document.getElementById('scannedAction').value = 'add'; document.getElementById('scannedProductInfo').innerHTML = '<p><strong>' + scannedProductData.name + '</strong></p><p style="color:var(--text-muted);font-size:0.85rem;">' + (scannedProductData.brand||'') + ' | ' + (scannedProductData.category||'') + '</p><p style="font-size:0.85rem;">Stock actual: <strong>' + scannedProductData.stock + '</strong></p>'; document.getElementById('scannedQuantity').value = '1'; document.getElementById('scannedQuantity').max = 999; document.getElementById('scannedProductModal').classList.add('active'); }
             function closeScannedModal() { document.getElementById('scannedProductModal').classList.remove('active'); scannedProductData = null; }
-
-            async function processScannedProduct() {
-                if (!scannedProductData) return;
-                var qty = parseInt(document.getElementById('scannedQuantity').value) || 1;
-                var action = document.getElementById('scannedAction').value;
-                if (action === 'discount') {
-                    if (qty > scannedProductData.stock) { alert('No hay suficiente stock'); return; }
-                    var newStock = scannedProductData.stock - qty;
-                    await supabase.from('inventory').update({stock: newStock}).eq('id', scannedProductData.id);
-                    await supabase.from('inventory_movements').insert([{inventory_id: scannedProductData.id, movement_type: 'salida', quantity: qty, notes: 'Descontado manualmente'}]);
-                } else {
-                    var newStock = scannedProductData.stock + qty;
-                    await supabase.from('inventory').update({stock: newStock}).eq('id', scannedProductData.id);
-                    await supabase.from('inventory_movements').insert([{inventory_id: scannedProductData.id, movement_type: 'entrada', quantity: qty, notes: 'Agregado manualmente'}]);
-                }
-                closeScannedModal(); renderInventory(); showSuccess();
-            }
-
-            function startScanner() {
-                if (html5QrCode) { try { html5QrCode.stop().catch(function(){}); html5QrCode.clear(); } catch(e) {} html5QrCode = null; }
-                document.getElementById('scannerContainer').style.display = 'block';
-                document.getElementById('scannerManualInput').value = '';
-                document.querySelector('.tab-btn[data-tab="inventory"]').click();
-                if (typeof Html5Qrcode === 'undefined') { var script = document.createElement('script'); script.src = 'https://unpkg.com/html5-qrcode'; script.onload = function() { initScanner(); }; document.head.appendChild(script); }
-                else { initScanner(); }
-            }
-
-            function initScanner() {
-                if (html5QrCode) { try { html5QrCode.stop().catch(function(){}); html5QrCode.clear(); } catch(e) {} html5QrCode = null; }
-                html5QrCode = new Html5Qrcode("scannerReader");
-                html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 150 } },
-                    function(decodedText) { searchByBarcode(decodedText); stopScanner(); },
-                    function(error) {}
-                ).catch(function(err) { console.log('Error al iniciar escaner:', err); });
-            }
-
-            function stopScanner() {
-                if (html5QrCode) { try { html5QrCode.stop().then(function() { html5QrCode.clear(); html5QrCode = null; }).catch(function() { html5QrCode = null; }); } catch(e) { html5QrCode = null; } }
-                document.getElementById('scannerContainer').style.display = 'none';
-            }
-
-            async function searchByBarcode(code) {
-                if (!code || !code.trim()) return;
-                code = code.trim();
-                var result = await supabase.from('inventory').select('*').or('barcode.eq.' + code + ',numeric_code.eq.' + code).single();
-                if (result.data) {
-                    scannedProductData = result.data;
-                    document.getElementById('scannedAction').value = 'discount';
-                    var info = document.getElementById('scannedProductInfo');
-                    info.innerHTML = '<p><strong>' + scannedProductData.name + '</strong></p><p style="color:var(--text-muted);font-size:0.85rem;">' + (scannedProductData.brand||'') + ' | ' + (scannedProductData.category||'') + '</p><p style="font-size:0.85rem;">Stock actual: <strong>' + scannedProductData.stock + '</strong></p>';
-                    document.getElementById('scannedQuantity').value = '1'; document.getElementById('scannedQuantity').max = scannedProductData.stock;
-                    document.getElementById('scannedProductModal').classList.add('active');
-                    document.getElementById('scannerManualInput').value = '';
-                } else { alert('Producto no encontrado con el codigo: ' + code); }
-            }
-
-            function viewLabel(id) {
-                supabase.from('inventory').select('*').eq('id', id).single().then(function(result) {
-                    if (!result.data) return;
-                    var product = result.data;
-                    var code = product.barcode || product.numeric_code || ('MMW-' + String(product.id).padStart(3, '0'));
-                    var modal = document.createElement('div');
-                    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:10001;display:flex;align-items:center;justify-content:center;padding:2rem;';
-                    modal.onclick = function(e) { if(e.target===modal) document.body.removeChild(modal); };
-                    var content = document.createElement('div');
-                    content.style.cssText = 'background:#111;border:1px solid #333;border-radius:16px;padding:2rem;text-align:center;max-width:400px;width:100%;position:relative;';
-                    var closeBtn = document.createElement('button');
-                    closeBtn.textContent = 'X'; closeBtn.style.cssText = 'position:absolute;top:1rem;right:1rem;background:none;border:none;color:#fff;font-size:1.5rem;cursor:pointer;';
-                    closeBtn.onclick = function() { document.body.removeChild(modal); };
-                    content.appendChild(closeBtn);
-                    var titleEl = document.createElement('h2');
-                    titleEl.textContent = product.name; titleEl.style.cssText = 'font-family:Montserrat,sans-serif;font-size:1.2rem;margin-bottom:0.5rem;color:#fff;';
-                    content.appendChild(titleEl);
-                    var subtitleEl = document.createElement('p');
-                    subtitleEl.textContent = (product.brand||'') + ' | ' + (product.category||''); subtitleEl.style.cssText = 'font-size:0.85rem;color:#a3a3a3;margin-bottom:1.5rem;';
-                    content.appendChild(subtitleEl);
-                    var canvas = document.createElement('canvas');
-                    try { JsBarcode(canvas, code, { format: "CODE128", width: 2, height: 60, displayValue: true, fontSize: 14, margin: 10, background: '#ffffff', lineColor: '#000000' }); canvas.style.maxWidth = '100%'; content.appendChild(canvas); } catch(e) {}
-                    var codeTextEl = document.createElement('p');
-                    codeTextEl.textContent = code; codeTextEl.style.cssText = 'font-size:1rem;font-weight:bold;color:#fff;margin-top:1rem;font-family:monospace;';
-                    content.appendChild(codeTextEl);
-                    var printBtn = document.createElement('button');
-                    printBtn.textContent = 'Imprimir etiqueta'; printBtn.style.cssText = 'margin-top:1.5rem;padding:0.6rem 1.5rem;background:#dc2626;color:white;border:none;border-radius:6px;cursor:pointer;font-family:inherit;font-size:0.85rem;';
-                    printBtn.onclick = function() { printLabel(id); };
-                    content.appendChild(printBtn);
-                    modal.appendChild(content); document.body.appendChild(modal);
-                });
-            }
-
-            function printLabel(id) {
-                supabase.from('inventory').select('*').eq('id', id).single().then(function(result) {
-                    if (!result.data) return;
-                    var product = result.data;
-                    var code = product.barcode || product.numeric_code || ('MMW-' + String(product.id).padStart(3, '0'));
-                    var printWindow = window.open('', '_blank', 'width=400,height=400');
-                    var canvas = document.createElement('canvas');
-                    var barcodeImg = '';
-                    try { JsBarcode(canvas, code, { format: "CODE128", width: 2, height: 60, displayValue: true, fontSize: 14, margin: 10 }); barcodeImg = canvas.toDataURL('image/png'); } catch(e) {}
-                    printWindow.document.write('<!DOCTYPE html><html><head><title>Etiqueta - ' + product.name + '</title><style>body{font-family:Arial,sans-serif;text-align:center;padding:20px;}h2{font-size:16px;margin-bottom:5px;}p{font-size:12px;color:#666;margin-bottom:15px;}img{max-width:100%;}@media print{body{margin:0;padding:10px;}}<' + '/style></head><body>');
-                    printWindow.document.write('<h2>' + product.name + '</h2><p>' + (product.brand||'') + ' | ' + (product.category||'') + '</p>');
-                    if (barcodeImg) printWindow.document.write('<img src="' + barcodeImg + '" alt="Codigo de barras">');
-                    printWindow.document.write('<p style="font-size:14px;font-weight:bold;margin-top:10px;">' + code + '</p>');
-                    printWindow.document.write('<script>setTimeout(function(){window.print();},500);<' + '/script></body></html>');
-                    printWindow.document.close();
-                });
-            }
+            async function processScannedProduct() { if (!scannedProductData) return; var qty = parseInt(document.getElementById('scannedQuantity').value) || 1; var action = document.getElementById('scannedAction').value; if (action === 'discount') { if (qty > scannedProductData.stock) { alert('No hay suficiente stock'); return; } var newStock = scannedProductData.stock - qty; await supabase.from('inventory').update({stock: newStock}).eq('id', scannedProductData.id); await supabase.from('inventory_movements').insert([{inventory_id: scannedProductData.id, movement_type: 'salida', quantity: qty, notes: 'Descontado manualmente'}]); } else { var newStock = scannedProductData.stock + qty; await supabase.from('inventory').update({stock: newStock}).eq('id', scannedProductData.id); await supabase.from('inventory_movements').insert([{inventory_id: scannedProductData.id, movement_type: 'entrada', quantity: qty, notes: 'Agregado manualmente'}]); } closeScannedModal(); renderInventory(); showSuccess(); }
+            function startScanner() { if (html5QrCode) { try { html5QrCode.stop().catch(function(){}); html5QrCode.clear(); } catch(e) {} html5QrCode = null; } document.getElementById('scannerContainer').style.display = 'block'; document.getElementById('scannerManualInput').value = ''; document.querySelector('.tab-btn[data-tab="inventory"]').click(); if (typeof Html5Qrcode === 'undefined') { var script = document.createElement('script'); script.src = 'https://unpkg.com/html5-qrcode'; script.onload = function() { initScanner(); }; document.head.appendChild(script); } else { initScanner(); } }
+            function initScanner() { if (html5QrCode) { try { html5QrCode.stop().catch(function(){}); html5QrCode.clear(); } catch(e) {} html5QrCode = null; } html5QrCode = new Html5Qrcode("scannerReader"); html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 150 } }, function(decodedText) { searchByBarcode(decodedText); stopScanner(); }, function(error) {}).catch(function(err) { console.log('Error al iniciar escaner:', err); }); }
+            function stopScanner() { if (html5QrCode) { try { html5QrCode.stop().then(function() { html5QrCode.clear(); html5QrCode = null; }).catch(function() { html5QrCode = null; }); } catch(e) { html5QrCode = null; } } document.getElementById('scannerContainer').style.display = 'none'; }
+            async function searchByBarcode(code) { if (!code || !code.trim()) return; code = code.trim(); var result = await supabase.from('inventory').select('*').or('barcode.eq.' + code + ',numeric_code.eq.' + code).single(); if (result.data) { scannedProductData = result.data; document.getElementById('scannedAction').value = 'discount'; document.getElementById('scannedProductInfo').innerHTML = '<p><strong>' + scannedProductData.name + '</strong></p><p style="color:var(--text-muted);font-size:0.85rem;">' + (scannedProductData.brand||'') + ' | ' + (scannedProductData.category||'') + '</p><p style="font-size:0.85rem;">Stock actual: <strong>' + scannedProductData.stock + '</strong></p>'; document.getElementById('scannedQuantity').value = '1'; document.getElementById('scannedQuantity').max = scannedProductData.stock; document.getElementById('scannedProductModal').classList.add('active'); document.getElementById('scannerManualInput').value = ''; } else { alert('Producto no encontrado con el codigo: ' + code); } }
+            function viewLabel(id) { supabase.from('inventory').select('*').eq('id', id).single().then(function(result) { if (!result.data) return; var product = result.data; var code = product.barcode || product.numeric_code || ('MMW-' + String(product.id).padStart(3, '0')); var modal = document.createElement('div'); modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:10001;display:flex;align-items:center;justify-content:center;padding:2rem;'; modal.onclick = function(e) { if(e.target===modal) document.body.removeChild(modal); }; var content = document.createElement('div'); content.style.cssText = 'background:#111;border:1px solid #333;border-radius:16px;padding:2rem;text-align:center;max-width:400px;width:100%;position:relative;'; var closeBtn = document.createElement('button'); closeBtn.textContent = 'X'; closeBtn.style.cssText = 'position:absolute;top:1rem;right:1rem;background:none;border:none;color:#fff;font-size:1.5rem;cursor:pointer;'; closeBtn.onclick = function() { document.body.removeChild(modal); }; content.appendChild(closeBtn); var titleEl = document.createElement('h2'); titleEl.textContent = product.name; titleEl.style.cssText = 'font-family:Montserrat,sans-serif;font-size:1.2rem;margin-bottom:0.5rem;color:#fff;'; content.appendChild(titleEl); var subtitleEl = document.createElement('p'); subtitleEl.textContent = (product.brand||'') + ' | ' + (product.category||''); subtitleEl.style.cssText = 'font-size:0.85rem;color:#a3a3a3;margin-bottom:1.5rem;'; content.appendChild(subtitleEl); var canvas = document.createElement('canvas'); try { JsBarcode(canvas, code, { format: "CODE128", width: 2, height: 60, displayValue: true, fontSize: 14, margin: 10, background: '#ffffff', lineColor: '#000000' }); canvas.style.maxWidth = '100%'; content.appendChild(canvas); } catch(e) {} var codeTextEl = document.createElement('p'); codeTextEl.textContent = code; codeTextEl.style.cssText = 'font-size:1rem;font-weight:bold;color:#fff;margin-top:1rem;font-family:monospace;'; content.appendChild(codeTextEl); var printBtn = document.createElement('button'); printBtn.textContent = 'Imprimir etiqueta'; printBtn.style.cssText = 'margin-top:1.5rem;padding:0.6rem 1.5rem;background:#dc2626;color:white;border:none;border-radius:6px;cursor:pointer;font-family:inherit;font-size:0.85rem;'; printBtn.onclick = function() { printLabel(id); }; content.appendChild(printBtn); modal.appendChild(content); document.body.appendChild(modal); }); }
+            function printLabel(id) { supabase.from('inventory').select('*').eq('id', id).single().then(function(result) { if (!result.data) return; var product = result.data; var code = product.barcode || product.numeric_code || ('MMW-' + String(product.id).padStart(3, '0')); var printWindow = window.open('', '_blank', 'width=400,height=400'); var canvas = document.createElement('canvas'); var barcodeImg = ''; try { JsBarcode(canvas, code, { format: "CODE128", width: 2, height: 60, displayValue: true, fontSize: 14, margin: 10 }); barcodeImg = canvas.toDataURL('image/png'); } catch(e) {} printWindow.document.write('<!DOCTYPE html><html><head><title>Etiqueta - ' + product.name + '</title><style>body{font-family:Arial,sans-serif;text-align:center;padding:20px;}h2{font-size:16px;margin-bottom:5px;}p{font-size:12px;color:#666;margin-bottom:15px;}img{max-width:100%;}@media print{body{margin:0;padding:10px;}}<' + '/style></head><body>'); printWindow.document.write('<h2>' + product.name + '</h2><p>' + (product.brand||'') + ' | ' + (product.category||'') + '</p>'); if (barcodeImg) printWindow.document.write('<img src="' + barcodeImg + '" alt="Codigo de barras">'); printWindow.document.write('<p style="font-size:14px;font-weight:bold;margin-top:10px;">' + code + '</p>'); printWindow.document.write('<script>setTimeout(function(){window.print();},500);<' + '/script></body></html>'); printWindow.document.close(); }); }
 
             window.showAddInventoryForm = showAddInventoryForm;
             window.startScanner = startScanner;
