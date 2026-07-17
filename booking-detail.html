@@ -64,66 +64,76 @@
         .btn { padding: 0.5rem 1rem; border: none; border-radius: var(--radius-sm); cursor: pointer; font-weight: 500; font-size: 0.82rem; font-family: inherit; transition: var(--transition); }
         .btn-primary { background: var(--red); color: white; } .btn-primary:hover { background: var(--red-hover); }
         .btn-secondary { background: transparent; color: var(--text-secondary); border: 1px solid var(--border); } .btn-secondary:hover { border-color: var(--border-light); color: var(--text-primary); }
-        .btn-sm { padding: 0.3rem 0.6rem; font-size: 0.72rem; }
+        .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.7rem; }
+        .btn-danger { background: #dc2626; color: white; } .btn-danger:hover { background: #b91c1c; }
+        .btn-edit { background: #4b5563; color: white; } .btn-edit:hover { background: #6b7280; }
         .note-list { display: grid; gap: 0.5rem; }
         .note-item { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.75rem 1rem; display: flex; justify-content: space-between; gap: 0.5rem; font-size: 0.85rem; }
         .note-item .note-time { color: var(--text-muted); font-size: 0.7rem; white-space: nowrap; }
-        .worklog-grid { display: grid; gap: 0.75rem; }
-        .worklog-card { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; }
-        .worklog-card .worklog-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.25rem; font-size: 0.8rem; }
-        .worklog-card .worklog-header span { color: var(--text-muted); }
-        .worklog-card p { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 0.5rem; }
-        .worklog-card .worklog-meta { display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.5rem; }
-        .worklog-card .worklog-price { font-weight: 700; color: #4ade80; font-size: 0.9rem; }
-        .worklog-card img { width: 100%; max-width: 100%; border-radius: var(--radius-sm); margin-top: 0.5rem; display: block; }
         .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.85rem; }
         .loading-state { text-align: center; padding: 2rem; color: var(--text-muted); }
+        .success-toast { position: fixed; bottom: 2rem; right: 2rem; background: #166534; color: #bbf7d0; padding: 0.75rem 1.25rem; border-radius: var(--radius); font-weight: 500; font-size: 0.85rem; display: none; z-index: 9999; border: 1px solid #22c55e; }
+
+        /* Worklog */
+        .worklog-grid { display: grid; gap: 0.5rem; }
+        .worklog-item { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+        .worklog-header-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; cursor: pointer; transition: var(--transition); user-select: none; }
+        .worklog-header-bar:hover { background: rgba(255,255,255,0.02); }
+        .worklog-header-bar .wl-title { font-weight: 600; font-size: 0.9rem; color: var(--text-primary); flex: 1; margin-right: 0.5rem; }
+        .worklog-header-bar .wl-badges { display: flex; gap: 0.3rem; flex-shrink: 0; margin-right: 0.5rem; }
+        .worklog-header-bar .wl-actions { display: flex; gap: 0.25rem; flex-shrink: 0; margin-right: 0.5rem; }
+        .worklog-header-bar .wl-arrow { color: var(--text-muted); font-size: 0.65rem; transition: var(--transition); flex-shrink: 0; }
+        .worklog-item.open .worklog-header-bar .wl-arrow { transform: rotate(180deg); }
+        .badge { padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.65rem; font-weight: 500; white-space: nowrap; }
+        .badge-time { background: rgba(59,130,246,0.12); color: #60a5fa; }
+        .badge-price { background: rgba(34,197,94,0.12); color: #4ade80; font-weight: 600; }
+        .worklog-body { display: none; padding: 0 1rem 1rem 1rem; }
+        .worklog-item.open .worklog-body { display: block; }
+        .worklog-body .wl-date { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .worklog-body .wl-meta { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.3rem; }
+        .worklog-body .wl-price { color: #4ade80; font-weight: 600; }
+        .worklog-body img { width: 100%; max-width: 100%; border-radius: var(--radius-sm); margin-top: 0.5rem; display: block; }
+
+        /* Edit form */
+        .edit-worklog-form { display: none; padding: 0 1rem 1rem 1rem; }
+        .edit-worklog-form textarea { width: 100%; padding: 0.5rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.85rem; font-family: inherit; outline: none; resize: vertical; min-height: 50px; margin-bottom: 0.5rem; }
+        .edit-worklog-form textarea:focus { border-color: var(--red); }
+        .edit-worklog-form .form-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.5rem; }
+        .edit-worklog-form .form-row input { padding: 0.4rem 0.5rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.8rem; font-family: inherit; outline: none; width: 65px; text-align: center; }
+        .edit-worklog-form .form-row input:focus { border-color: var(--red); }
+        .edit-worklog-form .form-row label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
+        .edit-worklog-form .form-actions { display: flex; gap: 0.5rem; }
+
         .add-worklog-form { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1.25rem; margin-top: 1rem; display: none; }
         .add-worklog-form textarea { width: 100%; padding: 0.7rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.85rem; font-family: inherit; outline: none; resize: vertical; min-height: 60px; margin-bottom: 0.75rem; }
         .add-worklog-form textarea:focus { border-color: var(--red); }
-        .form-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.75rem; }
-        .form-row input { padding: 0.5rem 0.7rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.85rem; font-family: inherit; outline: none; }
-        .form-row input:focus { border-color: var(--red); }
-        .form-row label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); white-space: nowrap; }
-        .form-row .input-group { display: flex; align-items: center; gap: 0.25rem; }
-        .form-row .input-group input { width: 60px; text-align: center; }
-        .form-actions { display: flex; gap: 0.5rem; }
-        .success-toast { position: fixed; bottom: 2rem; right: 2rem; background: #166534; color: #bbf7d0; padding: 0.75rem 1.25rem; border-radius: var(--radius); font-weight: 500; font-size: 0.85rem; display: none; z-index: 9999; border: 1px solid #22c55e; }
+        .add-worklog-form .form-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.75rem; }
+        .add-worklog-form .form-row input { padding: 0.5rem 0.7rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.85rem; font-family: inherit; outline: none; }
+        .add-worklog-form .form-row input:focus { border-color: var(--red); }
+        .add-worklog-form .form-row label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); white-space: nowrap; }
+        .add-worklog-form .form-row .input-group { display: flex; align-items: center; gap: 0.25rem; }
+        .add-worklog-form .form-row .input-group input { width: 60px; text-align: center; }
+        .add-worklog-form .form-actions { display: flex; gap: 0.5rem; }
 
         @media (max-width: 768px) { body { padding: 1rem; } .info-grid { grid-template-columns: 1fr; } .page-header { flex-direction: column; align-items: flex-start; } }
     </style>
 </head>
 <body>
     <div class="container">
-        <a href="/admin" class="back-link">← Volver al panel</a>
+        <a href="/admin" class="back-link">Volver al panel</a>
         <div class="page-header"><h1 id="pageTitle">Cargando cita...</h1><span class="status-badge" id="pageStatus"></span></div>
-        <div class="info-card"><div class="info-grid" id="infoGrid"><div class="loading-state">Cargando información...</div></div></div>
+        <div class="info-card"><div class="info-grid" id="infoGrid"><div class="loading-state">Cargando informacion...</div></div></div>
         <div class="section-card"><div class="section-header"><h2>Notas del Taller</h2><button class="btn btn-primary btn-sm" onclick="addNote()">Agregar nota</button></div><div id="notesContainer"><div class="loading-state">Cargando notas...</div></div></div>
         <div class="section-card"><div class="section-header"><h2>Registro de Trabajos</h2><button class="btn btn-primary btn-sm" onclick="toggleWorklogForm()">Agregar trabajo</button></div><div id="worklogContainer"><div class="loading-state">Cargando trabajos...</div></div>
         <div class="add-worklog-form" id="worklogForm">
             <textarea id="worklogDesc" placeholder="Describa el trabajo realizado..."></textarea>
             <div class="form-row">
-                <div class="input-group">
-                    <label>Horas</label>
-                    <input type="number" id="worklogHours" value="0" min="0" max="99">
-                </div>
-                <div class="input-group">
-                    <label>Minutos</label>
-                    <input type="number" id="worklogMinutes" value="0" min="0" max="59">
-                </div>
-                <div class="input-group" style="flex:1;">
-                    <label>Precio ($)</label>
-                    <input type="number" id="worklogPrice" value="0" min="0" step="0.01" style="width:100px;">
-                </div>
+                <div class="input-group"><label>Horas</label><input type="number" id="worklogHours" value="0" min="0" max="99"></div>
+                <div class="input-group"><label>Minutos</label><input type="number" id="worklogMinutes" value="0" min="0" max="59"></div>
+                <div class="input-group" style="flex:1;"><label>Precio (CRC)</label><input type="number" id="worklogPrice" value="0" min="0" step="0.01" style="width:100px;"></div>
             </div>
-            <div class="form-row">
-                <label>Foto (opcional)</label>
-                <input type="file" id="worklogPhoto" accept="image/*" style="flex:1;">
-            </div>
-            <div class="form-actions">
-                <button class="btn btn-primary" onclick="saveWorklog()">Guardar trabajo</button>
-                <button class="btn btn-secondary" onclick="toggleWorklogForm()">Cancelar</button>
-            </div>
+            <div class="form-row"><label>Foto (opcional)</label><input type="file" id="worklogPhoto" accept="image/*" style="flex:1;"></div>
+            <div class="form-actions"><button class="btn btn-primary" onclick="saveWorklog()">Guardar trabajo</button><button class="btn btn-secondary" onclick="toggleWorklogForm()">Cancelar</button></div>
         </div></div>
     </div>
     <div class="success-toast" id="successMsg">Cambios guardados</div>
@@ -164,15 +174,15 @@
                 var dateStr = booking.preferred_date ? new Date(booking.preferred_date+'T00:00:00').toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) : 'Sin fecha';
                 var html = '';
                 html += '<div class="info-item"><div class="label">Cliente</div><div class="value">'+booking.client_name+'</div></div>';
-                html += '<div class="info-item"><div class="label">Teléfono</div><div class="value">'+booking.phone+'</div></div>';
+                html += '<div class="info-item"><div class="label">Telefono</div><div class="value">'+booking.phone+'</div></div>';
                 html += '<div class="info-item"><div class="label">Email</div><div class="value">'+(booking.email||'No registrado')+'</div></div>';
                 html += '<div class="info-item"><div class="label">Placa</div><div class="value" style="font-family:monospace;letter-spacing:1px;">'+(booking.plate_number||'Sin placa')+'</div></div>';
-                html += '<div class="info-item"><div class="label">Vehículo</div><div class="value">'+booking.vehicle+'</div></div>';
+                html += '<div class="info-item"><div class="label">Vehiculo</div><div class="value">'+booking.vehicle+'</div></div>';
                 html += '<div class="info-item"><div class="label">Servicio</div><div class="value">'+booking.service_requested+'</div></div>';
                 html += '<div class="info-item"><div class="label">Fecha</div><div class="value">'+dateStr+'</div></div>';
                 html += '<div class="info-item"><div class="label">Hora</div><div class="value">'+(booking.preferred_time||'No especificada')+'</div></div>';
-                html += '<div class="info-item"><div class="label">Descripción</div><div class="value">'+(booking.problem_description||'Sin descripción')+'</div></div>';
-                html += '<div class="info-item"><div class="label">Cambiar Estado</div><div class="value"><select onchange="updateStatus(this.value)"><option value="pending"'+(booking.status==='pending'?' selected':'')+'>Pendiente</option><option value="confirmed"'+(booking.status==='confirmed'?' selected':'')+'>Confirmar</option><option value="en_taller"'+(booking.status==='en_taller'?' selected':'')+'>Ingresó al taller</option><option value="en_progreso"'+(booking.status==='en_progreso'?' selected':'')+'>En progreso</option><option value="completado"'+(booking.status==='completado'?' selected':'')+'>Completar</option><option value="entregado"'+(booking.status==='entregado'?' selected':'')+'>Entregado</option><option value="cancelled"'+(booking.status==='cancelled'?' selected':'')+'>Cancelar</option></select></div></div>';
+                html += '<div class="info-item"><div class="label">Descripcion</div><div class="value">'+(booking.problem_description||'Sin descripcion')+'</div></div>';
+                html += '<div class="info-item"><div class="label">Cambiar Estado</div><div class="value"><select onchange="updateStatus(this.value)"><option value="pending"'+(booking.status==='pending'?' selected':'')+'>Pendiente</option><option value="confirmed"'+(booking.status==='confirmed'?' selected':'')+'>Confirmar</option><option value="en_taller"'+(booking.status==='en_taller'?' selected':'')+'>Ingreso al taller</option><option value="en_progreso"'+(booking.status==='en_progreso'?' selected':'')+'>En progreso</option><option value="completado"'+(booking.status==='completado'?' selected':'')+'>Completar</option><option value="entregado"'+(booking.status==='entregado'?' selected':'')+'>Entregado</option><option value="cancelled"'+(booking.status==='cancelled'?' selected':'')+'>Cancelar</option></select></div></div>';
                 html += '<div class="info-item"><div class="label">Editar Placa</div><div class="value"><input type="text" value="'+(booking.plate_number||'')+'" onchange="updatePlate(this.value)" style="font-family:monospace;letter-spacing:1px;text-transform:uppercase;"></div></div>';
                 html += '<div class="info-item"><div class="label">Entrega Estimada</div><div class="value"><input type="date" value="'+(booking.estimated_delivery||'')+'" onchange="updateEstimate(this.value)" style="color-scheme:dark;"></div></div>';
                 document.getElementById('infoGrid').innerHTML = html;
@@ -206,24 +216,98 @@
                 var html = '<div class="worklog-grid">';
                 for (var i=0; i<result.data.length; i++) { 
                     var log = result.data[i];
-                    var duration = '';
+                    var badgesHtml = '';
                     if (log.hours > 0 || log.minutes > 0) {
-                        duration = '<span>⏱ ';
-                        if (log.hours > 0) duration += log.hours + 'h ';
-                        if (log.minutes > 0) duration += log.minutes + 'min';
-                        duration += '</span>';
+                        var timeStr = '';
+                        if (log.hours > 0) timeStr += log.hours + 'h ';
+                        if (log.minutes > 0) timeStr += log.minutes + 'min';
+                        badgesHtml += '<span class="badge badge-time">' + timeStr.trim() + '</span>';
                     }
-                    var price = log.price > 0 ? '<span class="worklog-price">$' + parseFloat(log.price).toFixed(2) + '</span>' : '';
-                    html += '<div class="worklog-card">';
-                    html += '<div class="worklog-header"><strong>'+log.description+'</strong><span>'+new Date(log.created_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></div>';
-                    if (duration || price) {
-                        html += '<div class="worklog-meta">' + duration + (duration && price ? ' | ' : '') + price + '</div>';
+                    if (log.price > 0) {
+                        badgesHtml += '<span class="badge badge-price">' + parseFloat(log.price).toLocaleString('es-CR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' CRC</span>';
                     }
-                    html += (log.photo_url?'<img src="'+log.photo_url+'" style="width:100%;max-width:100%;border-radius:6px;display:block;margin-top:0.5rem;" onerror="this.style.display=\'none\'">':'');
+
+                    var detailHtml = '';
+                    detailHtml += '<div class="wl-date">' + new Date(log.created_at).toLocaleString('es-MX', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'}) + '</div>';
+                    if (log.hours > 0 || log.minutes > 0) {
+                        var durText = 'Duracion: ';
+                        if (log.hours > 0) durText += log.hours + ' hora' + (log.hours > 1 ? 's' : '') + ' ';
+                        if (log.minutes > 0) durText += (log.hours > 0 ? 'con ' : '') + log.minutes + ' minuto' + (log.minutes > 1 ? 's' : '');
+                        detailHtml += '<div class="wl-meta"><span>' + durText + '</span></div>';
+                    }
+                    if (log.price > 0) {
+                        detailHtml += '<div class="wl-meta"><span>Costo: <span class="wl-price">' + parseFloat(log.price).toLocaleString('es-CR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' CRC</span></span></div>';
+                    }
+                    if (log.photo_url) {
+                        detailHtml += '<img src="' + log.photo_url + '" onerror="this.style.display=\'none\'" loading="lazy">';
+                    }
+
+                    html += '<div class="worklog-item" id="worklog-' + log.id + '">';
+                    html += '<div class="worklog-header-bar" onclick="toggleWorklog(this.parentElement)">';
+                    html += '<span class="wl-title">' + log.description + '</span>';
+                    html += '<span class="wl-badges">' + badgesHtml + '</span>';
+                    html += '<span class="wl-actions" onclick="event.stopPropagation()">';
+                    html += '<button class="btn btn-edit btn-sm" onclick="showEditForm(' + log.id + ')">Editar</button>';
+                    html += '<button class="btn btn-danger btn-sm" onclick="deleteWorklog(' + log.id + ')">Eliminar</button>';
+                    html += '</span>';
+                    html += '<span class="wl-arrow">&#9660;</span>';
+                    html += '</div>';
+                    html += '<div class="worklog-body">' + detailHtml + '</div>';
+                    html += '<div class="edit-worklog-form" id="editForm-' + log.id + '">';
+                    html += '<textarea id="editDesc-' + log.id + '">' + log.description + '</textarea>';
+                    html += '<div class="form-row">';
+                    html += '<label>Horas</label><input type="number" id="editHours-' + log.id + '" value="' + (log.hours||0) + '" min="0">';
+                    html += '<label>Minutos</label><input type="number" id="editMinutes-' + log.id + '" value="' + (log.minutes||0) + '" min="0" max="59">';
+                    html += '<label>Precio</label><input type="number" id="editPrice-' + log.id + '" value="' + (log.price||0) + '" min="0" step="0.01" style="width:90px;">';
+                    html += '</div>';
+                    html += '<div class="form-actions">';
+                    html += '<button class="btn btn-primary btn-sm" onclick="saveEdit(' + log.id + ')">Guardar</button>';
+                    html += '<button class="btn btn-secondary btn-sm" onclick="cancelEdit(' + log.id + ')">Cancelar</button>';
+                    html += '</div>';
+                    html += '</div>';
                     html += '</div>';
                 }
                 html += '</div>'; container.innerHTML = html;
             }
+
+            function toggleWorklog(item) {
+                if (item.classList.contains('open')) { item.classList.remove('open'); }
+                else { item.classList.add('open'); }
+            }
+            window.toggleWorklog = toggleWorklog;
+
+            function showEditForm(logId) {
+                var item = document.getElementById('worklog-' + logId);
+                item.querySelector('.worklog-body').style.display = 'none';
+                document.getElementById('editForm-' + logId).style.display = 'block';
+                if (!item.classList.contains('open')) item.classList.add('open');
+            }
+            window.showEditForm = showEditForm;
+
+            function cancelEdit(logId) {
+                var item = document.getElementById('worklog-' + logId);
+                document.getElementById('editForm-' + logId).style.display = 'none';
+                item.querySelector('.worklog-body').style.display = 'block';
+            }
+            window.cancelEdit = cancelEdit;
+
+            async function saveEdit(logId) {
+                var desc = document.getElementById('editDesc-' + logId).value.trim();
+                var hours = parseInt(document.getElementById('editHours-' + logId).value) || 0;
+                var minutes = parseInt(document.getElementById('editMinutes-' + logId).value) || 0;
+                var price = parseFloat(document.getElementById('editPrice-' + logId).value) || 0;
+                if (!desc) { alert('La descripcion es obligatoria'); return; }
+                await supabase.from('work_log').update({description:desc, hours:hours, minutes:minutes, price:price}).eq('id', logId);
+                loadWorkLogs(); showSuccess();
+            }
+            window.saveEdit = saveEdit;
+
+            async function deleteWorklog(logId) {
+                if (!confirm('Eliminar este trabajo permanentemente?')) return;
+                await supabase.from('work_log').delete().eq('id', logId);
+                loadWorkLogs(); showSuccess();
+            }
+            window.deleteWorklog = deleteWorklog;
 
             function toggleWorklogForm() { var form = document.getElementById('worklogForm'); form.style.display = form.style.display === 'block' ? 'none' : 'block'; if (form.style.display === 'block') document.getElementById('worklogDesc').focus(); }
 
@@ -238,30 +322,11 @@
                     var file = fileInput.files[0]; var fileName = 'booking-'+bookingId+'-'+Date.now()+'.'+file.name.split('.').pop();
                     var uploadResult = await supabase.storage.from('workshop-photos').upload(fileName, file);
                     if (uploadResult.error) { alert('Error al subir: ' + uploadResult.error.message); }
-                    else { 
-                        var publicUrlResult = supabase.storage.from('workshop-photos').getPublicUrl(fileName);
-                        photoUrl = publicUrlResult.data.publicUrl;
-                    }
+                    else { var publicUrlResult = supabase.storage.from('workshop-photos').getPublicUrl(fileName); photoUrl = publicUrlResult.data.publicUrl; }
                 }
-                var insertResult = await supabase.from('work_log').insert([{
-                    booking_id: parseInt(bookingId),
-                    description: desc,
-                    hours: hours,
-                    minutes: minutes,
-                    price: price,
-                    photo_url: photoUrl
-                }]);
+                var insertResult = await supabase.from('work_log').insert([{booking_id:parseInt(bookingId),description:desc,hours:hours,minutes:minutes,price:price,photo_url:photoUrl}]);
                 if (insertResult.error) { alert('Error al guardar: ' + insertResult.error.message); }
-                else { 
-                    document.getElementById('worklogDesc').value = ''; 
-                    document.getElementById('worklogHours').value = '0';
-                    document.getElementById('worklogMinutes').value = '0';
-                    document.getElementById('worklogPrice').value = '0';
-                    document.getElementById('worklogPhoto').value = ''; 
-                    toggleWorklogForm(); 
-                    loadWorkLogs(); 
-                    showSuccess(); 
-                }
+                else { document.getElementById('worklogDesc').value = ''; document.getElementById('worklogHours').value = '0'; document.getElementById('worklogMinutes').value = '0'; document.getElementById('worklogPrice').value = '0'; document.getElementById('worklogPhoto').value = ''; toggleWorklogForm(); loadWorkLogs(); showSuccess(); }
             }
 
             window.addNote = addNote; window.toggleWorklogForm = toggleWorklogForm; window.saveWorklog = saveWorklog;
