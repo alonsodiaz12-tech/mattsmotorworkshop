@@ -88,6 +88,8 @@
         .worklog-client-grid { display: grid; gap: 0.5rem; }
         .worklog-client-item { background: var(--bg-dark); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; font-size: 0.85rem; }
         .worklog-client-item .wl-header { display: flex; justify-content: space-between; margin-bottom: 0.25rem; flex-wrap: wrap; gap: 0.5rem; }
+        .worklog-client-item .wl-meta { display: flex; gap: 1rem; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+        .worklog-client-item .wl-price { color: #4ade80; font-weight: 700; }
         .worklog-client-item img { width: 100%; max-width: 100%; border-radius: 6px; margin-top: 0.5rem; display: block; }
 
         @media (max-width: 600px) {
@@ -202,7 +204,15 @@
             var result = await supabase.from('work_log').select('*').eq('booking_id',bookingId).order('created_at',{ascending:false});
             if (!result.data || result.data.length===0) { container.innerHTML = '<p class="no-notes">Sin registros aún.</p>'; return; }
             var html = '<div class="worklog-client-grid">';
-            for (var i=0; i<result.data.length; i++) { var log = result.data[i]; html += '<div class="worklog-client-item"><div class="wl-header"><span style="color:var(--text-secondary);">'+log.description+'</span><span style="color:var(--text-muted);font-size:0.7rem;">'+new Date(log.created_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></div>'+(log.photo_url?'<img src="'+log.photo_url+'" style="width:100%;max-width:100%;border-radius:6px;display:block;margin-top:0.5rem;" onerror="this.style.display=\'none\'">':'')+'</div>'; }
+            for (var i=0; i<result.data.length; i++) { 
+                var log = result.data[i];
+                var duration = '';
+                if (log.hours > 0 || log.minutes > 0) { duration += '⏱ '; if (log.hours > 0) duration += log.hours + 'h '; if (log.minutes > 0) duration += log.minutes + 'min'; }
+                var price = log.price > 0 ? '<span class="wl-price">$' + parseFloat(log.price).toFixed(2) + '</span>' : '';
+                var metaHtml = '';
+                if (duration || price) { metaHtml += '<div class="wl-meta"><span>' + duration + '</span>' + (duration && price ? '<span>|</span>' : '') + price + '</div>'; }
+                html += '<div class="worklog-client-item"><div class="wl-header"><span style="color:var(--text-secondary);">'+log.description+'</span><span style="color:var(--text-muted);font-size:0.7rem;">'+new Date(log.created_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></div>'+metaHtml+(log.photo_url?'<img src="'+log.photo_url+'" style="width:100%;max-width:100%;border-radius:6px;display:block;margin-top:0.5rem;" onerror="this.style.display=\'none\'">':'')+'</div>';
+            }
             html += '</div>'; container.innerHTML = html;
         }
 
