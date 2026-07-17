@@ -209,9 +209,6 @@
                     <button class="filter-chip" data-filter="pending">Pendientes</button>
                     <button class="filter-chip" data-filter="confirmed">Confirmadas</button>
                     <button class="filter-chip" data-filter="en_taller">En Taller</button>
-                    <button class="filter-chip" data-filter="en_progreso">En Progreso</button>
-                    <button class="filter-chip" data-filter="completado">Completadas</button>
-                    <button class="filter-chip" data-filter="entregado">Entregados</button>
                     <button class="filter-chip" data-filter="cancelled">Canceladas</button>
                 </div>
                 <div class="search-bar">
@@ -410,17 +407,39 @@
                 var html = '';
                 for (var i=0; i<bookings.length; i++) {
                     var b = bookings[i];
-                    var statusMap = { pending:{text:'Pendiente',cls:'status-pending'}, confirmed:{text:'Confirmada',cls:'status-confirmed'}, en_taller:{text:'En Taller',cls:'status-in_progress'}, en_progreso:{text:'En Progreso',cls:'status-in_progress'}, completado:{text:'Completada',cls:'status-completed'}, entregado:{text:'Entregado',cls:'status-completed'}, cancelled:{text:'Cancelada',cls:'status-cancelled'} };
+                    var statusMap = { pending:{text:'Pendiente',cls:'status-pending'}, confirmed:{text:'Confirmada',cls:'status-confirmed'}, en_taller:{text:'En Taller',cls:'status-in_progress'}, cancelled:{text:'Cancelada',cls:'status-cancelled'} };
                     var st = statusMap[b.status] || statusMap.pending;
                     var dateStr = b.preferred_date ? new Date(b.preferred_date+'T00:00:00').toLocaleDateString('es-MX',{weekday:'short',year:'numeric',month:'short',day:'numeric'}) : 'Sin fecha';
                     html += '<div class="booking-card">';
                     html += '<div class="booking-header-row"><div class="booking-meta"><strong>'+dateStr+'</strong>'+(b.preferred_time?' <span style="color:var(--text-muted);">'+b.preferred_time+'</span>':'')+(b.plate_number?'<span class="plate-badge">'+b.plate_number+'</span>':'')+'</div><span class="status-badge '+st.cls+'">'+st.text+'</span></div>';
                     html += '<div class="booking-detail-grid"><div><strong>Cliente:</strong> '+b.client_name+'</div><div><strong>Telefono:</strong> '+b.phone+'</div><div><strong>Vehiculo:</strong> '+b.vehicle+'</div><div><strong>Servicio:</strong> '+b.service_requested+'</div></div>';
-                    html += '<div class="booking-actions"><a href="/booking-detail?id='+b.id+'" class="btn-open">Abrir cita</a><select onchange="window._updateStatus('+b.id+',this.value)">';
-                    html += '<option value="pending"'+(b.status==='pending'?' selected':'')+'>Pendiente</option><option value="confirmed"'+(b.status==='confirmed'?' selected':'')+'>Confirmar</option><option value="en_taller"'+(b.status==='en_taller'?' selected':'')+'>Ingreso al taller</option><option value="en_progreso"'+(b.status==='en_progreso'?' selected':'')+'>En progreso</option><option value="completado"'+(b.status==='completado'?' selected':'')+'>Completar</option><option value="entregado"'+(b.status==='entregado'?' selected':'')+'>Entregado</option><option value="cancelled"'+(b.status==='cancelled'?' selected':'')+'>Cancelar</option>';
+                    html += '<div class="booking-actions"><a href="/booking-detail?id='+b.id+'" class="btn-open">Abrir cita</a>';
+                    if (b.status === 'confirmed' || b.status === 'en_taller') {
+                        html += '<button class="btn-sm btn-success" onclick="window._createWorkOrder(\''+b.id+'\',\''+(b.plate_number||'')+'\',\''+(b.vehicle||'')+'\',\''+(b.client_name||'')+'\',\''+(b.phone||'')+'\')">Iniciar Trabajo</button>';
+                    }
+                    html += '<select onchange="window._updateStatus('+b.id+',this.value)">';
+                    html += '<option value="pending"'+(b.status==='pending'?' selected':'')+'>Pendiente</option>';
+                    html += '<option value="confirmed"'+(b.status==='confirmed'?' selected':'')+'>Confirmar</option>';
+                    html += '<option value="en_taller"'+(b.status==='en_taller'?' selected':'')+'>En Taller</option>';
+                    html += '<option value="cancelled"'+(b.status==='cancelled'?' selected':'')+'>Cancelar</option>';
                     html += '</select><button class="btn-sm btn-delete" onclick="window._deleteBooking('+b.id+')">Eliminar</button></div></div>';
                 }
                 container.innerHTML = html;
+            }
+
+            async function createWorkOrder(bookingId, plate, vehicle, client, phone) {
+                if (!plate || plate === 'null' || plate === '') { alert('La cita no tiene placa asignada'); return; }
+                var result = await supabase.from('work_orders').insert([{
+                    booking_id: parseInt(bookingId),
+                    plate_number: plate,
+                    vehicle: vehicle,
+                    client_name: client,
+                    phone: phone,
+                    status: 'en_progreso'
+                }]).select();
+                if (result.error) { alert('Error al crear expediente'); return; }
+                await supabase.from('bookings').update({status: 'en_taller'}).eq('id', parseInt(bookingId));
+                window.location.href = '/work-detail?id=' + result.data[0].id;
             }
 
             function showServiceForm() { document.getElementById('serviceForm').style.display = 'grid'; document.getElementById('serviceEditId').value = ''; document.getElementById('serviceTitle').value = ''; document.getElementById('serviceDesc').value = ''; document.getElementById('serviceOrder').value = '1'; }
@@ -503,9 +522,8 @@
                     sale_price: parseFloat(document.getElementById('invSalePrice').value) || 0
                 };
                 if (!data.name) { alert('El nombre es obligatorio'); return; }
-                if (editId) { 
-                    await supabase.from('inventory').update(data).eq('id', editId); 
-                } else { 
+                if (editId) { await supabase.from('inventory').update(data).eq('id', editId); } 
+                else { 
                     if (!data.barcode && !data.numeric_code) {
                         var allProducts = await supabase.from('inventory').select('id').order('id', {ascending: false}).limit(1);
                         var nextId = allProducts.data && allProducts.data.length > 0 ? allProducts.data[0].id + 1 : 1;
@@ -682,6 +700,7 @@
             window._deleteGallery = deleteGalleryItem;
             window._updateStatus = updateBookingStatus;
             window._deleteBooking = deleteBooking;
+            window._createWorkOrder = createWorkOrder;
         })();
     </script>
 </body>
