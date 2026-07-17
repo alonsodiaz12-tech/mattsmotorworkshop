@@ -86,7 +86,15 @@
         .new-search-btn { display: inline-flex; align-items: center; gap: 0.5rem; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-light); padding: 0.7rem 1.5rem; border-radius: 50px; text-decoration: none; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: var(--transition); margin-top: 1rem; }
         .new-search-btn:hover { border-color: var(--text-secondary); color: var(--text-primary); }
 
-        /* Worklog colapsable */
+        /* Tabs */
+        .detail-tabs { display: flex; gap: 0; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+        .detail-tab { padding: 0.6rem 1.2rem; background: transparent; border: none; color: var(--text-muted); font-size: 0.82rem; font-weight: 500; cursor: pointer; font-family: inherit; transition: var(--transition); border-bottom: 2px solid transparent; }
+        .detail-tab:hover { color: var(--text-secondary); }
+        .detail-tab.active { color: var(--text-primary); border-bottom-color: var(--red); }
+        .detail-tab-content { display: none; }
+        .detail-tab-content.active { display: block; }
+
+        /* Worklog */
         .worklog-client-grid { display: grid; gap: 0.5rem; text-align: left; }
         .worklog-client-item { background: var(--bg-dark); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
         .worklog-header-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem; cursor: pointer; transition: var(--transition); user-select: none; }
@@ -104,6 +112,19 @@
         .worklog-body .wl-meta { display: grid; gap: 0.2rem; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
         .worklog-body .wl-price { color: #4ade80; font-weight: 600; }
         .worklog-body img { width: 100%; max-width: 100%; border-radius: 6px; margin-top: 0.5rem; display: block; }
+        .btn-sm { padding: 0.3rem 0.6rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: 500; font-family: inherit; background: #4b5563; color: white; transition: var(--transition); }
+        .btn-sm:hover { background: #6b7280; }
+
+        /* Parts */
+        .parts-client-grid { display: grid; gap: 0.75rem; text-align: left; }
+        .part-client-card { background: var(--bg-dark); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
+        .part-client-card .part-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem; }
+        .part-client-card .part-header strong { font-size: 0.95rem; }
+        .part-client-card .part-photos { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+        .part-client-card .part-photo-item { text-align: center; }
+        .part-client-card .part-photo-item .photo-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 0.3rem; }
+        .part-client-card .part-photo-item img { width: 100%; max-width: 100%; border-radius: 6px; display: block; }
+        .part-client-card .part-photo-item .no-photo { padding: 1.5rem; background: var(--bg-elevated); border-radius: 6px; color: var(--text-muted); font-size: 0.75rem; }
 
         @media (max-width: 600px) {
             body { padding: 1rem; align-items: flex-start; padding-top: 2rem; }
@@ -111,7 +132,7 @@
             .detail-grid { grid-template-columns: 1fr; }
             .progress-tracker { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
             .result-header { flex-direction: column; }
-            .worklog-body img { max-width: 100%; }
+            .part-client-card .part-photos { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -181,7 +202,7 @@
                 var dateFormatted = booking.preferred_date ? new Date(booking.preferred_date+'T00:00:00').toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) : '';
                 html += '<div class="info-message info-confirmed">Su cita ha sido <strong>confirmada</strong>. Presentese al taller el <strong>'+dateFormatted+'</strong> a las <strong>'+(booking.preferred_time||'')+'</strong>.</div>';
                 html += '<div class="detail-grid"><div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">'+(booking.service_requested||'')+'</div></div><div class="detail-item"><div class="detail-label">Fecha</div><div class="detail-value">'+dateFormatted+'</div></div><div class="detail-item"><div class="detail-label">Hora</div><div class="detail-value">'+(booking.preferred_time||'')+'</div></div><div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">'+(booking.client_name||'')+'</div></div></div>';
-            } else if (status === 'en_taller' || status === 'en_progreso') {
+            } else if (status === 'en_taller' || status === 'en_progreso' || status === 'completado') {
                 var progressOrder = ['en_taller','en_progreso','completado','entregado'];
                 var currentIndex = progressOrder.indexOf(status); if (currentIndex < 0) currentIndex = 0;
                 var steps = [{label:'En Taller',icon:'1'},{label:'En Progreso',icon:'2'},{label:'Completado',icon:'3'},{label:'Entregado',icon:'4'}];
@@ -193,11 +214,14 @@
                 var notes = booking.notes || []; if (typeof notes==='string') notes = JSON.parse(notes);
                 if (!notes || notes.length===0) { html += '<p class="no-notes">Sin notas.</p>'; } else { html += '<ul class="notes-list">'; for (var n=0; n<notes.length; n++) { html += '<li><span class="note-time">'+new Date(notes[n].time).toLocaleString('es-MX',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'})+'</span><span>'+notes[n].text+'</span></li>'; } html += '</ul>'; }
                 html += '</div>';
-                html += '<div class="notes-section"><h3>Historial de Trabajos</h3><div id="worklogClient"></div></div>';
-            } else if (status === 'completado') {
-                html += '<div class="info-message info-success">Su vehiculo esta <strong>listo</strong>. Puede pasar a retirarlo.</div>';
-                html += '<div class="detail-grid"><div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">'+(booking.service_requested||'')+'</div></div><div class="detail-item"><div class="detail-label">Ingreso</div><div class="detail-value">'+new Date(booking.created_at).toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})+'</div></div><div class="detail-item"><div class="detail-label">Estado</div><div class="detail-value">Listo</div></div><div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">'+(booking.client_name||'')+'</div></div></div>';
-                html += '<div class="notes-section"><h3>Historial de Trabajos</h3><div id="worklogClient"></div></div>';
+
+                // Tabs
+                html += '<div class="detail-tabs">';
+                html += '<button class="detail-tab active" onclick="switchTab(\'worklog\')">Trabajos Realizados</button>';
+                html += '<button class="detail-tab" onclick="switchTab(\'parts\')">Repuestos Reemplazados</button>';
+                html += '</div>';
+                html += '<div class="detail-tab-content active" id="tab-worklog"><div id="worklogClient"></div></div>';
+                html += '<div class="detail-tab-content" id="tab-parts"><div id="partsClient"></div></div>';
             } else if (status === 'entregado') {
                 html += '<div class="info-message info-success">Vehiculo <strong>entregado</strong>. Gracias por confiar en Matts Motor Workshop.</div>';
             } else if (status === 'cancelled') {
@@ -209,8 +233,37 @@
             resultCard.scrollIntoView({ behavior:'smooth', block:'center' });
 
             if (status === 'en_taller' || status === 'en_progreso' || status === 'completado') {
-                setTimeout(function() { loadWorkLogClient(booking.id); }, 300);
+                setTimeout(function() { loadWorkLogClient(booking.id); loadPartsClient(booking.id); }, 300);
             }
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.detail-tab').forEach(function(t){t.classList.remove('active')});
+            document.querySelectorAll('.detail-tab-content').forEach(function(c){c.classList.remove('active')});
+            if (tab === 'worklog') {
+                document.querySelector('.detail-tab:nth-child(1)').classList.add('active');
+                document.getElementById('tab-worklog').classList.add('active');
+            } else {
+                document.querySelector('.detail-tab:nth-child(2)').classList.add('active');
+                document.getElementById('tab-parts').classList.add('active');
+            }
+        }
+        window.switchTab = switchTab;
+
+        function switchToPartsTab() {
+            document.querySelectorAll('.detail-tab').forEach(function(t){t.classList.remove('active')});
+            document.querySelectorAll('.detail-tab-content').forEach(function(c){c.classList.remove('active')});
+            document.querySelector('.detail-tab:nth-child(2)').classList.add('active');
+            document.getElementById('tab-parts').classList.add('active');
+            document.getElementById('tab-parts').scrollIntoView({behavior:'smooth'});
+        }
+
+        function switchToWorklogTab() {
+            document.querySelectorAll('.detail-tab').forEach(function(t){t.classList.remove('active')});
+            document.querySelectorAll('.detail-tab-content').forEach(function(c){c.classList.remove('active')});
+            document.querySelector('.detail-tab:nth-child(1)').classList.add('active');
+            document.getElementById('tab-worklog').classList.add('active');
+            document.getElementById('tab-worklog').scrollIntoView({behavior:'smooth'});
         }
 
         async function loadWorkLogClient(bookingId) {
@@ -221,50 +274,45 @@
             for (var i=0; i<result.data.length; i++) { 
                 var log = result.data[i];
                 var badgesHtml = '';
-                if (log.hours > 0 || log.minutes > 0) {
-                    var timeStr = '';
-                    if (log.hours > 0) timeStr += log.hours + 'h ';
-                    if (log.minutes > 0) timeStr += log.minutes + 'min';
-                    badgesHtml += '<span class="badge badge-time">' + timeStr.trim() + '</span>';
-                }
-                if (log.price > 0) {
-                    badgesHtml += '<span class="badge badge-price">' + parseFloat(log.price).toLocaleString('es-CR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' CRC</span>';
-                }
-
-                var detailHtml = '';
-                detailHtml += '<div class="wl-date">' + new Date(log.created_at).toLocaleString('es-MX', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'}) + '</div>';
-                if (log.hours > 0 || log.minutes > 0) {
-                    var durText = 'Este trabajo tuvo una duracion de: ';
-                    if (log.hours > 0) durText += log.hours + ' hora' + (log.hours > 1 ? 's' : '') + ' ';
-                    if (log.minutes > 0) durText += (log.hours > 0 ? 'con ' : '') + log.minutes + ' minuto' + (log.minutes > 1 ? 's' : '');
-                    detailHtml += '<div class="wl-meta"><span>' + durText + '</span></div>';
-                }
-                if (log.price > 0) {
-                    detailHtml += '<div class="wl-meta"><span>El costo total del trabajo realizado es de: <span class="wl-price">' + parseFloat(log.price).toLocaleString('es-CR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' CRC</span></span></div>';
-                }
-                if (log.photo_url) {
-                    detailHtml += '<img src="' + log.photo_url + '" onerror="this.style.display=\'none\'" loading="lazy">';
-                }
-
+                if (log.hours > 0 || log.minutes > 0) { var ts=''; if(log.hours>0)ts+=log.hours+'h '; if(log.minutes>0)ts+=log.minutes+'min'; badgesHtml+='<span class="badge badge-time">'+ts.trim()+'</span>'; }
+                if (log.price > 0) { badgesHtml+='<span class="badge badge-price">'+parseFloat(log.price).toLocaleString('es-CR',{minimumFractionDigits:2,maximumFractionDigits:2})+' CRC</span>'; }
+                var detailHtml = '<div class="wl-date">'+new Date(log.created_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</div>';
+                if (log.hours>0||log.minutes>0) { var d='Este trabajo tuvo una duracion de: '; if(log.hours>0)d+=log.hours+' hora'+(log.hours>1?'s':'')+' '; if(log.minutes>0)d+=(log.hours>0?'con ':'')+log.minutes+' minuto'+(log.minutes>1?'s':''); detailHtml+='<div class="wl-meta"><span>'+d+'</span></div>'; }
+                if (log.price>0) { detailHtml+='<div class="wl-meta"><span>El costo total del trabajo realizado es de: <span class="wl-price">'+parseFloat(log.price).toLocaleString('es-CR',{minimumFractionDigits:2,maximumFractionDigits:2})+' CRC</span></span></div>'; }
+                if (log.photo_url) { detailHtml+='<img src="'+log.photo_url+'" onerror="this.style.display=\'none\'" loading="lazy">'; }
+                detailHtml+='<div style="margin-top:0.5rem;"><button class="btn-sm" onclick="switchToPartsTab()">Repuestos reemplazados</button></div>';
                 html += '<div class="worklog-client-item" onclick="toggleWorklog(this)">';
-                html += '<div class="worklog-header-bar">';
-                html += '<span class="wl-title">' + log.description + '</span>';
-                html += '<span class="wl-badges">' + badgesHtml + '</span>';
-                html += '<span class="wl-arrow">&#9660;</span>';
-                html += '</div>';
-                html += '<div class="worklog-body">' + detailHtml + '</div>';
-                html += '</div>';
+                html += '<div class="worklog-header-bar"><span class="wl-title">'+log.description+'</span><span class="wl-badges">'+badgesHtml+'</span><span class="wl-arrow">&#9660;</span></div>';
+                html += '<div class="worklog-body">'+detailHtml+'</div></div>';
             }
             html += '</div>'; container.innerHTML = html;
         }
 
-        function toggleWorklog(item) {
-            if (item.classList.contains('open')) {
-                item.classList.remove('open');
-            } else {
-                item.classList.add('open');
+        async function loadPartsClient(bookingId) {
+            var container = document.getElementById('partsClient'); if (!container) return;
+            var result = await supabase.from('replaced_parts').select('*,work_log(description)').eq('booking_id',bookingId).order('created_at',{ascending:false});
+            if (!result.data || result.data.length===0) { container.innerHTML = '<p class="no-notes">Sin repuestos registrados.</p>'; return; }
+            var html = '<div class="parts-client-grid">';
+            for (var i=0; i<result.data.length; i++) {
+                var part = result.data[i];
+                var workDesc = part.work_log ? part.work_log.description : null;
+                html += '<div class="part-client-card">';
+                html += '<div class="part-header"><strong>'+part.part_name+'</strong>';
+                if (workDesc) { html += '<button class="btn-sm" onclick="switchToWorklogTab()">Trabajo realizado: '+workDesc+'</button>'; }
+                html += '</div>';
+                html += '<div class="part-photos">';
+                html += '<div class="part-photo-item"><div class="photo-label">Repuesto Antiguo</div>';
+                html += part.old_part_photo ? '<img src="'+part.old_part_photo+'" onerror="this.style.display=\'none\'" loading="lazy">' : '<div class="no-photo">Sin foto</div>';
+                html += '</div>';
+                html += '<div class="part-photo-item"><div class="photo-label">Repuesto Nuevo</div>';
+                html += part.new_part_photo ? '<img src="'+part.new_part_photo+'" onerror="this.style.display=\'none\'" loading="lazy">' : '<div class="no-photo">Sin foto</div>';
+                html += '</div></div></div>';
             }
+            html += '</div>'; container.innerHTML = html;
         }
+
+        function toggleWorklog(item) { if(item.classList.contains('open')){item.classList.remove('open')}else{item.classList.add('open')} }
+        window.toggleWorklog = toggleWorklog;
 
         function newSearch() {
             document.getElementById('resultCard').style.display = 'none';
