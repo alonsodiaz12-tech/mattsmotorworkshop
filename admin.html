@@ -191,7 +191,6 @@
             <button class="tab-btn active" data-tab="bookings">Citas</button>
             <button class="tab-btn" data-tab="services">Servicios</button>
             <button class="tab-btn" data-tab="gallery">Galería</button>
-            <button class="tab-btn" data-tab="testimonials">Testimonios</button>
         </div>
         <div class="panel-content">
             <div class="success-toast" id="successMsg">Cambios guardados</div>
@@ -227,11 +226,6 @@
                 <div class="section-header-row"><h3>Imágenes de la galería</h3></div>
                 <div class="data-list" id="galleryList"><div class="loading-state">Cargando galería...</div></div>
                 <div class="inline-form"><input type="text" id="galleryUrl" placeholder="URL de la imagen"><input type="text" id="galleryAlt" placeholder="Descripción breve"><button class="btn-primary" id="addGalleryBtn">Agregar imagen</button></div>
-            </div>
-            <div class="tab-panel" id="tab-testimonials">
-                <div class="section-header-row"><h3>Testimonios de clientes</h3></div>
-                <div class="data-list" id="testimonialsList"><div class="loading-state">Cargando testimonios...</div></div>
-                <div class="inline-form"><input type="text" id="testimonialName" placeholder="Nombre del cliente"><input type="number" id="testimonialStars" placeholder="Calificación (1-5)" min="1" max="5" value="5"><textarea id="testimonialText" placeholder="Texto del testimonio"></textarea><button class="btn-primary" id="addTestimonialBtn">Agregar testimonio</button></div>
             </div>
         </div>
     </div>
@@ -279,7 +273,7 @@
 
             document.addEventListener('DOMContentLoaded', function() {
                 var tabBtns = document.querySelectorAll('.tab-btn');
-                tabBtns.forEach(function(btn) { btn.addEventListener('click', function() { var tab = this.dataset.tab; tabBtns.forEach(function(b){b.classList.remove('active')}); this.classList.add('active'); document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active')}); document.getElementById('tab-'+tab).classList.add('active'); if(tab==='bookings')renderBookings(); if(tab==='services')renderServicesList(); if(tab==='gallery')renderGalleryList(); if(tab==='testimonials')renderTestimonialsList(); }); });
+                tabBtns.forEach(function(btn) { btn.addEventListener('click', function() { var tab = this.dataset.tab; tabBtns.forEach(function(b){b.classList.remove('active')}); this.classList.add('active'); document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active')}); document.getElementById('tab-'+tab).classList.add('active'); if(tab==='bookings')renderBookings(); if(tab==='services')renderServicesList(); if(tab==='gallery')renderGalleryList(); }); });
                 document.getElementById('loginBtn').addEventListener('click', login);
                 document.getElementById('adminPassword').addEventListener('keypress', function(e){if(e.key==='Enter')login();});
                 document.getElementById('logoutBtn').addEventListener('click', logout);
@@ -287,7 +281,6 @@
                 document.getElementById('saveServiceBtn').addEventListener('click', saveService);
                 document.getElementById('cancelServiceBtn').addEventListener('click', cancelServiceForm);
                 document.getElementById('addGalleryBtn').addEventListener('click', addGalleryItem);
-                document.getElementById('addTestimonialBtn').addEventListener('click', addTestimonial);
                 document.getElementById('maintenancePassword').addEventListener('keypress', function(e){if(e.key==='Enter')confirmMaintenance();});
                 document.querySelectorAll('.filter-chip').forEach(function(chip){ chip.addEventListener('click', function(){ document.querySelectorAll('.filter-chip').forEach(function(c){c.classList.remove('active')}); this.classList.add('active'); currentFilter = this.dataset.filter; renderBookings(); }); });
                 document.getElementById('maintenanceModal').addEventListener('click', function(e){if(e.target===this)closeMaintenanceModal();});
@@ -304,12 +297,10 @@
             async function logout() { await supabase.auth.signOut(); session = null; document.getElementById('loginScreen').style.display = 'block'; document.getElementById('panelScreen').style.display = 'none'; document.body.style.alignItems = 'center'; document.getElementById('adminPassword').value = ''; document.getElementById('loginError').style.display = 'none'; }
             async function loadServices() { var result = await supabase.from('services').select('*').order('display_order'); if (result.error) { console.error(result.error); return []; } return result.data; }
             async function loadGallery() { var result = await supabase.from('gallery').select('*').order('created_at',{ascending:false}); if (result.error) { console.error(result.error); return []; } return result.data; }
-            async function loadTestimonials() { var result = await supabase.from('testimonials').select('*').order('created_at',{ascending:false}); if (result.error) { console.error(result.error); return []; } return result.data; }
             async function loadBookings(filter) { var query = supabase.from('bookings').select('*').order('created_at',{ascending:false}); if (filter && filter!=='all') query = query.eq('status',filter); var result = await query; if (result.error) { console.error(result.error); return []; } return result.data; }
 
             async function renderServicesList() { var container = document.getElementById('servicesList'); var services = await loadServices(); if (services.length===0) { container.innerHTML = '<div class="empty-state">No hay servicios registrados</div>'; return; } var html = ''; for (var i=0; i<services.length; i++) { var s = services[i]; html += '<div class="data-row"><span>'+(s.icon||'')+' <strong>'+s.title+'</strong> <span style="color:var(--text-muted);font-size:0.75rem;">Orden: '+s.display_order+'</span></span><div class="data-row-actions"><button class="btn-sm btn-edit" onclick="window._editService('+s.id+')">Editar</button><button class="btn-sm btn-delete" onclick="window._deleteService('+s.id+')">Eliminar</button></div></div>'; } container.innerHTML = html; }
             async function renderGalleryList() { var container = document.getElementById('galleryList'); var gallery = await loadGallery(); if (gallery.length===0) { container.innerHTML = '<div class="empty-state">No hay imágenes en la galería</div>'; return; } var html = ''; for (var i=0; i<gallery.length; i++) { var g = gallery[i]; html += '<div class="data-row"><span>'+(g.alt_text||'Sin descripción')+'</span><button class="btn-sm btn-delete" onclick="window._deleteGallery('+g.id+')">Eliminar</button></div>'; } container.innerHTML = html; }
-            async function renderTestimonialsList() { var container = document.getElementById('testimonialsList'); var testimonials = await loadTestimonials(); if (testimonials.length===0) { container.innerHTML = '<div class="empty-state">No hay testimonios registrados</div>'; return; } var html = ''; for (var i=0; i<testimonials.length; i++) { var t = testimonials[i]; var stars = ''; for (var j=0; j<t.stars; j++) stars += '★'; html += '<div class="data-row"><span><strong>'+t.client_name+'</strong> <span style="color:#c9a84c;">'+stars+'</span></span><button class="btn-sm btn-delete" onclick="window._deleteTestimonial('+t.id+')">Eliminar</button></div>'; } container.innerHTML = html; }
 
             function renderBookings() { loadBookings(currentFilter).then(function(bookings) { renderBookingsHTML(bookings); }); }
 
@@ -322,8 +313,6 @@
                     var statusMap = { pending:{text:'Pendiente',cls:'status-pending'}, confirmed:{text:'Confirmada',cls:'status-confirmed'}, en_taller:{text:'En Taller',cls:'status-in_progress'}, en_progreso:{text:'En Progreso',cls:'status-in_progress'}, completado:{text:'Completada',cls:'status-completed'}, entregado:{text:'Entregado',cls:'status-completed'}, cancelled:{text:'Cancelada',cls:'status-cancelled'} };
                     var st = statusMap[b.status] || statusMap.pending;
                     var dateStr = b.preferred_date ? new Date(b.preferred_date+'T00:00:00').toLocaleDateString('es-MX',{weekday:'short',year:'numeric',month:'short',day:'numeric'}) : 'Sin fecha';
-                    var notes = b.notes || []; if (typeof notes==='string') notes = JSON.parse(notes);
-                    var notesHtml = notes.length===0 ? '<p style="color:var(--text-muted);font-size:0.78rem;">Sin notas</p>' : '<ul class="note-list">'+notes.map(function(n){return '<li class="note-item"><span>'+n.text+'</span><span class="note-time">'+new Date(n.time).toLocaleString('es-MX',{hour:'2-digit',minute:'2-digit'})+'</span></li>';}).join('')+'</ul>';
                     html += '<div class="booking-card">';
                     html += '<div class="booking-header-row"><div class="booking-meta"><strong>'+dateStr+'</strong>'+(b.preferred_time?' <span style="color:var(--text-muted);">'+b.preferred_time+'</span>':'')+(b.plate_number?'<span class="plate-badge">'+b.plate_number+'</span>':'')+'</div><span class="status-badge '+st.cls+'">'+st.text+'</span></div>';
                     html += '<div class="booking-detail-grid"><div><strong>Cliente:</strong> '+b.client_name+'</div><div><strong>Teléfono:</strong> '+b.phone+'</div><div><strong>Vehículo:</strong> '+b.vehicle+'</div><div><strong>Servicio:</strong> '+b.service_requested+'</div></div>';
@@ -347,13 +336,11 @@
             async function deleteService(id) { if (confirm('Eliminar este servicio?')) { await supabase.from('services').delete().eq('id',id); await renderServicesList(); showSuccess(); } }
             async function addGalleryItem() { var url = document.getElementById('galleryUrl').value, alt = document.getElementById('galleryAlt').value||'Trabajo realizado'; if (!url) { alert('Ingrese la URL de la imagen'); return; } await supabase.from('gallery').insert([{image_url:url,alt_text:alt}]); document.getElementById('galleryUrl').value = ''; document.getElementById('galleryAlt').value = ''; await renderGalleryList(); showSuccess(); }
             async function deleteGalleryItem(id) { if (confirm('Eliminar esta imagen?')) { await supabase.from('gallery').delete().eq('id',id); await renderGalleryList(); showSuccess(); } }
-            async function addTestimonial() { var name = document.getElementById('testimonialName').value, stars = parseInt(document.getElementById('testimonialStars').value)||5, text = document.getElementById('testimonialText').value; if (!name||!text) { alert('Complete todos los campos'); return; } await supabase.from('testimonials').insert([{client_name:name,stars:Math.min(5,Math.max(1,stars)),testimonial_text:text}]); document.getElementById('testimonialName').value = ''; document.getElementById('testimonialStars').value = '5'; document.getElementById('testimonialText').value = ''; await renderTestimonialsList(); showSuccess(); }
-            async function deleteTestimonial(id) { if (confirm('Eliminar este testimonio?')) { await supabase.from('testimonials').delete().eq('id',id); await renderTestimonialsList(); showSuccess(); } }
             async function updateBookingStatus(id, status) { await supabase.from('bookings').update({status:status}).eq('id',id); await renderBookings(); showSuccess(); }
             async function deleteBooking(id) { if (confirm('Eliminar esta cita?')) { await supabase.from('bookings').delete().eq('id',id); await renderBookings(); showSuccess(); } }
 
             window._editService = editService; window._deleteService = deleteService; window._deleteGallery = deleteGalleryItem;
-            window._deleteTestimonial = deleteTestimonial; window._updateStatus = updateBookingStatus; window._deleteBooking = deleteBooking;
+            window._updateStatus = updateBookingStatus; window._deleteBooking = deleteBooking;
         })();
     </script>
 </body>
