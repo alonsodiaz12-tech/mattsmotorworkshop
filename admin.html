@@ -196,7 +196,6 @@
         <div class="panel-content">
             <div class="success-toast" id="successMsg">Cambios guardados</div>
             
-            <!-- TAB: CITAS -->
             <div class="tab-panel active" id="tab-bookings">
                 <div class="filter-bar">
                     <button class="filter-chip active" data-filter="all">Todas</button>
@@ -216,7 +215,6 @@
                 <div class="data-list" id="bookingsList"><div class="loading-state">Cargando citas...</div></div>
             </div>
             
-            <!-- TAB: SERVICIOS -->
             <div class="tab-panel" id="tab-services">
                 <div class="section-header-row"><h3>Servicios del taller</h3><button class="btn-primary" id="addServiceBtn">Nuevo servicio</button></div>
                 <div class="data-list" id="servicesList"><div class="loading-state">Cargando servicios...</div></div>
@@ -228,14 +226,12 @@
                 </div>
             </div>
             
-            <!-- TAB: GALERÍA -->
             <div class="tab-panel" id="tab-gallery">
                 <div class="section-header-row"><h3>Imágenes de la galería</h3></div>
                 <div class="data-list" id="galleryList"><div class="loading-state">Cargando galería...</div></div>
                 <div class="inline-form"><input type="text" id="galleryUrl" placeholder="URL de la imagen"><input type="text" id="galleryAlt" placeholder="Descripción breve"><button class="btn-primary" id="addGalleryBtn">Agregar imagen</button></div>
             </div>
             
-            <!-- TAB: INVENTARIO -->
             <div class="tab-panel" id="tab-inventory">
                 <div class="section-header-row">
                     <h3>Inventario de Productos</h3>
@@ -288,7 +284,6 @@
                     </div>
                 </div>
                 
-                <!-- Modal de producto escaneado -->
                 <div class="modal-overlay" id="scannedProductModal">
                     <div class="modal-dialog" style="text-align:left;">
                         <button class="modal-close" onclick="closeScannedModal()">✕</button>
@@ -568,8 +563,23 @@
                 } else { alert('Producto no encontrado con el codigo: ' + code); }
             }
 
-            window._editService = editService; window._deleteService = deleteService; window._deleteGallery = deleteGalleryItem;
-            window._updateStatus = updateBookingStatus; window._deleteBooking = deleteBooking;
+            // Exponer funciones al scope global
+            window.showAddInventoryForm = showAddInventoryForm;
+            window.startScanner = startScanner;
+            window.stopScanner = stopScanner;
+            window.searchByBarcode = searchByBarcode;
+            window.filterInventory = filterInventory;
+            window.editInventory = editInventory;
+            window.deleteInventory = deleteInventory;
+            window.quickDiscount = quickDiscount;
+            window.closeScannedModal = closeScannedModal;
+            window.discountScannedProduct = discountScannedProduct;
+            window.saveInventory = saveInventory;
+            window._editService = editService;
+            window._deleteService = deleteService;
+            window._deleteGallery = deleteGalleryItem;
+            window._updateStatus = updateBookingStatus;
+            window._deleteBooking = deleteBooking;
         })();
     </script>
 </body>
