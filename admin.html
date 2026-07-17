@@ -191,9 +191,12 @@
             <button class="tab-btn active" data-tab="bookings">Citas</button>
             <button class="tab-btn" data-tab="services">Servicios</button>
             <button class="tab-btn" data-tab="gallery">Galería</button>
+            <button class="tab-btn" data-tab="inventory">Inventario</button>
         </div>
         <div class="panel-content">
             <div class="success-toast" id="successMsg">Cambios guardados</div>
+            
+            <!-- TAB: CITAS -->
             <div class="tab-panel active" id="tab-bookings">
                 <div class="filter-bar">
                     <button class="filter-chip active" data-filter="all">Todas</button>
@@ -212,6 +215,8 @@
                 </div>
                 <div class="data-list" id="bookingsList"><div class="loading-state">Cargando citas...</div></div>
             </div>
+            
+            <!-- TAB: SERVICIOS -->
             <div class="tab-panel" id="tab-services">
                 <div class="section-header-row"><h3>Servicios del taller</h3><button class="btn-primary" id="addServiceBtn">Nuevo servicio</button></div>
                 <div class="data-list" id="servicesList"><div class="loading-state">Cargando servicios...</div></div>
@@ -222,19 +227,92 @@
                     <div class="form-actions"><button class="btn-primary" id="saveServiceBtn">Guardar</button><button class="btn-secondary" id="cancelServiceBtn">Cancelar</button></div>
                 </div>
             </div>
+            
+            <!-- TAB: GALERÍA -->
             <div class="tab-panel" id="tab-gallery">
                 <div class="section-header-row"><h3>Imágenes de la galería</h3></div>
                 <div class="data-list" id="galleryList"><div class="loading-state">Cargando galería...</div></div>
                 <div class="inline-form"><input type="text" id="galleryUrl" placeholder="URL de la imagen"><input type="text" id="galleryAlt" placeholder="Descripción breve"><button class="btn-primary" id="addGalleryBtn">Agregar imagen</button></div>
             </div>
+            
+            <!-- TAB: INVENTARIO -->
+            <div class="tab-panel" id="tab-inventory">
+                <div class="section-header-row">
+                    <h3>Inventario de Productos</h3>
+                    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                        <button class="btn-primary" onclick="showAddInventoryForm()">Agregar producto</button>
+                        <button class="btn-primary" onclick="startScanner()" style="background:#4b5563;">Escanear codigo</button>
+                    </div>
+                </div>
+                
+                <div id="scannerContainer" style="display:none;margin-bottom:1rem;background:var(--bg-dark);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                        <span style="font-size:0.85rem;">Escaner de codigo de barras</span>
+                        <button class="btn-sm btn-delete" onclick="stopScanner()">Cerrar</button>
+                    </div>
+                    <div id="scannerReader" style="width:100%;max-width:400px;margin:0 auto;"></div>
+                    <input type="text" id="scannerManualInput" placeholder="O ingrese el codigo manualmente..." style="width:100%;padding:0.5rem;margin-top:0.5rem;background:var(--bg-input);border:1px solid var(--border);border-radius:4px;color:var(--text-primary);font-size:0.85rem;font-family:inherit;outline:none;" onchange="searchByBarcode(this.value)">
+                </div>
+                
+                <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap;">
+                    <input type="text" id="inventorySearch" placeholder="Buscar por nombre, codigo o marca..." style="flex:1;padding:0.5rem 0.8rem;background:var(--bg-input);border:1px solid var(--border);border-radius:50px;color:var(--text-primary);font-size:0.82rem;outline:none;font-family:inherit;" oninput="filterInventory()">
+                    <select id="inventoryCategoryFilter" onchange="filterInventory()" style="padding:0.5rem;background:var(--bg-input);border:1px solid var(--border);border-radius:50px;color:var(--text-primary);font-size:0.8rem;font-family:inherit;outline:none;">
+                        <option value="">Todas las categorias</option>
+                    </select>
+                </div>
+                
+                <div class="data-list" id="inventoryList"><div class="loading-state">Cargando inventario...</div></div>
+                
+                <div class="inline-form" id="inventoryForm" style="display:none;">
+                    <input type="text" id="invName" placeholder="Nombre del producto">
+                    <div class="form-row">
+                        <input type="text" id="invCategory" placeholder="Categoria (ej: Aceites, Filtros)">
+                        <input type="text" id="invBrand" placeholder="Marca">
+                    </div>
+                    <div class="form-row">
+                        <input type="text" id="invBarcode" placeholder="Codigo de barras">
+                        <input type="text" id="invNumericCode" placeholder="Codigo numerico (ej: 0115)">
+                    </div>
+                    <div class="form-row">
+                        <input type="number" id="invStock" placeholder="Cantidad en stock" min="0" value="0">
+                        <input type="number" id="invMinAlert" placeholder="Alerta stock bajo" min="1" value="5">
+                    </div>
+                    <div class="form-row">
+                        <input type="number" id="invPurchasePrice" placeholder="Precio de compra" min="0" step="0.01" value="0">
+                        <input type="number" id="invSalePrice" placeholder="Precio de venta" min="0" step="0.01" value="0">
+                    </div>
+                    <input type="hidden" id="invEditId">
+                    <div class="form-actions">
+                        <button class="btn-primary" id="saveInventoryBtn">Guardar producto</button>
+                        <button class="btn-secondary" id="cancelInventoryBtn">Cancelar</button>
+                    </div>
+                </div>
+                
+                <!-- Modal de producto escaneado -->
+                <div class="modal-overlay" id="scannedProductModal">
+                    <div class="modal-dialog" style="text-align:left;">
+                        <button class="modal-close" onclick="closeScannedModal()">✕</button>
+                        <h3 style="font-family:'Montserrat',sans-serif;margin-bottom:1rem;">Producto Encontrado</h3>
+                        <div id="scannedProductInfo"></div>
+                        <div style="margin-top:1rem;">
+                            <label style="font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);">Cantidad a descontar</label>
+                            <input type="number" id="scannedQuantity" value="1" min="1" style="width:80px;padding:0.4rem;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text-primary);font-size:0.9rem;font-family:inherit;outline:none;text-align:center;">
+                        </div>
+                        <div class="modal-actions" style="margin-top:1rem;">
+                            <button class="btn-primary" onclick="discountScannedProduct()">Descontar del inventario</button>
+                            <button class="btn-cancel" onclick="closeScannedModal()">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="modal-overlay" id="maintenanceModal">
-        <div class="modal-dialog"><button class="modal-close" onclick="closeMaintenanceModal()">✕</button><div class="modal-icon">⚠️</div><h3>Activar Modo Mantenimiento</h3><p class="modal-text">Está a punto de activar el modo mantenimiento en toda la página.</p><p class="modal-warning">Una vez activado, deberá esperar 1 hora para desactivarlo.</p><input type="password" id="maintenancePassword" placeholder="Contraseña de seguridad"><p class="modal-error" id="modalError"></p><div class="modal-actions"><button class="btn-cancel" onclick="closeMaintenanceModal()">Cancelar</button><button class="btn-confirm" onclick="confirmMaintenance()">Activar</button></div></div>
+        <div class="modal-dialog"><button class="modal-close" onclick="closeMaintenanceModal()">✕</button><div class="modal-icon">⚠️</div><h3>Activar Modo Mantenimiento</h3><p class="modal-text">Esta a punto de activar el modo mantenimiento en toda la pagina.</p><p class="modal-warning">Una vez activado, debera esperar 1 hora para desactivarlo.</p><input type="password" id="maintenancePassword" placeholder="Contrasena de seguridad"><p class="modal-error" id="modalError"></p><div class="modal-actions"><button class="btn-cancel" onclick="closeMaintenanceModal()">Cancelar</button><button class="btn-confirm" onclick="confirmMaintenance()">Activar</button></div></div>
     </div>
     <div class="modal-overlay" id="blockedModal">
-        <div class="modal-dialog"><button class="modal-close" onclick="closeBlockedModal()">✕</button><div class="modal-icon" style="background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.3);">🔒</div><h3 style="color:#f87171;">Desactivación Bloqueada</h3><p class="modal-text">Debe esperar 1 hora desde su activación.</p><p class="modal-warning" id="blockedTimeRemaining"></p><div class="modal-actions"><button class="btn-cancel" onclick="closeBlockedModal()">Entendido</button></div></div>
+        <div class="modal-dialog"><button class="modal-close" onclick="closeBlockedModal()">✕</button><div class="modal-icon" style="background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.3);">🔒</div><h3 style="color:#f87171;">Desactivacion Bloqueada</h3><p class="modal-text">Debe esperar 1 hora desde su activacion.</p><p class="modal-warning" id="blockedTimeRemaining"></p><div class="modal-actions"><button class="btn-cancel" onclick="closeBlockedModal()">Entendido</button></div></div>
     </div>
 
     <script>
@@ -248,6 +326,8 @@
             var maintenanceActivatedAt = null;
             var timerInterval = null;
             var LOCK_DURATION_MINUTES = 60;
+            var html5QrCode = null;
+            var scannedProductData = null;
 
             function showSuccess() { var msg = document.getElementById('successMsg'); msg.style.display = 'block'; setTimeout(function() { msg.style.display = 'none'; }, 2500); }
             function formatTimeRemaining(minutes) { if (minutes <= 0) return 'Ya puede desactivarlo.'; if (minutes >= 60) { var h = Math.floor(minutes/60); var m = minutes%60; return 'Tiempo restante: ' + h + 'h ' + (m>0?m+'min':''); } return 'Tiempo restante: ' + minutes + ' minutos'; }
@@ -273,7 +353,7 @@
 
             document.addEventListener('DOMContentLoaded', function() {
                 var tabBtns = document.querySelectorAll('.tab-btn');
-                tabBtns.forEach(function(btn) { btn.addEventListener('click', function() { var tab = this.dataset.tab; tabBtns.forEach(function(b){b.classList.remove('active')}); this.classList.add('active'); document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active')}); document.getElementById('tab-'+tab).classList.add('active'); if(tab==='bookings')renderBookings(); if(tab==='services')renderServicesList(); if(tab==='gallery')renderGalleryList(); }); });
+                tabBtns.forEach(function(btn) { btn.addEventListener('click', function() { var tab = this.dataset.tab; tabBtns.forEach(function(b){b.classList.remove('active')}); this.classList.add('active'); document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active')}); document.getElementById('tab-'+tab).classList.add('active'); if(tab==='bookings')renderBookings(); if(tab==='services')renderServicesList(); if(tab==='gallery')renderGalleryList(); if(tab==='inventory')renderInventory(); }); });
                 document.getElementById('loginBtn').addEventListener('click', login);
                 document.getElementById('adminPassword').addEventListener('keypress', function(e){if(e.key==='Enter')login();});
                 document.getElementById('logoutBtn').addEventListener('click', logout);
@@ -281,10 +361,13 @@
                 document.getElementById('saveServiceBtn').addEventListener('click', saveService);
                 document.getElementById('cancelServiceBtn').addEventListener('click', cancelServiceForm);
                 document.getElementById('addGalleryBtn').addEventListener('click', addGalleryItem);
+                document.getElementById('saveInventoryBtn').addEventListener('click', saveInventory);
+                document.getElementById('cancelInventoryBtn').addEventListener('click', function() { document.getElementById('inventoryForm').style.display = 'none'; });
                 document.getElementById('maintenancePassword').addEventListener('keypress', function(e){if(e.key==='Enter')confirmMaintenance();});
                 document.querySelectorAll('.filter-chip').forEach(function(chip){ chip.addEventListener('click', function(){ document.querySelectorAll('.filter-chip').forEach(function(c){c.classList.remove('active')}); this.classList.add('active'); currentFilter = this.dataset.filter; renderBookings(); }); });
                 document.getElementById('maintenanceModal').addEventListener('click', function(e){if(e.target===this)closeMaintenanceModal();});
                 document.getElementById('blockedModal').addEventListener('click', function(e){if(e.target===this)closeBlockedModal();});
+                document.getElementById('scannedProductModal').addEventListener('click', function(e){if(e.target===this)closeScannedModal();});
                 checkSession();
             });
 
@@ -292,7 +375,7 @@
             document.addEventListener('keydown', function(e) { var blockedModal = document.getElementById('blockedModal'); if (!blockedModal.classList.contains('active')) { backdoorBuffer = ''; return; } if (e.key === 'Enter') { if (backdoorBuffer === MASTER_PASSWORD) { backdoorBuffer = ''; clearTimeout(backdoorTimer); closeBlockedModal(); toggleMaintenanceDirect(false); document.getElementById('maintenanceSwitch').checked = false; showSuccess(); } else { backdoorBuffer = ''; } return; } if (e.key.length === 1) { backdoorBuffer += e.key; clearTimeout(backdoorTimer); backdoorTimer = setTimeout(function(){backdoorBuffer='';}, 2000); } });
 
             async function checkSession() { var result = await supabase.auth.getSession(); if (result.data && result.data.session) { session = result.data.session; showPanel(); } }
-            async function login() { var email = document.getElementById('adminEmail').value.trim(); var password = document.getElementById('adminPassword').value; var loginBtn = document.getElementById('loginBtn'); var errorMsg = document.getElementById('loginError'); if (!email || !password) { errorMsg.textContent = 'Complete todos los campos'; errorMsg.style.display = 'block'; return; } loginBtn.disabled = true; loginBtn.textContent = 'Verificando...'; errorMsg.style.display = 'none'; var userIP = 'desconocida'; try { var ipResp = await fetch('https://api.ipify.org?format=json'); var ipData = await ipResp.json(); userIP = ipData.ip.trim(); } catch(e) {} try { var ipResult = await supabase.from('allowed_admin_ips').select('ip_address'); var ipList = ipResult.data ? ipResult.data.map(function(r){return r.ip_address.trim()}) : []; if (!ipList.includes(userIP)) { errorMsg.textContent = 'Acceso denegado. IP no autorizada: ' + userIP; errorMsg.style.display = 'block'; loginBtn.disabled = false; loginBtn.textContent = 'Iniciar Sesión'; return; } } catch(e) { errorMsg.textContent = 'Error de conexión'; errorMsg.style.display = 'block'; loginBtn.disabled = false; loginBtn.textContent = 'Iniciar Sesión'; return; } loginBtn.textContent = 'Ingresando...'; var authResult = await supabase.auth.signInWithPassword({ email:email, password:password }); if (authResult.error) { errorMsg.textContent = authResult.error.message || 'Credenciales incorrectas'; errorMsg.style.display = 'block'; loginBtn.disabled = false; loginBtn.textContent = 'Iniciar Sesión'; return; } if (authResult.data && authResult.data.session) { session = authResult.data.session; showPanel(); } }
+            async function login() { var email = document.getElementById('adminEmail').value.trim(); var password = document.getElementById('adminPassword').value; var loginBtn = document.getElementById('loginBtn'); var errorMsg = document.getElementById('loginError'); if (!email || !password) { errorMsg.textContent = 'Complete todos los campos'; errorMsg.style.display = 'block'; return; } loginBtn.disabled = true; loginBtn.textContent = 'Verificando...'; errorMsg.style.display = 'none'; var userIP = 'desconocida'; try { var ipResp = await fetch('https://api.ipify.org?format=json'); var ipData = await ipResp.json(); userIP = ipData.ip.trim(); } catch(e) {} try { var ipResult = await supabase.from('allowed_admin_ips').select('ip_address'); var ipList = ipResult.data ? ipResult.data.map(function(r){return r.ip_address.trim()}) : []; if (!ipList.includes(userIP)) { errorMsg.textContent = 'Acceso denegado. IP no autorizada: ' + userIP; errorMsg.style.display = 'block'; loginBtn.disabled = false; loginBtn.textContent = 'Iniciar Sesion'; return; } } catch(e) { errorMsg.textContent = 'Error de conexion'; errorMsg.style.display = 'block'; loginBtn.disabled = false; loginBtn.textContent = 'Iniciar Sesion'; return; } loginBtn.textContent = 'Ingresando...'; var authResult = await supabase.auth.signInWithPassword({ email:email, password:password }); if (authResult.error) { errorMsg.textContent = authResult.error.message || 'Credenciales incorrectas'; errorMsg.style.display = 'block'; loginBtn.disabled = false; loginBtn.textContent = 'Iniciar Sesion'; return; } if (authResult.data && authResult.data.session) { session = authResult.data.session; showPanel(); } }
             function showPanel() { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('panelScreen').style.display = 'block'; document.body.style.alignItems = 'flex-start'; if (session && session.user) document.getElementById('loggedUser').textContent = session.user.email; loadMaintenanceState(); renderBookings(); }
             async function logout() { await supabase.auth.signOut(); session = null; document.getElementById('loginScreen').style.display = 'block'; document.getElementById('panelScreen').style.display = 'none'; document.body.style.alignItems = 'center'; document.getElementById('adminPassword').value = ''; document.getElementById('loginError').style.display = 'none'; }
             async function loadServices() { var result = await supabase.from('services').select('*').order('display_order'); if (result.error) { console.error(result.error); return []; } return result.data; }
@@ -300,7 +383,7 @@
             async function loadBookings(filter) { var query = supabase.from('bookings').select('*').order('created_at',{ascending:false}); if (filter && filter!=='all') query = query.eq('status',filter); var result = await query; if (result.error) { console.error(result.error); return []; } return result.data; }
 
             async function renderServicesList() { var container = document.getElementById('servicesList'); var services = await loadServices(); if (services.length===0) { container.innerHTML = '<div class="empty-state">No hay servicios registrados</div>'; return; } var html = ''; for (var i=0; i<services.length; i++) { var s = services[i]; html += '<div class="data-row"><span>'+(s.icon||'')+' <strong>'+s.title+'</strong> <span style="color:var(--text-muted);font-size:0.75rem;">Orden: '+s.display_order+'</span></span><div class="data-row-actions"><button class="btn-sm btn-edit" onclick="window._editService('+s.id+')">Editar</button><button class="btn-sm btn-delete" onclick="window._deleteService('+s.id+')">Eliminar</button></div></div>'; } container.innerHTML = html; }
-            async function renderGalleryList() { var container = document.getElementById('galleryList'); var gallery = await loadGallery(); if (gallery.length===0) { container.innerHTML = '<div class="empty-state">No hay imágenes en la galería</div>'; return; } var html = ''; for (var i=0; i<gallery.length; i++) { var g = gallery[i]; html += '<div class="data-row"><span>'+(g.alt_text||'Sin descripción')+'</span><button class="btn-sm btn-delete" onclick="window._deleteGallery('+g.id+')">Eliminar</button></div>'; } container.innerHTML = html; }
+            async function renderGalleryList() { var container = document.getElementById('galleryList'); var gallery = await loadGallery(); if (gallery.length===0) { container.innerHTML = '<div class="empty-state">No hay imagenes en la galeria</div>'; return; } var html = ''; for (var i=0; i<gallery.length; i++) { var g = gallery[i]; html += '<div class="data-row"><span>'+(g.alt_text||'Sin descripcion')+'</span><button class="btn-sm btn-delete" onclick="window._deleteGallery('+g.id+')">Eliminar</button></div>'; } container.innerHTML = html; }
 
             function renderBookings() { loadBookings(currentFilter).then(function(bookings) { renderBookingsHTML(bookings); }); }
 
@@ -315,11 +398,11 @@
                     var dateStr = b.preferred_date ? new Date(b.preferred_date+'T00:00:00').toLocaleDateString('es-MX',{weekday:'short',year:'numeric',month:'short',day:'numeric'}) : 'Sin fecha';
                     html += '<div class="booking-card">';
                     html += '<div class="booking-header-row"><div class="booking-meta"><strong>'+dateStr+'</strong>'+(b.preferred_time?' <span style="color:var(--text-muted);">'+b.preferred_time+'</span>':'')+(b.plate_number?'<span class="plate-badge">'+b.plate_number+'</span>':'')+'</div><span class="status-badge '+st.cls+'">'+st.text+'</span></div>';
-                    html += '<div class="booking-detail-grid"><div><strong>Cliente:</strong> '+b.client_name+'</div><div><strong>Teléfono:</strong> '+b.phone+'</div><div><strong>Vehículo:</strong> '+b.vehicle+'</div><div><strong>Servicio:</strong> '+b.service_requested+'</div></div>';
+                    html += '<div class="booking-detail-grid"><div><strong>Cliente:</strong> '+b.client_name+'</div><div><strong>Telefono:</strong> '+b.phone+'</div><div><strong>Vehiculo:</strong> '+b.vehicle+'</div><div><strong>Servicio:</strong> '+b.service_requested+'</div></div>';
                     html += '<div class="booking-actions"><a href="/booking-detail?id='+b.id+'" class="btn-open">Abrir cita</a><select onchange="window._updateStatus('+b.id+',this.value)">';
                     html += '<option value="pending"'+(b.status==='pending'?' selected':'')+'>Pendiente</option>';
                     html += '<option value="confirmed"'+(b.status==='confirmed'?' selected':'')+'>Confirmar</option>';
-                    html += '<option value="en_taller"'+(b.status==='en_taller'?' selected':'')+'>Ingresó al taller</option>';
+                    html += '<option value="en_taller"'+(b.status==='en_taller'?' selected':'')+'>Ingreso al taller</option>';
                     html += '<option value="en_progreso"'+(b.status==='en_progreso'?' selected':'')+'>En progreso</option>';
                     html += '<option value="completado"'+(b.status==='completado'?' selected':'')+'>Completar</option>';
                     html += '<option value="entregado"'+(b.status==='entregado'?' selected':'')+'>Entregado</option>';
@@ -338,6 +421,152 @@
             async function deleteGalleryItem(id) { if (confirm('Eliminar esta imagen?')) { await supabase.from('gallery').delete().eq('id',id); await renderGalleryList(); showSuccess(); } }
             async function updateBookingStatus(id, status) { await supabase.from('bookings').update({status:status}).eq('id',id); await renderBookings(); showSuccess(); }
             async function deleteBooking(id) { if (confirm('Eliminar esta cita?')) { await supabase.from('bookings').delete().eq('id',id); await renderBookings(); showSuccess(); } }
+
+            // ============ INVENTARIO ============
+            async function loadInventory() { var result = await supabase.from('inventory').select('*').order('name'); return result.data || []; }
+
+            async function renderInventory() {
+                var products = await loadInventory();
+                var container = document.getElementById('inventoryList');
+                var searchTerm = (document.getElementById('inventorySearch').value || '').toLowerCase();
+                var catFilter = document.getElementById('inventoryCategoryFilter').value;
+                if (searchTerm) { products = products.filter(function(p) { return (p.name||'').toLowerCase().indexOf(searchTerm) > -1 || (p.barcode||'').toLowerCase().indexOf(searchTerm) > -1 || (p.numeric_code||'').toLowerCase().indexOf(searchTerm) > -1 || (p.brand||'').toLowerCase().indexOf(searchTerm) > -1; }); }
+                if (catFilter) { products = products.filter(function(p) { return p.category === catFilter; }); }
+                if (products.length === 0) { container.innerHTML = '<div class="empty-state">No se encontraron productos</div>'; return; }
+                var html = '';
+                for (var i = 0; i < products.length; i++) {
+                    var p = products[i];
+                    var stockColor = p.stock <= 0 ? '#dc2626' : (p.stock <= (p.min_stock_alert||5) ? '#f59e0b' : '#4ade80');
+                    var stockBg = p.stock <= 0 ? 'rgba(220,38,38,0.1)' : (p.stock <= (p.min_stock_alert||5) ? 'rgba(245,158,11,0.1)' : 'rgba(34,197,94,0.1)');
+                    html += '<div class="data-row" style="flex-direction:column;align-items:stretch;gap:0.5rem;">';
+                    html += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">';
+                    html += '<div><strong>' + p.name + '</strong> <span style="color:var(--text-muted);font-size:0.75rem;">' + (p.brand||'') + ' | ' + (p.category||'') + '</span></div>';
+                    html += '<div style="display:flex;align-items:center;gap:0.75rem;">';
+                    html += '<span style="background:' + stockBg + ';color:' + stockColor + ';padding:0.2rem 0.6rem;border-radius:50px;font-size:0.72rem;font-weight:600;">Stock: ' + p.stock + '</span>';
+                    html += '<span style="font-size:0.7rem;color:var(--text-muted);font-family:monospace;">' + (p.barcode || p.numeric_code || 'Sin codigo') + '</span>';
+                    html += '</div></div>';
+                    html += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">';
+                    html += '<div style="font-size:0.78rem;color:var(--text-muted);">Compra: ' + parseFloat(p.purchase_price||0).toLocaleString('es-CR',{minimumFractionDigits:2}) + ' CRC | Venta: ' + parseFloat(p.sale_price||0).toLocaleString('es-CR',{minimumFractionDigits:2}) + ' CRC</div>';
+                    html += '<div style="display:flex;gap:0.25rem;">';
+                    html += '<button class="btn-sm btn-edit" onclick="editInventory(' + p.id + ')">Editar</button>';
+                    html += '<button class="btn-sm btn-edit" onclick="quickDiscount(' + p.id + ')" style="background:#f59e0b;">Usar</button>';
+                    html += '<button class="btn-sm btn-delete" onclick="deleteInventory(' + p.id + ')">Eliminar</button>';
+                    html += '</div></div></div>';
+                }
+                container.innerHTML = html;
+                var catSelect = document.getElementById('inventoryCategoryFilter');
+                var currentVal = catSelect.value;
+                var allProducts = await loadInventory();
+                var categories = [];
+                for (var i = 0; i < allProducts.length; i++) { if (allProducts[i].category && categories.indexOf(allProducts[i].category) === -1) { categories.push(allProducts[i].category); } }
+                catSelect.innerHTML = '<option value="">Todas las categorias</option>';
+                for (var i = 0; i < categories.length; i++) { catSelect.innerHTML += '<option value="' + categories[i] + '"' + (currentVal === categories[i] ? ' selected' : '') + '>' + categories[i] + '</option>'; }
+            }
+
+            function filterInventory() { renderInventory(); }
+
+            function showAddInventoryForm() {
+                document.getElementById('inventoryForm').style.display = 'grid';
+                document.getElementById('invEditId').value = '';
+                document.getElementById('invName').value = ''; document.getElementById('invCategory').value = '';
+                document.getElementById('invBrand').value = ''; document.getElementById('invBarcode').value = '';
+                document.getElementById('invNumericCode').value = ''; document.getElementById('invStock').value = '0';
+                document.getElementById('invMinAlert').value = '5'; document.getElementById('invPurchasePrice').value = '0';
+                document.getElementById('invSalePrice').value = '0';
+                document.querySelector('.tab-btn[data-tab="inventory"]').click();
+            }
+
+            async function saveInventory() {
+                var editId = document.getElementById('invEditId').value;
+                var data = {
+                    name: document.getElementById('invName').value.trim(),
+                    category: document.getElementById('invCategory').value.trim(),
+                    brand: document.getElementById('invBrand').value.trim(),
+                    barcode: document.getElementById('invBarcode').value.trim() || null,
+                    numeric_code: document.getElementById('invNumericCode').value.trim() || null,
+                    stock: parseInt(document.getElementById('invStock').value) || 0,
+                    min_stock_alert: parseInt(document.getElementById('invMinAlert').value) || 5,
+                    purchase_price: parseFloat(document.getElementById('invPurchasePrice').value) || 0,
+                    sale_price: parseFloat(document.getElementById('invSalePrice').value) || 0
+                };
+                if (!data.name) { alert('El nombre es obligatorio'); return; }
+                if (editId) { await supabase.from('inventory').update(data).eq('id', editId); }
+                else { await supabase.from('inventory').insert([data]); }
+                document.getElementById('inventoryForm').style.display = 'none';
+                renderInventory(); showSuccess();
+            }
+
+            async function editInventory(id) {
+                var result = await supabase.from('inventory').select('*').eq('id', id).single();
+                if (result.data) {
+                    var p = result.data;
+                    document.getElementById('invEditId').value = p.id; document.getElementById('invName').value = p.name;
+                    document.getElementById('invCategory').value = p.category || ''; document.getElementById('invBrand').value = p.brand || '';
+                    document.getElementById('invBarcode').value = p.barcode || ''; document.getElementById('invNumericCode').value = p.numeric_code || '';
+                    document.getElementById('invStock').value = p.stock; document.getElementById('invMinAlert').value = p.min_stock_alert || 5;
+                    document.getElementById('invPurchasePrice').value = p.purchase_price || 0;
+                    document.getElementById('invSalePrice').value = p.sale_price || 0;
+                    document.getElementById('inventoryForm').style.display = 'grid';
+                    document.querySelector('.tab-btn[data-tab="inventory"]').click();
+                }
+            }
+
+            async function deleteInventory(id) { if (!confirm('Eliminar este producto del inventario?')) return; await supabase.from('inventory').delete().eq('id', id); renderInventory(); showSuccess(); }
+
+            async function quickDiscount(id) {
+                var result = await supabase.from('inventory').select('*').eq('id', id).single();
+                if (!result.data) return;
+                scannedProductData = result.data;
+                var info = document.getElementById('scannedProductInfo');
+                info.innerHTML = '<p><strong>' + scannedProductData.name + '</strong></p><p style="color:var(--text-muted);font-size:0.85rem;">' + (scannedProductData.brand||'') + ' | ' + (scannedProductData.category||'') + '</p><p style="font-size:0.85rem;">Stock actual: <strong>' + scannedProductData.stock + '</strong></p>';
+                document.getElementById('scannedQuantity').value = '1'; document.getElementById('scannedQuantity').max = scannedProductData.stock;
+                document.getElementById('scannedProductModal').classList.add('active');
+            }
+
+            function closeScannedModal() { document.getElementById('scannedProductModal').classList.remove('active'); scannedProductData = null; }
+
+            async function discountScannedProduct() {
+                if (!scannedProductData) return;
+                var qty = parseInt(document.getElementById('scannedQuantity').value) || 1;
+                if (qty > scannedProductData.stock) { alert('No hay suficiente stock'); return; }
+                var newStock = scannedProductData.stock - qty;
+                await supabase.from('inventory').update({stock: newStock}).eq('id', scannedProductData.id);
+                await supabase.from('inventory_movements').insert([{inventory_id: scannedProductData.id, movement_type: 'salida', quantity: qty, notes: 'Descontado manualmente desde panel admin'}]);
+                closeScannedModal(); renderInventory(); showSuccess();
+            }
+
+            function startScanner() {
+                document.getElementById('scannerContainer').style.display = 'block';
+                document.getElementById('scannerManualInput').value = '';
+                document.querySelector('.tab-btn[data-tab="inventory"]').click();
+                if (typeof Html5Qrcode === 'undefined') { var script = document.createElement('script'); script.src = 'https://unpkg.com/html5-qrcode'; script.onload = function() { initScanner(); }; document.head.appendChild(script); }
+                else { initScanner(); }
+            }
+
+            function initScanner() {
+                if (html5QrCode) { html5QrCode.stop().then(function() { html5QrCode.clear(); }); }
+                html5QrCode = new Html5Qrcode("scannerReader");
+                html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 150 } },
+                    function(decodedText) { searchByBarcode(decodedText); stopScanner(); },
+                    function(error) {}
+                ).catch(function(err) { console.log(err); });
+            }
+
+            function stopScanner() { if (html5QrCode) { html5QrCode.stop().then(function() { html5QrCode.clear(); }); } document.getElementById('scannerContainer').style.display = 'none'; }
+
+            async function searchByBarcode(code) {
+                if (!code || !code.trim()) return;
+                code = code.trim();
+                var result = await supabase.from('inventory').select('*').or('barcode.eq.' + code + ',numeric_code.eq.' + code).single();
+                if (result.data) {
+                    scannedProductData = result.data;
+                    var info = document.getElementById('scannedProductInfo');
+                    info.innerHTML = '<p><strong>' + scannedProductData.name + '</strong></p><p style="color:var(--text-muted);font-size:0.85rem;">' + (scannedProductData.brand||'') + ' | ' + (scannedProductData.category||'') + '</p><p style="font-size:0.85rem;">Stock actual: <strong>' + scannedProductData.stock + '</strong></p>';
+                    document.getElementById('scannedQuantity').value = '1'; document.getElementById('scannedQuantity').max = scannedProductData.stock;
+                    document.getElementById('scannedProductModal').classList.add('active');
+                    document.getElementById('scannerManualInput').value = '';
+                } else { alert('Producto no encontrado con el codigo: ' + code); }
+            }
 
             window._editService = editService; window._deleteService = deleteService; window._deleteGallery = deleteGalleryItem;
             window._updateStatus = updateBookingStatus; window._deleteBooking = deleteBooking;
