@@ -74,8 +74,8 @@
         .timer-indicator { font-size: 0.7rem; color: #fbbf24; display: none; white-space: nowrap; }
         .timer-indicator.active { display: inline; }
 
-        .tab-nav { background: var(--bg-card); border-left: 1px solid var(--border); border-right: 1px solid var(--border); display: flex; gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        .tab-btn { padding: 0.9rem 1.5rem; background: transparent; border: none; color: var(--text-muted); font-size: 0.85rem; font-weight: 500; cursor: pointer; white-space: nowrap; font-family: inherit; transition: var(--transition); border-bottom: 2px solid transparent; }
+        .tab-nav { background: var(--bg-card); border-left: 1px solid var(--border); border-right: 1px solid var(--border); display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .tab-btn { padding: 0.9rem 1.5rem; background: transparent; border: none; color: var(--text-muted); font-size: 0.85rem; font-weight: 500; cursor: pointer; white-space: nowrap; font-family: inherit; transition: var(--transition); border-bottom: 2px solid transparent; flex-shrink: 0; }
         .tab-btn:hover { color: var(--text-secondary); }
         .tab-btn.active { color: var(--text-primary); border-bottom-color: var(--red); }
         .panel-content { background: var(--bg-card); border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius-lg) var(--radius-lg); padding: 2rem; }
@@ -90,23 +90,25 @@
         .data-list { display: grid; gap: 0.5rem; }
         .data-row { background: var(--bg-input); padding: 0.85rem 1.1rem; border-radius: var(--radius); display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); flex-wrap: wrap; gap: 0.5rem; transition: var(--transition); }
         .data-row:hover { border-color: var(--border-light); }
-        .data-row-actions { display: flex; gap: 0.4rem; }
-        .btn-sm { padding: 0.35rem 0.75rem; border: none; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.75rem; font-weight: 500; color: white; font-family: inherit; transition: var(--transition); }
+        .data-row-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+        .btn-sm { padding: 0.35rem 0.75rem; border: none; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.75rem; font-weight: 500; color: white; font-family: inherit; transition: var(--transition); white-space: nowrap; }
         .btn-edit { background: #4b5563; } .btn-edit:hover { background: #6b7280; }
         .btn-delete { background: #dc2626; } .btn-delete:hover { background: #b91c1c; }
         .btn-open { background: #4b5563; color: white; text-decoration: none; padding: 0.35rem 0.75rem; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 500; display: inline-block; transition: var(--transition); }
         .btn-open:hover { background: #6b7280; }
-        .btn-primary { padding: 0.55rem 1.2rem; background: var(--red); color: white; border: none; border-radius: var(--radius-sm); font-weight: 500; font-size: 0.82rem; cursor: pointer; font-family: inherit; transition: var(--transition); }
+        .btn-primary { padding: 0.55rem 1.2rem; background: var(--red); color: white; border: none; border-radius: var(--radius-sm); font-weight: 500; font-size: 0.82rem; cursor: pointer; font-family: inherit; transition: var(--transition); white-space: nowrap; }
         .btn-primary:hover { background: var(--red-hover); }
-        .btn-secondary { padding: 0.55rem 1.2rem; background: transparent; color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); font-weight: 500; font-size: 0.82rem; cursor: pointer; font-family: inherit; transition: var(--transition); }
+        .btn-secondary { padding: 0.55rem 1.2rem; background: transparent; color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); font-weight: 500; font-size: 0.82rem; cursor: pointer; font-family: inherit; transition: var(--transition); white-space: nowrap; }
         .btn-secondary:hover { border-color: var(--border-light); color: var(--text-primary); }
         .btn-label { background: #2563eb; } .btn-label:hover { background: #1d4ed8; }
+        .btn-success { background: #16a34a; } .btn-success:hover { background: #15803d; }
         .inline-form { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-top: 1rem; display: grid; gap: 0.85rem; }
         .inline-form input, .inline-form textarea, .inline-form select { padding: 0.7rem 1rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.9rem; font-family: inherit; outline: none; transition: var(--transition); width: 100%; }
+        .inline-form input::placeholder, .inline-form textarea::placeholder { color: #4b5563; }
         .inline-form input:focus, .inline-form textarea:focus, .inline-form select:focus { border-color: var(--red); }
         .inline-form textarea { resize: vertical; min-height: 70px; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; }
-        .form-actions { display: flex; gap: 0.5rem; margin-top: 0.25rem; }
+        .form-actions { display: flex; gap: 0.5rem; margin-top: 0.25rem; flex-wrap: wrap; }
         .booking-card { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; display: grid; gap: 1rem; transition: var(--transition); }
         .booking-card:hover { border-color: var(--border-light); }
         .booking-header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
@@ -120,46 +122,49 @@
         .status-cancelled { background: rgba(239,68,68,0.12); color: #f87171; }
         .booking-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.85rem; color: var(--text-secondary); }
         .booking-detail-grid strong { color: var(--text-primary); }
-        .booking-notes { background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem 1rem; }
-        .booking-notes-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-        .booking-notes-header span { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
-        .note-list { list-style: none; display: grid; gap: 0.4rem; }
-        .note-item { font-size: 0.8rem; color: var(--text-secondary); padding: 0.4rem 0.6rem; background: var(--bg-input); border-radius: 4px; display: flex; justify-content: space-between; gap: 0.5rem; }
-        .note-time { color: var(--text-muted); font-size: 0.7rem; white-space: nowrap; }
         .booking-actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
         .booking-actions select { padding: 0.4rem 0.7rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.78rem; cursor: pointer; font-family: inherit; }
-        .success-toast { position: fixed; bottom: 2rem; right: 2rem; background: #166534; color: #bbf7d0; padding: 0.75rem 1.25rem; border-radius: var(--radius); font-weight: 500; font-size: 0.85rem; display: none; z-index: 9999; border: 1px solid #22c55e; }
+        .success-toast { position: fixed; bottom: 2rem; right: 2rem; background: #166534; color: #bbf7d0; padding: 0.75rem 1.25rem; border-radius: var(--radius); font-weight: 500; font-size: 0.85rem; display: none; z-index: 9999; border: 1px solid #22c55e; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.85rem; }
         .loading-state { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.85rem; }
         .search-bar { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
-        .search-bar input { flex: 1; padding: 0.5rem 0.8rem; background: var(--bg-input); border: 1px solid var(--border); border-radius: 50px; color: var(--text-primary); font-size: 0.82rem; outline: none; font-family: inherit; }
+        .search-bar input { flex: 1; min-width: 150px; padding: 0.5rem 0.8rem; background: var(--bg-input); border: 1px solid var(--border); border-radius: 50px; color: var(--text-primary); font-size: 0.82rem; outline: none; font-family: inherit; }
 
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; align-items: center; justify-content: center; padding: 1.5rem; }
         .modal-overlay.active { display: flex; }
-        .modal-dialog { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2.5rem 2rem; max-width: 480px; width: 100%; text-align: center; animation: modalIn 0.3s ease-out; position: relative; }
+        .modal-dialog { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; max-width: 480px; width: 100%; text-align: center; animation: modalIn 0.3s ease-out; position: relative; }
         @keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(-10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-        .modal-icon { width: 64px; height: 64px; background: rgba(245,158,11,0.12); border: 2px solid rgba(245,158,11,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2rem; }
-        .modal-dialog h3 { font-family: 'Montserrat', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; color: #fbbf24; }
-        .modal-dialog .modal-text { color: var(--text-secondary); font-size: 0.85rem; line-height: 1.6; margin-bottom: 0.75rem; }
-        .modal-dialog .modal-warning { color: var(--text-muted); font-size: 0.78rem; font-style: italic; margin-bottom: 1.5rem; padding: 0.75rem; background: var(--bg-input); border-radius: var(--radius-sm); border: 1px solid var(--border); }
-        .modal-dialog input { display: block; width: 100%; padding: 0.75rem 1rem; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.9rem; text-align: center; margin-bottom: 1.25rem; outline: none; font-family: inherit; }
+        .modal-icon { width: 56px; height: 56px; background: rgba(245,158,11,0.12); border: 2px solid rgba(245,158,11,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.5rem; }
+        .modal-dialog h3 { font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .modal-dialog .modal-text { color: var(--text-secondary); font-size: 0.82rem; line-height: 1.5; margin-bottom: 0.75rem; }
+        .modal-dialog .modal-warning { color: var(--text-muted); font-size: 0.75rem; font-style: italic; margin-bottom: 1.25rem; padding: 0.75rem; background: var(--bg-input); border-radius: var(--radius-sm); border: 1px solid var(--border); }
+        .modal-dialog input { display: block; width: 100%; padding: 0.65rem 0.8rem; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.85rem; text-align: center; margin-bottom: 1rem; outline: none; font-family: inherit; }
         .modal-dialog input:focus { border-color: var(--red); }
-        .modal-actions { display: flex; gap: 0.75rem; justify-content: center; }
-        .btn-cancel { padding: 0.6rem 1.5rem; background: transparent; color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; font-size: 0.85rem; font-family: inherit; transition: var(--transition); }
+        .modal-actions { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+        .btn-cancel { padding: 0.5rem 1.2rem; background: transparent; color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; font-size: 0.8rem; font-family: inherit; transition: var(--transition); }
         .btn-cancel:hover { border-color: var(--border-light); color: var(--text-primary); }
-        .btn-confirm { padding: 0.6rem 1.5rem; background: #f59e0b; color: #000; border: none; border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; font-size: 0.85rem; font-family: inherit; transition: var(--transition); }
+        .btn-confirm { padding: 0.5rem 1.2rem; background: #f59e0b; color: #000; border: none; border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; font-size: 0.8rem; font-family: inherit; transition: var(--transition); }
         .btn-confirm:hover { background: #fbbf24; }
-        .modal-error { color: #ef4444; font-size: 0.75rem; display: none; margin-bottom: 0.75rem; }
-        .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--text-muted); font-size: 1.25rem; cursor: pointer; transition: var(--transition); line-height: 1; }
+        .modal-error { color: #ef4444; font-size: 0.7rem; display: none; margin-bottom: 0.5rem; }
+        .modal-close { position: absolute; top: 0.75rem; right: 0.75rem; background: none; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; transition: var(--transition); line-height: 1; }
         .modal-close:hover { color: var(--text-primary); }
 
         @media (max-width: 768px) {
             .panel-header { flex-direction: column; text-align: center; }
-            .tab-nav { gap: 0; } .tab-btn { padding: 0.7rem 1rem; font-size: 0.78rem; }
-            .form-row { grid-template-columns: 1fr; } .booking-detail-grid { grid-template-columns: 1fr; }
-            .data-row { flex-direction: column; text-align: left; }
+            .tab-btn { padding: 0.7rem 1rem; font-size: 0.78rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .booking-detail-grid { grid-template-columns: 1fr; }
+            .data-row { flex-direction: column; align-items: flex-start; }
+            .data-row-actions { width: 100%; justify-content: flex-end; }
             .maintenance-toggle { justify-content: center; }
-            .modal-dialog { padding: 2rem 1.5rem; }
+            .modal-dialog { padding: 1.5rem; margin: 1rem; }
+            .search-bar { flex-wrap: wrap; }
+            .search-bar button { flex: 1; min-width: 80px; }
+            .section-header-row { flex-direction: column; align-items: flex-start; }
+            .section-header-row button { width: 100%; }
+            .booking-actions { flex-direction: column; align-items: flex-start; }
+            .booking-actions select { width: 100%; }
+            .btn-open { display: block; text-align: center; width: 100%; }
         }
     </style>
 </head>
@@ -167,17 +172,17 @@
 
     <div id="loginScreen">
         <h2>Matts Motor Workshop</h2>
-        <p class="subtitle">Panel de Administración</p>
-        <input type="email" id="adminEmail" placeholder="Correo electrónico" autofocus>
-        <input type="password" id="adminPassword" placeholder="Contraseña">
+        <p class="subtitle">Panel de Administracion</p>
+        <input type="email" id="adminEmail" placeholder="Correo electronico" autofocus>
+        <input type="password" id="adminPassword" placeholder="Contrasena">
         <p class="error-msg" id="loginError"></p>
-        <button id="loginBtn">Iniciar Sesión</button>
+        <button id="loginBtn">Iniciar Sesion</button>
         <a href="/home" class="back-link">Volver al taller</a>
     </div>
 
     <div id="panelScreen">
         <div class="panel-header">
-            <h1>Panel de Administración</h1>
+            <h1>Panel de Administracion</h1>
             <div class="header-actions">
                 <div class="maintenance-toggle">
                     <span class="toggle-label">Mantenimiento</span>
@@ -186,13 +191,13 @@
                 </div>
                 <span style="color:var(--text-muted);font-size:0.8rem;" id="loggedUser"></span>
                 <a href="/home">Ver taller</a>
-                <button class="btn-logout" id="logoutBtn">Cerrar sesión</button>
+                <button class="btn-logout" id="logoutBtn">Cerrar sesion</button>
             </div>
         </div>
         <div class="tab-nav">
             <button class="tab-btn active" data-tab="bookings">Citas</button>
             <button class="tab-btn" data-tab="services">Servicios</button>
-            <button class="tab-btn" data-tab="gallery">Galería</button>
+            <button class="tab-btn" data-tab="gallery">Galeria</button>
             <button class="tab-btn" data-tab="inventory">Inventario</button>
         </div>
         <div class="panel-content">
@@ -221,17 +226,23 @@
                 <div class="section-header-row"><h3>Servicios del taller</h3><button class="btn-primary" id="addServiceBtn">Nuevo servicio</button></div>
                 <div class="data-list" id="servicesList"><div class="loading-state">Cargando servicios...</div></div>
                 <div class="inline-form" id="serviceForm" style="display:none;">
-                    <input type="text" id="serviceTitle" placeholder="Nombre del servicio"><textarea id="serviceDesc" placeholder="Descripción"></textarea>
-                    <select id="serviceIcon"><option value="🔧">Mecánica</option><option value="⚡">Electricidad</option><option value="🖥️">Scanner</option><option value="🛑">Frenos</option><option value="❄️">Aire acondicionado</option><option value="🛢️">Aceite</option><option value="🔩">General</option><option value="🚗">Motor</option></select>
-                    <input type="number" id="serviceOrder" placeholder="Orden (1, 2, 3...)" min="1" value="1"><input type="hidden" id="serviceEditId">
+                    <input type="text" id="serviceTitle" placeholder="Nombre del servicio">
+                    <textarea id="serviceDesc" placeholder="Descripcion del servicio"></textarea>
+                    <select id="serviceIcon"><option value="🔧">Mecanica</option><option value="⚡">Electricidad</option><option value="🖥️">Scanner</option><option value="🛑">Frenos</option><option value="❄️">Aire acondicionado</option><option value="🛢️">Aceite</option><option value="🔩">General</option><option value="🚗">Motor</option></select>
+                    <input type="number" id="serviceOrder" placeholder="Orden de aparicion (1, 2, 3...)" min="1" value="1">
+                    <input type="hidden" id="serviceEditId">
                     <div class="form-actions"><button class="btn-primary" id="saveServiceBtn">Guardar</button><button class="btn-secondary" id="cancelServiceBtn">Cancelar</button></div>
                 </div>
             </div>
             
             <div class="tab-panel" id="tab-gallery">
-                <div class="section-header-row"><h3>Imágenes de la galería</h3></div>
-                <div class="data-list" id="galleryList"><div class="loading-state">Cargando galería...</div></div>
-                <div class="inline-form"><input type="text" id="galleryUrl" placeholder="URL de la imagen"><input type="text" id="galleryAlt" placeholder="Descripción breve"><button class="btn-primary" id="addGalleryBtn">Agregar imagen</button></div>
+                <div class="section-header-row"><h3>Imagenes de la galeria</h3></div>
+                <div class="data-list" id="galleryList"><div class="loading-state">Cargando galeria...</div></div>
+                <div class="inline-form">
+                    <input type="text" id="galleryUrl" placeholder="URL de la imagen">
+                    <input type="text" id="galleryAlt" placeholder="Descripcion breve">
+                    <button class="btn-primary" id="addGalleryBtn">Agregar imagen</button>
+                </div>
             </div>
             
             <div class="tab-panel" id="tab-inventory">
@@ -253,8 +264,8 @@
                 </div>
                 
                 <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap;">
-                    <input type="text" id="inventorySearch" placeholder="Buscar por nombre, codigo o marca..." style="flex:1;padding:0.5rem 0.8rem;background:var(--bg-input);border:1px solid var(--border);border-radius:50px;color:var(--text-primary);font-size:0.82rem;outline:none;font-family:inherit;" oninput="filterInventory()">
-                    <select id="inventoryCategoryFilter" onchange="filterInventory()" style="padding:0.5rem;background:var(--bg-input);border:1px solid var(--border);border-radius:50px;color:var(--text-primary);font-size:0.8rem;font-family:inherit;outline:none;">
+                    <input type="text" id="inventorySearch" placeholder="Buscar por nombre, codigo o marca..." style="flex:1;min-width:150px;padding:0.5rem 0.8rem;background:var(--bg-input);border:1px solid var(--border);border-radius:50px;color:var(--text-primary);font-size:0.82rem;outline:none;font-family:inherit;" oninput="filterInventory()">
+                    <select id="inventoryCategoryFilter" onchange="filterInventory()" style="padding:0.5rem;background:var(--bg-input);border:1px solid var(--border);border-radius:50px;color:var(--text-primary);font-size:0.8rem;font-family:inherit;outline:none;min-width:120px;">
                         <option value="">Todas las categorias</option>
                     </select>
                 </div>
@@ -268,16 +279,16 @@
                         <input type="text" id="invBrand" placeholder="Marca">
                     </div>
                     <div class="form-row">
-                        <input type="text" id="invBarcode" placeholder="Codigo de barras (opcional, se autogenera)">
-                        <input type="text" id="invNumericCode" placeholder="Codigo numerico (opcional, se autogenera)">
+                        <input type="text" id="invBarcode" placeholder="Codigo de barras (opcional)">
+                        <input type="text" id="invNumericCode" placeholder="Codigo numerico (opcional)">
                     </div>
                     <div class="form-row">
-                        <input type="number" id="invStock" placeholder="Cantidad en stock" min="0" value="0">
-                        <input type="number" id="invMinAlert" placeholder="Alerta stock bajo" min="1" value="5">
+                        <input type="number" id="invStock" placeholder="Cantidad en stock">
+                        <input type="number" id="invMinAlert" placeholder="Alerta stock bajo (minimo)" value="5">
                     </div>
                     <div class="form-row">
-                        <input type="number" id="invPurchasePrice" placeholder="Precio de compra" min="0" step="0.01" value="0">
-                        <input type="number" id="invSalePrice" placeholder="Precio de venta" min="0" step="0.01" value="0">
+                        <input type="number" id="invPurchasePrice" placeholder="Precio de compra (CRC)">
+                        <input type="number" id="invSalePrice" placeholder="Precio de venta (CRC)">
                     </div>
                     <input type="hidden" id="invEditId">
                     <div class="form-actions">
@@ -288,15 +299,24 @@
                 
                 <div class="modal-overlay" id="scannedProductModal">
                     <div class="modal-dialog" style="text-align:left;">
-                        <button class="modal-close" onclick="closeScannedModal()">✕</button>
+                        <button class="modal-close" onclick="closeScannedModal()">X</button>
                         <h3 style="font-family:'Montserrat',sans-serif;margin-bottom:1rem;">Producto Encontrado</h3>
                         <div id="scannedProductInfo"></div>
-                        <div style="margin-top:1rem;">
-                            <label style="font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);">Cantidad a descontar</label>
-                            <input type="number" id="scannedQuantity" value="1" min="1" style="width:80px;padding:0.4rem;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text-primary);font-size:0.9rem;font-family:inherit;outline:none;text-align:center;">
+                        <div style="margin-top:1rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap;">
+                            <div>
+                                <label style="font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:0.25rem;">Cantidad</label>
+                                <input type="number" id="scannedQuantity" value="1" min="1" style="width:70px;padding:0.4rem;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text-primary);font-size:0.9rem;font-family:inherit;outline:none;text-align:center;">
+                            </div>
+                            <div>
+                                <label style="font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:0.25rem;">Accion</label>
+                                <select id="scannedAction" style="padding:0.4rem;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text-primary);font-size:0.85rem;font-family:inherit;outline:none;">
+                                    <option value="discount">Descontar (usar)</option>
+                                    <option value="add">Agregar (reponer)</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="modal-actions" style="margin-top:1rem;">
-                            <button class="btn-primary" onclick="discountScannedProduct()">Descontar del inventario</button>
+                            <button class="btn-primary" onclick="processScannedProduct()">Confirmar</button>
                             <button class="btn-cancel" onclick="closeScannedModal()">Cancelar</button>
                         </div>
                     </div>
@@ -306,10 +326,10 @@
     </div>
 
     <div class="modal-overlay" id="maintenanceModal">
-        <div class="modal-dialog"><button class="modal-close" onclick="closeMaintenanceModal()">✕</button><div class="modal-icon">⚠️</div><h3>Activar Modo Mantenimiento</h3><p class="modal-text">Esta a punto de activar el modo mantenimiento en toda la pagina.</p><p class="modal-warning">Una vez activado, debera esperar 1 hora para desactivarlo.</p><input type="password" id="maintenancePassword" placeholder="Contrasena de seguridad"><p class="modal-error" id="modalError"></p><div class="modal-actions"><button class="btn-cancel" onclick="closeMaintenanceModal()">Cancelar</button><button class="btn-confirm" onclick="confirmMaintenance()">Activar</button></div></div>
+        <div class="modal-dialog"><button class="modal-close" onclick="closeMaintenanceModal()">X</button><div class="modal-icon">!</div><h3>Activar Modo Mantenimiento</h3><p class="modal-text">Esta a punto de activar el modo mantenimiento en toda la pagina.</p><p class="modal-warning">Una vez activado, debera esperar 1 hora para desactivarlo.</p><input type="password" id="maintenancePassword" placeholder="Contrasena de seguridad"><p class="modal-error" id="modalError"></p><div class="modal-actions"><button class="btn-cancel" onclick="closeMaintenanceModal()">Cancelar</button><button class="btn-confirm" onclick="confirmMaintenance()">Activar</button></div></div>
     </div>
     <div class="modal-overlay" id="blockedModal">
-        <div class="modal-dialog"><button class="modal-close" onclick="closeBlockedModal()">✕</button><div class="modal-icon" style="background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.3);">🔒</div><h3 style="color:#f87171;">Desactivacion Bloqueada</h3><p class="modal-text">Debe esperar 1 hora desde su activacion.</p><p class="modal-warning" id="blockedTimeRemaining"></p><div class="modal-actions"><button class="btn-cancel" onclick="closeBlockedModal()">Entendido</button></div></div>
+        <div class="modal-dialog"><button class="modal-close" onclick="closeBlockedModal()">X</button><div class="modal-icon" style="background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.3);">!</div><h3 style="color:#f87171;">Desactivacion Bloqueada</h3><p class="modal-text">Debe esperar 1 hora desde su activacion.</p><p class="modal-warning" id="blockedTimeRemaining"></p><div class="modal-actions"><button class="btn-cancel" onclick="closeBlockedModal()">Entendido</button></div></div>
     </div>
 
     <script>
@@ -329,7 +349,7 @@
             function showSuccess() { var msg = document.getElementById('successMsg'); msg.style.display = 'block'; setTimeout(function() { msg.style.display = 'none'; }, 2500); }
             function formatTimeRemaining(minutes) { if (minutes <= 0) return 'Ya puede desactivarlo.'; if (minutes >= 60) { var h = Math.floor(minutes/60); var m = minutes%60; return 'Tiempo restante: ' + h + 'h ' + (m>0?m+'min':''); } return 'Tiempo restante: ' + minutes + ' minutos'; }
             function startTimer(activatedAt) { maintenanceActivatedAt = new Date(activatedAt); clearInterval(timerInterval); updateTimerDisplay(); timerInterval = setInterval(updateTimerDisplay, 30000); }
-            function updateTimerDisplay() { var indicator = document.getElementById('timerIndicator'); if (!maintenanceActivatedAt) { indicator.classList.remove('active'); return; } var now = new Date(); var diffMs = now - maintenanceActivatedAt; var diffMin = Math.floor(diffMs/60000); var remaining = LOCK_DURATION_MINUTES - diffMin; if (remaining <= 0) { indicator.classList.remove('active'); clearInterval(timerInterval); maintenanceActivatedAt = null; return; } indicator.textContent = '🔒 ' + formatTimeRemaining(remaining); indicator.classList.add('active'); }
+            function updateTimerDisplay() { var indicator = document.getElementById('timerIndicator'); if (!maintenanceActivatedAt) { indicator.classList.remove('active'); return; } var now = new Date(); var diffMs = now - maintenanceActivatedAt; var diffMin = Math.floor(diffMs/60000); var remaining = LOCK_DURATION_MINUTES - diffMin; if (remaining <= 0) { indicator.classList.remove('active'); clearInterval(timerInterval); maintenanceActivatedAt = null; return; } indicator.textContent = 'Bloqueado ' + formatTimeRemaining(remaining); indicator.classList.add('active'); }
             function stopTimer() { clearInterval(timerInterval); maintenanceActivatedAt = null; document.getElementById('timerIndicator').classList.remove('active'); }
             async function loadMaintenanceState() { try { var result = await supabase.from('site_settings').select('*').eq('setting_key','maintenance_mode').single(); if (result.data) { var isActive = result.data.setting_value==='true'; document.getElementById('maintenanceSwitch').checked = isActive; if (isActive && result.data.updated_at) { startTimer(result.data.updated_at); } else { stopTimer(); } } } catch(e) {} }
             function handleMaintenanceToggle(checkbox) { if (checkbox.checked) { showMaintenanceModal(); } else { checkbox.checked = true; attemptDeactivate(); } }
@@ -372,7 +392,7 @@
             document.addEventListener('keydown', function(e) { var blockedModal = document.getElementById('blockedModal'); if (!blockedModal.classList.contains('active')) { backdoorBuffer = ''; return; } if (e.key === 'Enter') { if (backdoorBuffer === MASTER_PASSWORD) { backdoorBuffer = ''; clearTimeout(backdoorTimer); closeBlockedModal(); toggleMaintenanceDirect(false); document.getElementById('maintenanceSwitch').checked = false; showSuccess(); } else { backdoorBuffer = ''; } return; } if (e.key.length === 1) { backdoorBuffer += e.key; clearTimeout(backdoorTimer); backdoorTimer = setTimeout(function(){backdoorBuffer='';}, 2000); } });
 
             async function checkSession() { var result = await supabase.auth.getSession(); if (result.data && result.data.session) { session = result.data.session; showPanel(); } }
-            async function login() { var email = document.getElementById('adminEmail').value.trim(); var password = document.getElementById('adminPassword').value; var loginBtn = document.getElementById('loginBtn'); var errorMsg = document.getElementById('loginError'); if (!email || !password) { errorMsg.textContent = 'Complete todos los campos'; errorMsg.style.display = 'block'; return; } loginBtn.disabled = true; loginBtn.textContent = 'Verificando...'; errorMsg.style.display = 'none'; var userIP = 'desconocida'; try { var ipResp = await fetch('https://api.ipify.org?format=json'); var ipData = await ipResp.json(); userIP = ipData.ip.trim(); } catch(e) {} try { var ipResult = await supabase.from('allowed_admin_ips').select('ip_address'); var ipList = ipResult.data ? ipResult.data.map(function(r){return r.ip_address.trim()}) : []; if (!ipList.includes(userIP)) { errorMsg.textContent = 'Acceso denegado. IP no autorizada: ' + userIP; errorMsg.style.display = 'block'; loginBtn.disabled = false; loginBtn.textContent = 'Iniciar Sesion'; return; } } catch(e) { errorMsg.textContent = 'Error de conexion'; errorMsg.style.display = 'block'; loginBtn.disabled = false; loginBtn.textContent = 'Iniciar Sesion'; return; } loginBtn.textContent = 'Ingresando...'; var authResult = await supabase.auth.signInWithPassword({ email:email, password:password }); if (authResult.error) { errorMsg.textContent = authResult.error.message || 'Credenciales incorrectas'; errorMsg.style.display = 'block'; loginBtn.disabled = false; loginBtn.textContent = 'Iniciar Sesion'; return; } if (authResult.data && authResult.data.session) { session = authResult.data.session; showPanel(); } }
+            async function login() { var email = document.getElementById('adminEmail').value.trim(); var password = document.getElementById('adminPassword').value; var loginBtn = document.getElementById('loginBtn'); var errorMsg = document.getElementById('loginError'); if (!email || !password) { errorMsg.textContent = 'Complete todos los campos'; errorMsg.style.display = 'block'; return; } loginBtn.disabled = true; loginBtn.textContent = 'Verificando...'; errorMsg.style.display = 'none'; var userIP = 'desconocida'; try { var ipResp = await fetch('https://api.ipify.org?format=json'); var ipData = await ipResp.json(); userIP = ipData.ip.trim(); } catch(e) {} try { var ipResult = await supabase.from('allowed_admin_ips').select('ip_address'); var ipList = ipResult.data ? ipResult.data.map(function(r){return r.ip_address.trim()}) : []; if (!ipList.includes(userIP)) { errorMsg.textContent = 'Acceso denegado. IP no autorizada.'; errorMsg.style.display = 'block'; loginBtn.disabled = false; loginBtn.textContent = 'Iniciar Sesion'; return; } } catch(e) { errorMsg.textContent = 'Error de conexion'; errorMsg.style.display = 'block'; loginBtn.disabled = false; loginBtn.textContent = 'Iniciar Sesion'; return; } loginBtn.textContent = 'Ingresando...'; var authResult = await supabase.auth.signInWithPassword({ email:email, password:password }); if (authResult.error) { errorMsg.textContent = authResult.error.message || 'Credenciales incorrectas'; errorMsg.style.display = 'block'; loginBtn.disabled = false; loginBtn.textContent = 'Iniciar Sesion'; return; } if (authResult.data && authResult.data.session) { session = authResult.data.session; showPanel(); } }
             function showPanel() { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('panelScreen').style.display = 'block'; document.body.style.alignItems = 'flex-start'; if (session && session.user) document.getElementById('loggedUser').textContent = session.user.email; loadMaintenanceState(); renderBookings(); }
             async function logout() { await supabase.auth.signOut(); session = null; document.getElementById('loginScreen').style.display = 'block'; document.getElementById('panelScreen').style.display = 'none'; document.body.style.alignItems = 'center'; document.getElementById('adminPassword').value = ''; document.getElementById('loginError').style.display = 'none'; }
             async function loadServices() { var result = await supabase.from('services').select('*').order('display_order'); if (result.error) { console.error(result.error); return []; } return result.data; }
@@ -438,10 +458,11 @@
                     html += '</div></div>';
                     html += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">';
                     html += '<div style="font-size:0.78rem;color:var(--text-muted);">Compra: ' + parseFloat(p.purchase_price||0).toLocaleString('es-CR',{minimumFractionDigits:2}) + ' CRC | Venta: ' + parseFloat(p.sale_price||0).toLocaleString('es-CR',{minimumFractionDigits:2}) + ' CRC</div>';
-                    html += '<div style="display:flex;gap:0.25rem;">';
+                    html += '<div class="data-row-actions">';
                     html += '<button class="btn-sm btn-edit" onclick="editInventory(' + p.id + ')">Editar</button>';
                     html += '<button class="btn-sm btn-label" onclick="viewLabel(' + p.id + ')">Etiqueta</button>';
                     html += '<button class="btn-sm btn-edit" onclick="quickDiscount(' + p.id + ')" style="background:#f59e0b;">Usar</button>';
+                    html += '<button class="btn-sm btn-success" onclick="quickAdd(' + p.id + ')">Agregar</button>';
                     html += '<button class="btn-sm btn-delete" onclick="deleteInventory(' + p.id + ')">Eliminar</button>';
                     html += '</div></div></div>';
                 }
@@ -462,9 +483,9 @@
                 document.getElementById('invEditId').value = '';
                 document.getElementById('invName').value = ''; document.getElementById('invCategory').value = '';
                 document.getElementById('invBrand').value = ''; document.getElementById('invBarcode').value = '';
-                document.getElementById('invNumericCode').value = ''; document.getElementById('invStock').value = '0';
-                document.getElementById('invMinAlert').value = '5'; document.getElementById('invPurchasePrice').value = '0';
-                document.getElementById('invSalePrice').value = '0';
+                document.getElementById('invNumericCode').value = ''; document.getElementById('invStock').value = '';
+                document.getElementById('invMinAlert').value = '5'; document.getElementById('invPurchasePrice').value = '';
+                document.getElementById('invSalePrice').value = '';
                 document.querySelector('.tab-btn[data-tab="inventory"]').click();
             }
 
@@ -503,9 +524,8 @@
                     document.getElementById('invEditId').value = p.id; document.getElementById('invName').value = p.name;
                     document.getElementById('invCategory').value = p.category || ''; document.getElementById('invBrand').value = p.brand || '';
                     document.getElementById('invBarcode').value = p.barcode || ''; document.getElementById('invNumericCode').value = p.numeric_code || '';
-                    document.getElementById('invStock').value = p.stock; document.getElementById('invMinAlert').value = p.min_stock_alert || 5;
-                    document.getElementById('invPurchasePrice').value = p.purchase_price || 0;
-                    document.getElementById('invSalePrice').value = p.sale_price || 0;
+                    document.getElementById('invStock').value = p.stock || ''; document.getElementById('invMinAlert').value = p.min_stock_alert || 5;
+                    document.getElementById('invPurchasePrice').value = p.purchase_price || ''; document.getElementById('invSalePrice').value = p.sale_price || '';
                     document.getElementById('inventoryForm').style.display = 'grid';
                     document.querySelector('.tab-btn[data-tab="inventory"]').click();
                 }
@@ -517,21 +537,40 @@
                 var result = await supabase.from('inventory').select('*').eq('id', id).single();
                 if (!result.data) return;
                 scannedProductData = result.data;
+                document.getElementById('scannedAction').value = 'discount';
                 var info = document.getElementById('scannedProductInfo');
                 info.innerHTML = '<p><strong>' + scannedProductData.name + '</strong></p><p style="color:var(--text-muted);font-size:0.85rem;">' + (scannedProductData.brand||'') + ' | ' + (scannedProductData.category||'') + '</p><p style="font-size:0.85rem;">Stock actual: <strong>' + scannedProductData.stock + '</strong></p>';
                 document.getElementById('scannedQuantity').value = '1'; document.getElementById('scannedQuantity').max = scannedProductData.stock;
                 document.getElementById('scannedProductModal').classList.add('active');
             }
 
+            async function quickAdd(id) {
+                var result = await supabase.from('inventory').select('*').eq('id', id).single();
+                if (!result.data) return;
+                scannedProductData = result.data;
+                document.getElementById('scannedAction').value = 'add';
+                var info = document.getElementById('scannedProductInfo');
+                info.innerHTML = '<p><strong>' + scannedProductData.name + '</strong></p><p style="color:var(--text-muted);font-size:0.85rem;">' + (scannedProductData.brand||'') + ' | ' + (scannedProductData.category||'') + '</p><p style="font-size:0.85rem;">Stock actual: <strong>' + scannedProductData.stock + '</strong></p>';
+                document.getElementById('scannedQuantity').value = '1'; document.getElementById('scannedQuantity').max = 999;
+                document.getElementById('scannedProductModal').classList.add('active');
+            }
+
             function closeScannedModal() { document.getElementById('scannedProductModal').classList.remove('active'); scannedProductData = null; }
 
-            async function discountScannedProduct() {
+            async function processScannedProduct() {
                 if (!scannedProductData) return;
                 var qty = parseInt(document.getElementById('scannedQuantity').value) || 1;
-                if (qty > scannedProductData.stock) { alert('No hay suficiente stock'); return; }
-                var newStock = scannedProductData.stock - qty;
-                await supabase.from('inventory').update({stock: newStock}).eq('id', scannedProductData.id);
-                await supabase.from('inventory_movements').insert([{inventory_id: scannedProductData.id, movement_type: 'salida', quantity: qty, notes: 'Descontado manualmente desde panel admin'}]);
+                var action = document.getElementById('scannedAction').value;
+                if (action === 'discount') {
+                    if (qty > scannedProductData.stock) { alert('No hay suficiente stock'); return; }
+                    var newStock = scannedProductData.stock - qty;
+                    await supabase.from('inventory').update({stock: newStock}).eq('id', scannedProductData.id);
+                    await supabase.from('inventory_movements').insert([{inventory_id: scannedProductData.id, movement_type: 'salida', quantity: qty, notes: 'Descontado manualmente'}]);
+                } else {
+                    var newStock = scannedProductData.stock + qty;
+                    await supabase.from('inventory').update({stock: newStock}).eq('id', scannedProductData.id);
+                    await supabase.from('inventory_movements').insert([{inventory_id: scannedProductData.id, movement_type: 'entrada', quantity: qty, notes: 'Agregado manualmente'}]);
+                }
                 closeScannedModal(); renderInventory(); showSuccess();
             }
 
@@ -564,6 +603,7 @@
                 var result = await supabase.from('inventory').select('*').or('barcode.eq.' + code + ',numeric_code.eq.' + code).single();
                 if (result.data) {
                     scannedProductData = result.data;
+                    document.getElementById('scannedAction').value = 'discount';
                     var info = document.getElementById('scannedProductInfo');
                     info.innerHTML = '<p><strong>' + scannedProductData.name + '</strong></p><p style="color:var(--text-muted);font-size:0.85rem;">' + (scannedProductData.brand||'') + ' | ' + (scannedProductData.category||'') + '</p><p style="font-size:0.85rem;">Stock actual: <strong>' + scannedProductData.stock + '</strong></p>';
                     document.getElementById('scannedQuantity').value = '1'; document.getElementById('scannedQuantity').max = scannedProductData.stock;
@@ -593,10 +633,7 @@
                     subtitleEl.textContent = (product.brand||'') + ' | ' + (product.category||''); subtitleEl.style.cssText = 'font-size:0.85rem;color:#a3a3a3;margin-bottom:1.5rem;';
                     content.appendChild(subtitleEl);
                     var canvas = document.createElement('canvas');
-                    try {
-                        JsBarcode(canvas, code, { format: "CODE128", width: 2, height: 60, displayValue: true, fontSize: 14, margin: 10, background: '#ffffff', lineColor: '#000000' });
-                        canvas.style.maxWidth = '100%'; content.appendChild(canvas);
-                    } catch(e) {}
+                    try { JsBarcode(canvas, code, { format: "CODE128", width: 2, height: 60, displayValue: true, fontSize: 14, margin: 10, background: '#ffffff', lineColor: '#000000' }); canvas.style.maxWidth = '100%'; content.appendChild(canvas); } catch(e) {}
                     var codeTextEl = document.createElement('p');
                     codeTextEl.textContent = code; codeTextEl.style.cssText = 'font-size:1rem;font-weight:bold;color:#fff;margin-top:1rem;font-family:monospace;';
                     content.appendChild(codeTextEl);
@@ -634,8 +671,9 @@
             window.editInventory = editInventory;
             window.deleteInventory = deleteInventory;
             window.quickDiscount = quickDiscount;
+            window.quickAdd = quickAdd;
             window.closeScannedModal = closeScannedModal;
-            window.discountScannedProduct = discountScannedProduct;
+            window.processScannedProduct = processScannedProduct;
             window.saveInventory = saveInventory;
             window.viewLabel = viewLabel;
             window.printLabel = printLabel;
