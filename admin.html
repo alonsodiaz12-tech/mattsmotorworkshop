@@ -531,6 +531,10 @@
             }
 
             function startScanner() {
+                if (html5QrCode) {
+                    try { html5QrCode.stop().catch(function(){}); html5QrCode.clear(); } catch(e) {}
+                    html5QrCode = null;
+                }
                 document.getElementById('scannerContainer').style.display = 'block';
                 document.getElementById('scannerManualInput').value = '';
                 document.querySelector('.tab-btn[data-tab="inventory"]').click();
@@ -546,7 +550,7 @@
 
             function initScanner() {
                 if (html5QrCode) {
-                    html5QrCode.stop().then(function() { html5QrCode.clear(); }).catch(function() {});
+                    try { html5QrCode.stop().catch(function(){}); html5QrCode.clear(); } catch(e) {}
                     html5QrCode = null;
                 }
                 html5QrCode = new Html5Qrcode("scannerReader");
@@ -555,17 +559,21 @@
                     { fps: 10, qrbox: { width: 250, height: 150 } },
                     function(decodedText) { searchByBarcode(decodedText); stopScanner(); },
                     function(error) {}
-                ).catch(function(err) { console.log(err); });
+                ).catch(function(err) { console.log('Error al iniciar escaner:', err); });
             }
 
             function stopScanner() {
                 if (html5QrCode) {
-                    html5QrCode.stop().then(function() {
-                        html5QrCode.clear();
+                    try {
+                        html5QrCode.stop().then(function() {
+                            html5QrCode.clear();
+                            html5QrCode = null;
+                        }).catch(function() {
+                            html5QrCode = null;
+                        });
+                    } catch(e) {
                         html5QrCode = null;
-                    }).catch(function() {
-                        html5QrCode = null;
-                    });
+                    }
                 }
                 document.getElementById('scannerContainer').style.display = 'none';
             }
