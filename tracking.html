@@ -85,13 +85,25 @@
         .no-notes { color: var(--text-muted); font-style: italic; font-size: 0.9rem; }
         .new-search-btn { display: inline-flex; align-items: center; gap: 0.5rem; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-light); padding: 0.7rem 1.5rem; border-radius: 50px; text-decoration: none; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: var(--transition); margin-top: 1rem; }
         .new-search-btn:hover { border-color: var(--text-secondary); color: var(--text-primary); }
-        .worklog-client-grid { display: grid; gap: 0.75rem; text-align: left; }
-        .worklog-client-item { background: var(--bg-dark); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
-        .worklog-client-item .wl-title { font-weight: 600; font-size: 0.95rem; color: var(--text-primary); margin-bottom: 0.4rem; }
-        .worklog-client-item .wl-date { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.5rem; }
-        .worklog-client-item .wl-meta { display: grid; gap: 0.2rem; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
-        .worklog-client-item .wl-price { color: #4ade80; font-weight: 600; }
-        .worklog-client-item img { width: 100%; max-width: 100%; border-radius: 6px; margin-top: 0.5rem; display: block; }
+
+        /* Worklog colapsable */
+        .worklog-client-grid { display: grid; gap: 0.5rem; text-align: left; }
+        .worklog-client-item { background: var(--bg-dark); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        .worklog-header-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem; cursor: pointer; transition: var(--transition); user-select: none; }
+        .worklog-header-bar:hover { background: rgba(255,255,255,0.02); }
+        .worklog-header-bar .wl-title { font-weight: 600; font-size: 0.95rem; color: var(--text-primary); flex: 1; margin-right: 0.75rem; }
+        .worklog-header-bar .wl-badges { display: flex; gap: 0.4rem; flex-shrink: 0; }
+        .worklog-header-bar .wl-arrow { color: var(--text-muted); font-size: 0.7rem; transition: var(--transition); flex-shrink: 0; margin-left: 0.5rem; }
+        .worklog-client-item.open .worklog-header-bar .wl-arrow { transform: rotate(180deg); }
+        .badge { padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 500; white-space: nowrap; }
+        .badge-time { background: rgba(59,130,246,0.12); color: #60a5fa; }
+        .badge-price { background: rgba(34,197,94,0.12); color: #4ade80; font-weight: 600; }
+        .worklog-body { display: none; padding: 0 1rem 1rem 1rem; }
+        .worklog-client-item.open .worklog-body { display: block; }
+        .worklog-body .wl-date { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .worklog-body .wl-meta { display: grid; gap: 0.2rem; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
+        .worklog-body .wl-price { color: #4ade80; font-weight: 600; }
+        .worklog-body img { width: 100%; max-width: 100%; border-radius: 6px; margin-top: 0.5rem; display: block; }
 
         @media (max-width: 600px) {
             body { padding: 1rem; align-items: flex-start; padding-top: 2rem; }
@@ -99,7 +111,7 @@
             .detail-grid { grid-template-columns: 1fr; }
             .progress-tracker { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
             .result-header { flex-direction: column; }
-            .worklog-client-item img { max-width: 100%; }
+            .worklog-body img { max-width: 100%; }
         }
     </style>
 </head>
@@ -208,26 +220,50 @@
             var html = '<div class="worklog-client-grid">';
             for (var i=0; i<result.data.length; i++) { 
                 var log = result.data[i];
-                var durationText = '';
+                var badgesHtml = '';
                 if (log.hours > 0 || log.minutes > 0) {
-                    durationText = 'Este trabajo tuvo una duracion de: ';
-                    if (log.hours > 0) durationText += log.hours + ' hora' + (log.hours > 1 ? 's' : '') + ' ';
-                    if (log.minutes > 0) durationText += (log.hours > 0 ? 'con ' : '') + log.minutes + ' minuto' + (log.minutes > 1 ? 's' : '');
+                    var timeStr = '';
+                    if (log.hours > 0) timeStr += log.hours + 'h ';
+                    if (log.minutes > 0) timeStr += log.minutes + 'min';
+                    badgesHtml += '<span class="badge badge-time">' + timeStr.trim() + '</span>';
                 }
-                var priceText = log.price > 0 ? 'El costo total del trabajo realizado es de: <span class="wl-price">' + parseFloat(log.price).toLocaleString('es-CR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' CRC</span>' : '';
-                html += '<div class="worklog-client-item">';
-                html += '<div class="wl-title">' + log.description + '</div>';
-                html += '<div class="wl-date">' + new Date(log.created_at).toLocaleString('es-MX', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'}) + '</div>';
-                if (durationText || priceText) {
-                    html += '<div class="wl-meta">';
-                    if (durationText) html += '<span>' + durationText + '</span>';
-                    if (priceText) html += '<span>' + priceText + '</span>';
-                    html += '</div>';
+                if (log.price > 0) {
+                    badgesHtml += '<span class="badge badge-price">' + parseFloat(log.price).toLocaleString('es-CR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' CRC</span>';
                 }
-                html += (log.photo_url ? '<img src="' + log.photo_url + '" onerror="this.style.display=\'none\'" loading="lazy">' : '');
+
+                var detailHtml = '';
+                detailHtml += '<div class="wl-date">' + new Date(log.created_at).toLocaleString('es-MX', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'}) + '</div>';
+                if (log.hours > 0 || log.minutes > 0) {
+                    var durText = 'Este trabajo tuvo una duracion de: ';
+                    if (log.hours > 0) durText += log.hours + ' hora' + (log.hours > 1 ? 's' : '') + ' ';
+                    if (log.minutes > 0) durText += (log.hours > 0 ? 'con ' : '') + log.minutes + ' minuto' + (log.minutes > 1 ? 's' : '');
+                    detailHtml += '<div class="wl-meta"><span>' + durText + '</span></div>';
+                }
+                if (log.price > 0) {
+                    detailHtml += '<div class="wl-meta"><span>El costo total del trabajo realizado es de: <span class="wl-price">' + parseFloat(log.price).toLocaleString('es-CR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' CRC</span></span></div>';
+                }
+                if (log.photo_url) {
+                    detailHtml += '<img src="' + log.photo_url + '" onerror="this.style.display=\'none\'" loading="lazy">';
+                }
+
+                html += '<div class="worklog-client-item" onclick="toggleWorklog(this)">';
+                html += '<div class="worklog-header-bar">';
+                html += '<span class="wl-title">' + log.description + '</span>';
+                html += '<span class="wl-badges">' + badgesHtml + '</span>';
+                html += '<span class="wl-arrow">&#9660;</span>';
+                html += '</div>';
+                html += '<div class="worklog-body">' + detailHtml + '</div>';
                 html += '</div>';
             }
             html += '</div>'; container.innerHTML = html;
+        }
+
+        function toggleWorklog(item) {
+            if (item.classList.contains('open')) {
+                item.classList.remove('open');
+            } else {
+                item.classList.add('open');
+            }
         }
 
         function newSearch() {
