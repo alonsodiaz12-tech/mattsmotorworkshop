@@ -32,11 +32,8 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-dark);
-            color: var(--text-primary);
-            min-height: 100vh;
-            padding: 2rem;
-            -webkit-font-smoothing: antialiased;
+            background: var(--bg-dark); color: var(--text-primary);
+            min-height: 100vh; padding: 2rem; -webkit-font-smoothing: antialiased;
         }
 
         .container { max-width: 900px; margin: 0 auto; }
@@ -57,7 +54,6 @@
         .info-item .value { font-weight: 600; font-size: 0.95rem; }
         .info-item input, .info-item select { padding: 0.4rem 0.6rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; color: var(--text-primary); font-size: 0.85rem; outline: none; width: 100%; font-family: inherit; }
         .info-item select { cursor: pointer; }
-        .info-item input:focus, .info-item select:focus { border-color: var(--red); }
         .section-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 1.5rem; }
         .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem; }
         .section-header h2 { font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 700; }
@@ -91,31 +87,41 @@
         .worklog-item.open .worklog-body { display: block; }
         .worklog-body .wl-date { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.5rem; }
         .worklog-body .wl-meta { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.3rem; }
-        .worklog-body .wl-price { color: #4ade80; font-weight: 600; }
         .worklog-body img { width: 100%; max-width: 100%; border-radius: var(--radius-sm); margin-top: 0.5rem; display: block; }
 
         /* Edit form */
         .edit-worklog-form { display: none; padding: 0 1rem 1rem 1rem; }
         .edit-worklog-form textarea { width: 100%; padding: 0.5rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.85rem; font-family: inherit; outline: none; resize: vertical; min-height: 50px; margin-bottom: 0.5rem; }
-        .edit-worklog-form textarea:focus { border-color: var(--red); }
         .edit-worklog-form .form-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.5rem; }
         .edit-worklog-form .form-row input { padding: 0.4rem 0.5rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.8rem; font-family: inherit; outline: none; width: 65px; text-align: center; }
-        .edit-worklog-form .form-row input:focus { border-color: var(--red); }
         .edit-worklog-form .form-row label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
         .edit-worklog-form .form-actions { display: flex; gap: 0.5rem; }
 
-        .add-worklog-form { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1.25rem; margin-top: 1rem; display: none; }
-        .add-worklog-form textarea { width: 100%; padding: 0.7rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.85rem; font-family: inherit; outline: none; resize: vertical; min-height: 60px; margin-bottom: 0.75rem; }
-        .add-worklog-form textarea:focus { border-color: var(--red); }
+        .add-worklog-form, .add-part-form { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1.25rem; margin-top: 1rem; display: none; }
+        .add-worklog-form textarea, .add-part-form textarea, .add-part-form input[type="text"] { width: 100%; padding: 0.7rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.85rem; font-family: inherit; outline: none; resize: vertical; min-height: 40px; margin-bottom: 0.75rem; }
+        .add-part-form .form-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.75rem; }
+        .add-part-form .form-row label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); white-space: nowrap; }
+        .add-part-form .form-row input[type="file"] { flex: 1; padding: 0.4rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.8rem; }
+        .add-part-form .form-actions, .add-worklog-form .form-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
         .add-worklog-form .form-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.75rem; }
         .add-worklog-form .form-row input { padding: 0.5rem 0.7rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.85rem; font-family: inherit; outline: none; }
-        .add-worklog-form .form-row input:focus { border-color: var(--red); }
         .add-worklog-form .form-row label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); white-space: nowrap; }
         .add-worklog-form .form-row .input-group { display: flex; align-items: center; gap: 0.25rem; }
         .add-worklog-form .form-row .input-group input { width: 60px; text-align: center; }
-        .add-worklog-form .form-actions { display: flex; gap: 0.5rem; }
 
-        @media (max-width: 768px) { body { padding: 1rem; } .info-grid { grid-template-columns: 1fr; } .page-header { flex-direction: column; align-items: flex-start; } }
+        /* Parts */
+        .parts-grid { display: grid; gap: 0.75rem; }
+        .part-card { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; }
+        .part-card .part-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem; }
+        .part-card .part-header strong { font-size: 0.95rem; }
+        .part-card .part-header .part-link { font-size: 0.7rem; color: var(--text-muted); }
+        .part-card .part-photos { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+        .part-card .part-photo-item { text-align: center; }
+        .part-card .part-photo-item .photo-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 0.3rem; }
+        .part-card .part-photo-item img { width: 100%; max-width: 100%; border-radius: var(--radius-sm); display: block; }
+        .part-card .part-photo-item .no-photo { padding: 2rem; background: var(--bg-dark); border-radius: var(--radius-sm); color: var(--text-muted); font-size: 0.75rem; }
+
+        @media (max-width: 768px) { body { padding: 1rem; } .info-grid { grid-template-columns: 1fr; } .page-header { flex-direction: column; align-items: flex-start; } .part-card .part-photos { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -123,7 +129,9 @@
         <a href="/admin" class="back-link">Volver al panel</a>
         <div class="page-header"><h1 id="pageTitle">Cargando cita...</h1><span class="status-badge" id="pageStatus"></span></div>
         <div class="info-card"><div class="info-grid" id="infoGrid"><div class="loading-state">Cargando informacion...</div></div></div>
+        
         <div class="section-card"><div class="section-header"><h2>Notas del Taller</h2><button class="btn btn-primary btn-sm" onclick="addNote()">Agregar nota</button></div><div id="notesContainer"><div class="loading-state">Cargando notas...</div></div></div>
+        
         <div class="section-card"><div class="section-header"><h2>Registro de Trabajos</h2><button class="btn btn-primary btn-sm" onclick="toggleWorklogForm()">Agregar trabajo</button></div><div id="worklogContainer"><div class="loading-state">Cargando trabajos...</div></div>
         <div class="add-worklog-form" id="worklogForm">
             <textarea id="worklogDesc" placeholder="Describa el trabajo realizado..."></textarea>
@@ -134,6 +142,15 @@
             </div>
             <div class="form-row"><label>Foto (opcional)</label><input type="file" id="worklogPhoto" accept="image/*" style="flex:1;"></div>
             <div class="form-actions"><button class="btn btn-primary" onclick="saveWorklog()">Guardar trabajo</button><button class="btn btn-secondary" onclick="toggleWorklogForm()">Cancelar</button></div>
+        </div></div>
+        
+        <div class="section-card"><div class="section-header"><h2>Repuestos Reemplazados</h2><button class="btn btn-primary btn-sm" onclick="togglePartForm()">Agregar repuesto</button></div><div id="partsContainer"><div class="loading-state">Cargando repuestos...</div></div>
+        <div class="add-part-form" id="partForm">
+            <input type="text" id="partName" placeholder="Nombre del repuesto (ej: Filtro de aceite, Bateria, etc.)">
+            <div class="form-row"><label>Vincular a trabajo (opcional)</label><select id="partWorklog" style="padding:0.5rem;background:var(--bg-dark);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:0.85rem;font-family:inherit;flex:1;"><option value="">Sin vincular</option></select></div>
+            <div class="form-row"><label>Foto repuesto ANTIGUO</label><input type="file" id="partOldPhoto" accept="image/*"></div>
+            <div class="form-row"><label>Foto repuesto NUEVO</label><input type="file" id="partNewPhoto" accept="image/*"></div>
+            <div class="form-actions"><button class="btn btn-primary" onclick="savePart()">Guardar repuesto</button><button class="btn btn-secondary" onclick="togglePartForm()">Cancelar</button></div>
         </div></div>
     </div>
     <div class="success-toast" id="successMsg">Cambios guardados</div>
@@ -164,6 +181,7 @@
                 renderBooking();
                 loadNotes();
                 loadWorkLogs();
+                loadParts();
             }
 
             function renderBooking() {
@@ -205,10 +223,11 @@
                 booking.notes = notes; loadNotes(); showSuccess();
             }
 
-            async function updateStatus(newStatus) { await supabase.from('bookings').update({status:newStatus}).eq('id',bookingId); booking.status = newStatus; renderBooking(); showSuccess(); }
-            async function updatePlate(plate) { await supabase.from('bookings').update({plate_number:plate.toUpperCase()}).eq('id',bookingId); booking.plate_number = plate.toUpperCase(); showSuccess(); }
-            async function updateEstimate(date) { await supabase.from('bookings').update({estimated_delivery:date}).eq('id',bookingId); booking.estimated_delivery = date; showSuccess(); }
+            async function updateStatus(s) { await supabase.from('bookings').update({status:s}).eq('id',bookingId); booking.status = s; renderBooking(); showSuccess(); }
+            async function updatePlate(p) { await supabase.from('bookings').update({plate_number:p.toUpperCase()}).eq('id',bookingId); booking.plate_number = p.toUpperCase(); showSuccess(); }
+            async function updateEstimate(d) { await supabase.from('bookings').update({estimated_delivery:d}).eq('id',bookingId); booking.estimated_delivery = d; showSuccess(); }
 
+            // ============ WORK LOGS ============
             async function loadWorkLogs() {
                 var container = document.getElementById('worklogContainer');
                 var result = await supabase.from('work_log').select('*').eq('booking_id',bookingId).order('created_at',{ascending:false});
@@ -217,126 +236,102 @@
                 for (var i=0; i<result.data.length; i++) { 
                     var log = result.data[i];
                     var badgesHtml = '';
-                    if (log.hours > 0 || log.minutes > 0) {
-                        var timeStr = '';
-                        if (log.hours > 0) timeStr += log.hours + 'h ';
-                        if (log.minutes > 0) timeStr += log.minutes + 'min';
-                        badgesHtml += '<span class="badge badge-time">' + timeStr.trim() + '</span>';
-                    }
-                    if (log.price > 0) {
-                        badgesHtml += '<span class="badge badge-price">' + parseFloat(log.price).toLocaleString('es-CR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' CRC</span>';
-                    }
-
-                    var detailHtml = '';
-                    detailHtml += '<div class="wl-date">' + new Date(log.created_at).toLocaleString('es-MX', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'}) + '</div>';
-                    if (log.hours > 0 || log.minutes > 0) {
-                        var durText = 'Duracion: ';
-                        if (log.hours > 0) durText += log.hours + ' hora' + (log.hours > 1 ? 's' : '') + ' ';
-                        if (log.minutes > 0) durText += (log.hours > 0 ? 'con ' : '') + log.minutes + ' minuto' + (log.minutes > 1 ? 's' : '');
-                        detailHtml += '<div class="wl-meta"><span>' + durText + '</span></div>';
-                    }
-                    if (log.price > 0) {
-                        detailHtml += '<div class="wl-meta"><span>Costo: <span class="wl-price">' + parseFloat(log.price).toLocaleString('es-CR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' CRC</span></span></div>';
-                    }
-                    if (log.photo_url) {
-                        detailHtml += '<img src="' + log.photo_url + '" onerror="this.style.display=\'none\'" loading="lazy">';
-                    }
-
-                    html += '<div class="worklog-item" id="worklog-' + log.id + '">';
+                    if (log.hours > 0 || log.minutes > 0) { var ts = ''; if (log.hours>0) ts+=log.hours+'h '; if (log.minutes>0) ts+=log.minutes+'min'; badgesHtml += '<span class="badge badge-time">'+ts.trim()+'</span>'; }
+                    if (log.price > 0) { badgesHtml += '<span class="badge badge-price">'+parseFloat(log.price).toLocaleString('es-CR',{minimumFractionDigits:2,maximumFractionDigits:2})+' CRC</span>'; }
+                    var detailHtml = '<div class="wl-date">'+new Date(log.created_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</div>';
+                    if (log.hours>0||log.minutes>0) { var d='Duracion: '; if(log.hours>0)d+=log.hours+' hora'+(log.hours>1?'s':'')+' '; if(log.minutes>0)d+=(log.hours>0?'con ':'')+log.minutes+' minuto'+(log.minutes>1?'s':''); detailHtml+='<div class="wl-meta"><span>'+d+'</span></div>'; }
+                    if (log.price>0) { detailHtml+='<div class="wl-meta"><span>Costo: <span class="wl-price">'+parseFloat(log.price).toLocaleString('es-CR',{minimumFractionDigits:2,maximumFractionDigits:2})+' CRC</span></span></div>'; }
+                    if (log.photo_url) { detailHtml+='<img src="'+log.photo_url+'" onerror="this.style.display=\'none\'" loading="lazy">'; }
+                    html += '<div class="worklog-item" id="worklog-'+log.id+'">';
                     html += '<div class="worklog-header-bar" onclick="toggleWorklog(this.parentElement)">';
-                    html += '<span class="wl-title">' + log.description + '</span>';
-                    html += '<span class="wl-badges">' + badgesHtml + '</span>';
-                    html += '<span class="wl-actions" onclick="event.stopPropagation()">';
-                    html += '<button class="btn btn-edit btn-sm" onclick="showEditForm(' + log.id + ')">Editar</button>';
-                    html += '<button class="btn btn-danger btn-sm" onclick="deleteWorklog(' + log.id + ')">Eliminar</button>';
-                    html += '</span>';
-                    html += '<span class="wl-arrow">&#9660;</span>';
-                    html += '</div>';
-                    html += '<div class="worklog-body">' + detailHtml + '</div>';
-                    html += '<div class="edit-worklog-form" id="editForm-' + log.id + '">';
-                    html += '<textarea id="editDesc-' + log.id + '">' + log.description + '</textarea>';
-                    html += '<div class="form-row">';
-                    html += '<label>Horas</label><input type="number" id="editHours-' + log.id + '" value="' + (log.hours||0) + '" min="0">';
-                    html += '<label>Minutos</label><input type="number" id="editMinutes-' + log.id + '" value="' + (log.minutes||0) + '" min="0" max="59">';
-                    html += '<label>Precio</label><input type="number" id="editPrice-' + log.id + '" value="' + (log.price||0) + '" min="0" step="0.01" style="width:90px;">';
-                    html += '</div>';
-                    html += '<div class="form-actions">';
-                    html += '<button class="btn btn-primary btn-sm" onclick="saveEdit(' + log.id + ')">Guardar</button>';
-                    html += '<button class="btn btn-secondary btn-sm" onclick="cancelEdit(' + log.id + ')">Cancelar</button>';
-                    html += '</div>';
-                    html += '</div>';
+                    html += '<span class="wl-title">'+log.description+'</span><span class="wl-badges">'+badgesHtml+'</span>';
+                    html += '<span class="wl-actions" onclick="event.stopPropagation()"><button class="btn btn-edit btn-sm" onclick="showEditForm('+log.id+')">Editar</button><button class="btn btn-danger btn-sm" onclick="deleteWorklog('+log.id+')">Eliminar</button></span>';
+                    html += '<span class="wl-arrow">&#9660;</span></div>';
+                    html += '<div class="worklog-body">'+detailHtml+'</div>';
+                    html += '<div class="edit-worklog-form" id="editForm-'+log.id+'"><textarea id="editDesc-'+log.id+'">'+log.description+'</textarea><div class="form-row"><label>Horas</label><input type="number" id="editHours-'+log.id+'" value="'+(log.hours||0)+'" min="0"><label>Minutos</label><input type="number" id="editMinutes-'+log.id+'" value="'+(log.minutes||0)+'" min="0" max="59"><label>Precio</label><input type="number" id="editPrice-'+log.id+'" value="'+(log.price||0)+'" min="0" step="0.01" style="width:90px;"></div><div class="form-actions"><button class="btn btn-primary btn-sm" onclick="saveEdit('+log.id+')">Guardar</button><button class="btn btn-secondary btn-sm" onclick="cancelEdit('+log.id+')">Cancelar</button></div></div>';
                     html += '</div>';
                 }
                 html += '</div>'; container.innerHTML = html;
+                populateWorklogSelect();
             }
 
-            function toggleWorklog(item) {
-                if (item.classList.contains('open')) { item.classList.remove('open'); }
-                else { item.classList.add('open'); }
-            }
+            function toggleWorklog(item) { if(item.classList.contains('open')){item.classList.remove('open')}else{item.classList.add('open')} }
             window.toggleWorklog = toggleWorklog;
 
-            function showEditForm(logId) {
-    var item = document.getElementById('worklog-' + logId);
-    item.querySelector('.worklog-body').style.display = 'none';
-    document.getElementById('editForm-' + logId).style.display = 'block';
-    if (!item.classList.contains('open')) item.classList.add('open');
-    // Guardar referencia de que fue abierto por edición
-    item.setAttribute('data-opened-by-edit', 'true');
-}
-window.showEditForm = showEditForm;
+            function showEditForm(logId) { var item = document.getElementById('worklog-'+logId); item.querySelector('.worklog-body').style.display='none'; document.getElementById('editForm-'+logId).style.display='block'; if(!item.classList.contains('open'))item.classList.add('open'); item.setAttribute('data-opened-by-edit','true'); }
+            window.showEditForm = showEditForm;
 
-function cancelEdit(logId) {
-    var item = document.getElementById('worklog-' + logId);
-    document.getElementById('editForm-' + logId).style.display = 'none';
-    item.querySelector('.worklog-body').style.display = 'block';
-    // Si fue abierto por edición, cerrarlo
-    if (item.getAttribute('data-opened-by-edit') === 'true') {
-        item.classList.remove('open');
-        item.removeAttribute('data-opened-by-edit');
-    }
-}
-window.cancelEdit = cancelEdit;
+            function cancelEdit(logId) { var item = document.getElementById('worklog-'+logId); document.getElementById('editForm-'+logId).style.display='none'; item.querySelector('.worklog-body').style.display='block'; if(item.getAttribute('data-opened-by-edit')==='true'){item.classList.remove('open');item.removeAttribute('data-opened-by-edit');} }
+            window.cancelEdit = cancelEdit;
 
-            async function saveEdit(logId) {
-                var desc = document.getElementById('editDesc-' + logId).value.trim();
-                var hours = parseInt(document.getElementById('editHours-' + logId).value) || 0;
-                var minutes = parseInt(document.getElementById('editMinutes-' + logId).value) || 0;
-                var price = parseFloat(document.getElementById('editPrice-' + logId).value) || 0;
-                if (!desc) { alert('La descripcion es obligatoria'); return; }
-                await supabase.from('work_log').update({description:desc, hours:hours, minutes:minutes, price:price}).eq('id', logId);
-                loadWorkLogs(); showSuccess();
-            }
+            async function saveEdit(logId) { var desc=document.getElementById('editDesc-'+logId).value.trim(); var h=parseInt(document.getElementById('editHours-'+logId).value)||0; var m=parseInt(document.getElementById('editMinutes-'+logId).value)||0; var p=parseFloat(document.getElementById('editPrice-'+logId).value)||0; if(!desc){alert('Descripcion obligatoria');return;} await supabase.from('work_log').update({description:desc,hours:h,minutes:m,price:p}).eq('id',logId); loadWorkLogs(); showSuccess(); }
             window.saveEdit = saveEdit;
 
-            async function deleteWorklog(logId) {
-                if (!confirm('Eliminar este trabajo permanentemente?')) return;
-                await supabase.from('work_log').delete().eq('id', logId);
-                loadWorkLogs(); showSuccess();
-            }
+            async function deleteWorklog(logId) { if(!confirm('Eliminar este trabajo?'))return; await supabase.from('work_log').delete().eq('id',logId); loadWorkLogs(); loadParts(); showSuccess(); }
             window.deleteWorklog = deleteWorklog;
 
-            function toggleWorklogForm() { var form = document.getElementById('worklogForm'); form.style.display = form.style.display === 'block' ? 'none' : 'block'; if (form.style.display === 'block') document.getElementById('worklogDesc').focus(); }
-
-            async function saveWorklog() {
-                var desc = document.getElementById('worklogDesc').value.trim(); if (!desc) { alert('Describa el trabajo'); return; }
-                var hours = parseInt(document.getElementById('worklogHours').value) || 0;
-                var minutes = parseInt(document.getElementById('worklogMinutes').value) || 0;
-                var price = parseFloat(document.getElementById('worklogPrice').value) || 0;
-                var photoUrl = null;
-                var fileInput = document.getElementById('worklogPhoto');
-                if (fileInput.files && fileInput.files[0]) {
-                    var file = fileInput.files[0]; var fileName = 'booking-'+bookingId+'-'+Date.now()+'.'+file.name.split('.').pop();
-                    var uploadResult = await supabase.storage.from('workshop-photos').upload(fileName, file);
-                    if (uploadResult.error) { alert('Error al subir: ' + uploadResult.error.message); }
-                    else { var publicUrlResult = supabase.storage.from('workshop-photos').getPublicUrl(fileName); photoUrl = publicUrlResult.data.publicUrl; }
-                }
-                var insertResult = await supabase.from('work_log').insert([{booking_id:parseInt(bookingId),description:desc,hours:hours,minutes:minutes,price:price,photo_url:photoUrl}]);
-                if (insertResult.error) { alert('Error al guardar: ' + insertResult.error.message); }
-                else { document.getElementById('worklogDesc').value = ''; document.getElementById('worklogHours').value = '0'; document.getElementById('worklogMinutes').value = '0'; document.getElementById('worklogPrice').value = '0'; document.getElementById('worklogPhoto').value = ''; toggleWorklogForm(); loadWorkLogs(); showSuccess(); }
+            async function populateWorklogSelect() {
+                var select = document.getElementById('partWorklog');
+                var result = await supabase.from('work_log').select('id,description').eq('booking_id',bookingId).order('created_at',{ascending:false});
+                var html = '<option value="">Sin vincular</option>';
+                if(result.data) { for(var i=0;i<result.data.length;i++){ html+='<option value="'+result.data[i].id+'">'+result.data[i].description+'</option>'; } }
+                select.innerHTML = html;
             }
 
+            function toggleWorklogForm() { var f=document.getElementById('worklogForm'); f.style.display=f.style.display==='block'?'none':'block'; if(f.style.display==='block')document.getElementById('worklogDesc').focus(); }
+            async function saveWorklog() {
+                var desc=document.getElementById('worklogDesc').value.trim(); if(!desc){alert('Describa el trabajo');return;}
+                var h=parseInt(document.getElementById('worklogHours').value)||0; var m=parseInt(document.getElementById('worklogMinutes').value)||0; var p=parseFloat(document.getElementById('worklogPrice').value)||0;
+                var photoUrl=null; var fi=document.getElementById('worklogPhoto');
+                if(fi.files&&fi.files[0]){var file=fi.files[0];var fn='booking-'+bookingId+'-'+Date.now()+'.'+file.name.split('.').pop();var up=await supabase.storage.from('workshop-photos').upload(fn,file); if(!up.error){var pu=supabase.storage.from('workshop-photos').getPublicUrl(fn);photoUrl=pu.data.publicUrl;}}
+                await supabase.from('work_log').insert([{booking_id:parseInt(bookingId),description:desc,hours:h,minutes:m,price:p,photo_url:photoUrl}]);
+                document.getElementById('worklogDesc').value=''; document.getElementById('worklogHours').value='0'; document.getElementById('worklogMinutes').value='0'; document.getElementById('worklogPrice').value='0'; document.getElementById('worklogPhoto').value='';
+                toggleWorklogForm(); loadWorkLogs(); loadParts(); showSuccess();
+            }
+
+            // ============ PARTS ============
+            async function loadParts() {
+                var container = document.getElementById('partsContainer');
+                var result = await supabase.from('replaced_parts').select('*,work_log(description)').eq('booking_id',bookingId).order('created_at',{ascending:false});
+                if (!result.data || result.data.length===0) { container.innerHTML = '<div class="empty-state">Sin repuestos registrados</div>'; return; }
+                var html = '<div class="parts-grid">';
+                for (var i=0; i<result.data.length; i++) {
+                    var part = result.data[i];
+                    var workDesc = part.work_log ? part.work_log.description : null;
+                    html += '<div class="part-card">';
+                    html += '<div class="part-header"><strong>'+part.part_name+'</strong>';
+                    if (workDesc) { html += '<span class="part-link">Trabajo: '+workDesc+'</span>'; }
+                    html += '<button class="btn btn-danger btn-sm" onclick="deletePart('+part.id+')">Eliminar</button></div>';
+                    html += '<div class="part-photos">';
+                    html += '<div class="part-photo-item"><div class="photo-label">Repuesto Antiguo</div>';
+                    html += part.old_part_photo ? '<img src="'+part.old_part_photo+'" onerror="this.style.display=\'none\'" loading="lazy">' : '<div class="no-photo">Sin foto</div>';
+                    html += '</div>';
+                    html += '<div class="part-photo-item"><div class="photo-label">Repuesto Nuevo</div>';
+                    html += part.new_part_photo ? '<img src="'+part.new_part_photo+'" onerror="this.style.display=\'none\'" loading="lazy">' : '<div class="no-photo">Sin foto</div>';
+                    html += '</div></div></div>';
+                }
+                html += '</div>'; container.innerHTML = html;
+                populateWorklogSelect();
+            }
+
+            function togglePartForm() { var f=document.getElementById('partForm'); f.style.display=f.style.display==='block'?'none':'block'; if(f.style.display==='block'){populateWorklogSelect();document.getElementById('partName').focus();} }
+            async function savePart() {
+                var name=document.getElementById('partName').value.trim(); if(!name){alert('Ingrese el nombre del repuesto');return;}
+                var wlId=document.getElementById('partWorklog').value || null;
+                var oldPhoto=null, newPhoto=null;
+                var oldFile=document.getElementById('partOldPhoto').files[0];
+                var newFile=document.getElementById('partNewPhoto').files[0];
+                if(oldFile){var fn='part-old-'+bookingId+'-'+Date.now()+'.'+oldFile.name.split('.').pop();var up=await supabase.storage.from('workshop-photos').upload(fn,oldFile); if(!up.error){var pu=supabase.storage.from('workshop-photos').getPublicUrl(fn);oldPhoto=pu.data.publicUrl;}}
+                if(newFile){var fn='part-new-'+bookingId+'-'+Date.now()+'.'+newFile.name.split('.').pop();var up=await supabase.storage.from('workshop-photos').upload(fn,newFile); if(!up.error){var pu=supabase.storage.from('workshop-photos').getPublicUrl(fn);newPhoto=pu.data.publicUrl;}}
+                await supabase.from('replaced_parts').insert([{booking_id:parseInt(bookingId),work_log_id:wlId?parseInt(wlId):null,part_name:name,old_part_photo:oldPhoto,new_part_photo:newPhoto}]);
+                document.getElementById('partName').value=''; document.getElementById('partWorklog').value=''; document.getElementById('partOldPhoto').value=''; document.getElementById('partNewPhoto').value='';
+                togglePartForm(); loadParts(); showSuccess();
+            }
+            async function deletePart(partId) { if(!confirm('Eliminar este repuesto?'))return; await supabase.from('replaced_parts').delete().eq('id',partId); loadParts(); showSuccess(); }
+            window.deletePart = deletePart;
+
             window.addNote = addNote; window.toggleWorklogForm = toggleWorklogForm; window.saveWorklog = saveWorklog;
+            window.togglePartForm = togglePartForm; window.savePart = savePart;
             window.updateStatus = updateStatus; window.updatePlate = updatePlate; window.updateEstimate = updateEstimate;
             init();
         })();
