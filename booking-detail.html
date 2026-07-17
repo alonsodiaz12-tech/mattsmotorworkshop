@@ -57,7 +57,7 @@
         .section-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 1.5rem; }
         .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem; }
         .section-header h2 { font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 700; }
-        .btn { padding: 0.5rem 1rem; border: none; border-radius: var(--radius-sm); cursor: pointer; font-weight: 500; font-size: 0.82rem; font-family: inherit; transition: var(--transition); }
+        .btn { padding: 0.5rem 1rem; border: none; border-radius: var(--radius-sm); cursor: pointer; font-weight: 500; font-size: 0.82rem; font-family: inherit; transition: var(--transition); white-space: nowrap; }
         .btn-primary { background: var(--red); color: white; } .btn-primary:hover { background: var(--red-hover); }
         .btn-secondary { background: transparent; color: var(--text-secondary); border: 1px solid var(--border); } .btn-secondary:hover { border-color: var(--border-light); color: var(--text-primary); }
         .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.7rem; }
@@ -68,60 +68,57 @@
         .note-item .note-time { color: var(--text-muted); font-size: 0.7rem; white-space: nowrap; }
         .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.85rem; }
         .loading-state { text-align: center; padding: 2rem; color: var(--text-muted); }
-        .success-toast { position: fixed; bottom: 2rem; right: 2rem; background: #166534; color: #bbf7d0; padding: 0.75rem 1.25rem; border-radius: var(--radius); font-weight: 500; font-size: 0.85rem; display: none; z-index: 9999; border: 1px solid #22c55e; }
+        .success-toast { position: fixed; bottom: 2rem; right: 2rem; background: #166534; color: #bbf7d0; padding: 0.75rem 1.25rem; border-radius: var(--radius); font-weight: 500; font-size: 0.85rem; display: none; z-index: 9999; border: 1px solid #22c55e; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
         /* Worklog */
-        .worklog-grid { display: grid; gap: 0.5rem; }
-        .worklog-item { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
-        .worklog-header-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; cursor: pointer; transition: var(--transition); user-select: none; }
-        .worklog-header-bar:hover { background: rgba(255,255,255,0.02); }
-        .worklog-header-bar .wl-title { font-weight: 600; font-size: 0.9rem; color: var(--text-primary); flex: 1; margin-right: 0.5rem; }
-        .worklog-header-bar .wl-badges { display: flex; gap: 0.3rem; flex-shrink: 0; margin-right: 0.5rem; }
-        .worklog-header-bar .wl-actions { display: flex; gap: 0.25rem; flex-shrink: 0; margin-right: 0.5rem; }
-        .worklog-header-bar .wl-arrow { color: var(--text-muted); font-size: 0.65rem; transition: var(--transition); flex-shrink: 0; }
-        .worklog-item.open .worklog-header-bar .wl-arrow { transform: rotate(180deg); }
+        .collapsible-grid { display: grid; gap: 0.5rem; }
+        .collapsible-item { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+        .collapsible-header { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; cursor: pointer; transition: var(--transition); user-select: none; }
+        .collapsible-header:hover { background: rgba(255,255,255,0.02); }
+        .collapsible-header .cl-title { font-weight: 600; font-size: 0.9rem; color: var(--text-primary); flex: 1; margin-right: 0.5rem; }
+        .collapsible-header .cl-badges { display: flex; gap: 0.3rem; flex-shrink: 0; margin-right: 0.5rem; }
+        .collapsible-header .cl-actions { display: flex; gap: 0.25rem; flex-shrink: 0; margin-right: 0.5rem; }
+        .collapsible-header .cl-arrow { color: var(--text-muted); font-size: 0.65rem; transition: var(--transition); flex-shrink: 0; }
+        .collapsible-item.open .collapsible-header .cl-arrow { transform: rotate(180deg); }
         .badge { padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.65rem; font-weight: 500; white-space: nowrap; }
         .badge-time { background: rgba(59,130,246,0.12); color: #60a5fa; }
         .badge-price { background: rgba(34,197,94,0.12); color: #4ade80; font-weight: 600; }
-        .worklog-body { display: none; padding: 0 1rem 1rem 1rem; }
-        .worklog-item.open .worklog-body { display: block; }
-        .worklog-body .wl-date { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.5rem; }
-        .worklog-body .wl-meta { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.3rem; }
-        .worklog-body img { width: 100%; max-width: 100%; border-radius: var(--radius-sm); margin-top: 0.5rem; display: block; }
+        .collapsible-body { display: none; padding: 0 1rem 1rem 1rem; }
+        .collapsible-item.open .collapsible-body { display: block; }
+        .collapsible-body .cl-date { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .collapsible-body .cl-meta { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.3rem; }
+        .collapsible-body img { width: 100%; max-width: 100%; border-radius: var(--radius-sm); margin-top: 0.5rem; display: block; }
 
         /* Edit form */
-        .edit-worklog-form { display: none; padding: 0 1rem 1rem 1rem; }
-        .edit-worklog-form textarea { width: 100%; padding: 0.5rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.85rem; font-family: inherit; outline: none; resize: vertical; min-height: 50px; margin-bottom: 0.5rem; }
-        .edit-worklog-form .form-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.5rem; }
-        .edit-worklog-form .form-row input { padding: 0.4rem 0.5rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.8rem; font-family: inherit; outline: none; width: 65px; text-align: center; }
-        .edit-worklog-form .form-row label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
-        .edit-worklog-form .form-actions { display: flex; gap: 0.5rem; }
+        .edit-form { display: none; padding: 0 1rem 1rem 1rem; }
+        .edit-form textarea { width: 100%; padding: 0.5rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.85rem; font-family: inherit; outline: none; resize: vertical; min-height: 50px; margin-bottom: 0.5rem; }
+        .edit-form .form-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.5rem; }
+        .edit-form .form-row input { padding: 0.4rem 0.5rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.8rem; font-family: inherit; outline: none; width: 65px; text-align: center; }
+        .edit-form .form-row label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
+        .edit-form .form-actions { display: flex; gap: 0.5rem; }
 
-        .add-worklog-form, .add-part-form { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1.25rem; margin-top: 1rem; display: none; }
-        .add-worklog-form textarea, .add-part-form textarea, .add-part-form input[type="text"] { width: 100%; padding: 0.7rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.85rem; font-family: inherit; outline: none; resize: vertical; min-height: 40px; margin-bottom: 0.75rem; }
-        .add-part-form .form-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.75rem; }
-        .add-part-form .form-row label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); white-space: nowrap; }
-        .add-part-form .form-row input[type="file"] { flex: 1; padding: 0.4rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.8rem; }
-        .add-part-form .form-actions, .add-worklog-form .form-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
-        .add-worklog-form .form-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.75rem; }
-        .add-worklog-form .form-row input { padding: 0.5rem 0.7rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.85rem; font-family: inherit; outline: none; }
-        .add-worklog-form .form-row label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); white-space: nowrap; }
-        .add-worklog-form .form-row .input-group { display: flex; align-items: center; gap: 0.25rem; }
-        .add-worklog-form .form-row .input-group input { width: 60px; text-align: center; }
+        .add-form { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1.25rem; margin-top: 1rem; display: none; }
+        .add-form textarea, .add-form input[type="text"] { width: 100%; padding: 0.7rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.85rem; font-family: inherit; outline: none; resize: vertical; min-height: 40px; margin-bottom: 0.75rem; }
+        .add-form .form-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.75rem; }
+        .add-form .form-row label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); white-space: nowrap; }
+        .add-form .form-row input[type="file"] { flex: 1; padding: 0.4rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.8rem; }
+        .add-form .form-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+        .add-form .input-group { display: flex; align-items: center; gap: 0.25rem; }
+        .add-form .input-group input { width: 60px; text-align: center; }
 
         /* Parts */
-        .parts-grid { display: grid; gap: 0.75rem; }
-        .part-card { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; }
-        .part-card .part-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem; }
-        .part-card .part-header strong { font-size: 0.95rem; }
-        .part-card .part-header .part-link { font-size: 0.7rem; color: var(--text-muted); }
         .part-card .part-photos { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
         .part-card .part-photo-item { text-align: center; }
         .part-card .part-photo-item .photo-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 0.3rem; }
         .part-card .part-photo-item img { width: 100%; max-width: 100%; border-radius: var(--radius-sm); display: block; }
         .part-card .part-photo-item .no-photo { padding: 2rem; background: var(--bg-dark); border-radius: var(--radius-sm); color: var(--text-muted); font-size: 0.75rem; }
 
-        @media (max-width: 768px) { body { padding: 1rem; } .info-grid { grid-template-columns: 1fr; } .page-header { flex-direction: column; align-items: flex-start; } .part-card .part-photos { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { 
+            body { padding: 1rem; } 
+            .info-grid { grid-template-columns: 1fr; } 
+            .page-header { flex-direction: column; align-items: flex-start; } 
+            .part-card .part-photos { grid-template-columns: 1fr; } 
+        }
     </style>
 </head>
 <body>
@@ -130,28 +127,37 @@
         <div class="page-header"><h1 id="pageTitle">Cargando cita...</h1><span class="status-badge" id="pageStatus"></span></div>
         <div class="info-card"><div class="info-grid" id="infoGrid"><div class="loading-state">Cargando informacion...</div></div></div>
         
-        <div class="section-card"><div class="section-header"><h2>Notas del Taller</h2><button class="btn btn-primary btn-sm" onclick="addNote()">Agregar nota</button></div><div id="notesContainer"><div class="loading-state">Cargando notas...</div></div></div>
+        <div class="section-card">
+            <div class="section-header"><h2>Notas del Taller</h2><button class="btn btn-primary btn-sm" onclick="addNote()">Agregar nota</button></div>
+            <div id="notesContainer"><div class="loading-state">Cargando notas...</div></div>
+        </div>
         
-        <div class="section-card"><div class="section-header"><h2>Registro de Trabajos</h2><button class="btn btn-primary btn-sm" onclick="toggleWorklogForm()">Agregar trabajo</button></div><div id="worklogContainer"><div class="loading-state">Cargando trabajos...</div></div>
-        <div class="add-worklog-form" id="worklogForm">
-            <textarea id="worklogDesc" placeholder="Describa el trabajo realizado..."></textarea>
-            <div class="form-row">
-                <div class="input-group"><label>Horas</label><input type="number" id="worklogHours" value="0" min="0" max="99"></div>
-                <div class="input-group"><label>Minutos</label><input type="number" id="worklogMinutes" value="0" min="0" max="59"></div>
-                <div class="input-group" style="flex:1;"><label>Precio (CRC)</label><input type="number" id="worklogPrice" value="0" min="0" step="0.01" style="width:100px;"></div>
+        <div class="section-card">
+            <div class="section-header"><h2>Registro de Trabajos</h2><button class="btn btn-primary btn-sm" onclick="toggleWorklogForm()">Agregar trabajo</button></div>
+            <div id="worklogContainer"><div class="loading-state">Cargando trabajos...</div></div>
+            <div class="add-form" id="worklogForm">
+                <textarea id="worklogDesc" placeholder="Describa el trabajo realizado..."></textarea>
+                <div class="form-row">
+                    <div class="input-group"><label>Horas</label><input type="number" id="worklogHours" placeholder="0" value="0" min="0" max="99"></div>
+                    <div class="input-group"><label>Minutos</label><input type="number" id="worklogMinutes" placeholder="0" value="0" min="0" max="59"></div>
+                    <div class="input-group" style="flex:1;"><label>Precio (CRC)</label><input type="number" id="worklogPrice" placeholder="0" value="0" min="0" step="0.01" style="width:100px;"></div>
+                </div>
+                <div class="form-row"><label>Foto (opcional)</label><input type="file" id="worklogPhoto" accept="image/*" style="flex:1;"></div>
+                <div class="form-actions"><button class="btn btn-primary" onclick="saveWorklog()">Guardar trabajo</button><button class="btn btn-secondary" onclick="toggleWorklogForm()">Cancelar</button></div>
             </div>
-            <div class="form-row"><label>Foto (opcional)</label><input type="file" id="worklogPhoto" accept="image/*" style="flex:1;"></div>
-            <div class="form-actions"><button class="btn btn-primary" onclick="saveWorklog()">Guardar trabajo</button><button class="btn btn-secondary" onclick="toggleWorklogForm()">Cancelar</button></div>
-        </div></div>
+        </div>
         
-        <div class="section-card"><div class="section-header"><h2>Repuestos Reemplazados</h2><button class="btn btn-primary btn-sm" onclick="togglePartForm()">Agregar repuesto</button></div><div id="partsContainer"><div class="loading-state">Cargando repuestos...</div></div>
-        <div class="add-part-form" id="partForm">
-            <input type="text" id="partName" placeholder="Nombre del repuesto (ej: Filtro de aceite, Bateria, etc.)">
-            <div class="form-row"><label>Vincular a trabajo (opcional)</label><select id="partWorklog" style="padding:0.5rem;background:var(--bg-dark);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:0.85rem;font-family:inherit;flex:1;"><option value="">Sin vincular</option></select></div>
-            <div class="form-row"><label>Foto repuesto ANTIGUO</label><input type="file" id="partOldPhoto" accept="image/*"></div>
-            <div class="form-row"><label>Foto repuesto NUEVO</label><input type="file" id="partNewPhoto" accept="image/*"></div>
-            <div class="form-actions"><button class="btn btn-primary" onclick="savePart()">Guardar repuesto</button><button class="btn btn-secondary" onclick="togglePartForm()">Cancelar</button></div>
-        </div></div>
+        <div class="section-card">
+            <div class="section-header"><h2>Repuestos Reemplazados</h2><button class="btn btn-primary btn-sm" onclick="togglePartForm()">Agregar repuesto</button></div>
+            <div id="partsContainer"><div class="loading-state">Cargando repuestos...</div></div>
+            <div class="add-form" id="partForm">
+                <input type="text" id="partName" placeholder="Nombre del repuesto (ej: Filtro de aceite, Bateria, etc.)">
+                <div class="form-row"><label>Vincular a trabajo (opcional)</label><select id="partWorklog" style="padding:0.5rem;background:var(--bg-dark);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:0.85rem;font-family:inherit;flex:1;"><option value="">Sin vincular</option></select></div>
+                <div class="form-row"><label>Foto repuesto ANTIGUO</label><input type="file" id="partOldPhoto" accept="image/*"></div>
+                <div class="form-row"><label>Foto repuesto NUEVO</label><input type="file" id="partNewPhoto" accept="image/*"></div>
+                <div class="form-actions"><button class="btn btn-primary" onclick="savePart()">Guardar repuesto</button><button class="btn btn-secondary" onclick="togglePartForm()">Cancelar</button></div>
+            </div>
+        </div>
     </div>
     <div class="success-toast" id="successMsg">Cambios guardados</div>
 
@@ -232,36 +238,36 @@
                 var container = document.getElementById('worklogContainer');
                 var result = await supabase.from('work_log').select('*').eq('booking_id',bookingId).order('created_at',{ascending:false});
                 if (!result.data || result.data.length===0) { container.innerHTML = '<div class="empty-state">Sin registros de trabajo</div>'; return; }
-                var html = '<div class="worklog-grid">';
+                var html = '<div class="collapsible-grid">';
                 for (var i=0; i<result.data.length; i++) { 
                     var log = result.data[i];
                     var badgesHtml = '';
                     if (log.hours > 0 || log.minutes > 0) { var ts = ''; if (log.hours>0) ts+=log.hours+'h '; if (log.minutes>0) ts+=log.minutes+'min'; badgesHtml += '<span class="badge badge-time">'+ts.trim()+'</span>'; }
                     if (log.price > 0) { badgesHtml += '<span class="badge badge-price">'+parseFloat(log.price).toLocaleString('es-CR',{minimumFractionDigits:2,maximumFractionDigits:2})+' CRC</span>'; }
-                    var detailHtml = '<div class="wl-date">'+new Date(log.created_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</div>';
-                    if (log.hours>0||log.minutes>0) { var d='Duracion: '; if(log.hours>0)d+=log.hours+' hora'+(log.hours>1?'s':'')+' '; if(log.minutes>0)d+=(log.hours>0?'con ':'')+log.minutes+' minuto'+(log.minutes>1?'s':''); detailHtml+='<div class="wl-meta"><span>'+d+'</span></div>'; }
-                    if (log.price>0) { detailHtml+='<div class="wl-meta"><span>Costo: <span class="wl-price">'+parseFloat(log.price).toLocaleString('es-CR',{minimumFractionDigits:2,maximumFractionDigits:2})+' CRC</span></span></div>'; }
+                    var detailHtml = '<div class="cl-date">'+new Date(log.created_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</div>';
+                    if (log.hours>0||log.minutes>0) { var d='Duracion: '; if(log.hours>0)d+=log.hours+' hora'+(log.hours>1?'s':'')+' '; if(log.minutes>0)d+=(log.hours>0?'con ':'')+log.minutes+' minuto'+(log.minutes>1?'s':''); detailHtml+='<div class="cl-meta"><span>'+d+'</span></div>'; }
+                    if (log.price>0) { detailHtml+='<div class="cl-meta"><span>Costo: <span style="color:#4ade80;font-weight:600;">'+parseFloat(log.price).toLocaleString('es-CR',{minimumFractionDigits:2,maximumFractionDigits:2})+' CRC</span></span></div>'; }
                     if (log.photo_url) { detailHtml+='<img src="'+log.photo_url+'" onerror="this.style.display=\'none\'" loading="lazy">'; }
-                    html += '<div class="worklog-item" id="worklog-'+log.id+'">';
-                    html += '<div class="worklog-header-bar" onclick="toggleWorklog(this.parentElement)">';
-                    html += '<span class="wl-title">'+log.description+'</span><span class="wl-badges">'+badgesHtml+'</span>';
-                    html += '<span class="wl-actions" onclick="event.stopPropagation()"><button class="btn btn-edit btn-sm" onclick="showEditForm('+log.id+')">Editar</button><button class="btn btn-danger btn-sm" onclick="deleteWorklog('+log.id+')">Eliminar</button></span>';
-                    html += '<span class="wl-arrow">&#9660;</span></div>';
-                    html += '<div class="worklog-body">'+detailHtml+'</div>';
-                    html += '<div class="edit-worklog-form" id="editForm-'+log.id+'"><textarea id="editDesc-'+log.id+'">'+log.description+'</textarea><div class="form-row"><label>Horas</label><input type="number" id="editHours-'+log.id+'" value="'+(log.hours||0)+'" min="0"><label>Minutos</label><input type="number" id="editMinutes-'+log.id+'" value="'+(log.minutes||0)+'" min="0" max="59"><label>Precio</label><input type="number" id="editPrice-'+log.id+'" value="'+(log.price||0)+'" min="0" step="0.01" style="width:90px;"></div><div class="form-actions"><button class="btn btn-primary btn-sm" onclick="saveEdit('+log.id+')">Guardar</button><button class="btn btn-secondary btn-sm" onclick="cancelEdit('+log.id+')">Cancelar</button></div></div>';
+                    html += '<div class="collapsible-item" id="worklog-'+log.id+'">';
+                    html += '<div class="collapsible-header" onclick="toggleItem(this.parentElement)">';
+                    html += '<span class="cl-title">'+log.description+'</span><span class="cl-badges">'+badgesHtml+'</span>';
+                    html += '<span class="cl-actions" onclick="event.stopPropagation()"><button class="btn btn-edit btn-sm" onclick="showEditForm('+log.id+')">Editar</button><button class="btn btn-danger btn-sm" onclick="deleteWorklog('+log.id+')">Eliminar</button></span>';
+                    html += '<span class="cl-arrow">&#9660;</span></div>';
+                    html += '<div class="collapsible-body">'+detailHtml+'</div>';
+                    html += '<div class="edit-form" id="editForm-'+log.id+'"><textarea id="editDesc-'+log.id+'">'+log.description+'</textarea><div class="form-row"><label>Horas</label><input type="number" id="editHours-'+log.id+'" value="'+(log.hours||0)+'" min="0"><label>Minutos</label><input type="number" id="editMinutes-'+log.id+'" value="'+(log.minutes||0)+'" min="0" max="59"><label>Precio</label><input type="number" id="editPrice-'+log.id+'" value="'+(log.price||0)+'" min="0" step="0.01" style="width:90px;"></div><div class="form-actions"><button class="btn btn-primary btn-sm" onclick="saveEdit('+log.id+')">Guardar</button><button class="btn btn-secondary btn-sm" onclick="cancelEdit('+log.id+')">Cancelar</button></div></div>';
                     html += '</div>';
                 }
                 html += '</div>'; container.innerHTML = html;
                 populateWorklogSelect();
             }
 
-            function toggleWorklog(item) { if(item.classList.contains('open')){item.classList.remove('open')}else{item.classList.add('open')} }
-            window.toggleWorklog = toggleWorklog;
+            function toggleItem(item) { if(item.classList.contains('open')){item.classList.remove('open')}else{item.classList.add('open')} }
+            window.toggleItem = toggleItem;
 
-            function showEditForm(logId) { var item = document.getElementById('worklog-'+logId); item.querySelector('.worklog-body').style.display='none'; document.getElementById('editForm-'+logId).style.display='block'; if(!item.classList.contains('open'))item.classList.add('open'); item.setAttribute('data-opened-by-edit','true'); }
+            function showEditForm(logId) { var item = document.getElementById('worklog-'+logId); item.querySelector('.collapsible-body').style.display='none'; document.getElementById('editForm-'+logId).style.display='block'; if(!item.classList.contains('open'))item.classList.add('open'); item.setAttribute('data-opened-by-edit','true'); }
             window.showEditForm = showEditForm;
 
-            function cancelEdit(logId) { var item = document.getElementById('worklog-'+logId); document.getElementById('editForm-'+logId).style.display='none'; item.querySelector('.worklog-body').style.display='block'; if(item.getAttribute('data-opened-by-edit')==='true'){item.classList.remove('open');item.removeAttribute('data-opened-by-edit');} }
+            function cancelEdit(logId) { var item = document.getElementById('worklog-'+logId); document.getElementById('editForm-'+logId).style.display='none'; item.querySelector('.collapsible-body').style.display='block'; if(item.getAttribute('data-opened-by-edit')==='true'){item.classList.remove('open');item.removeAttribute('data-opened-by-edit');} }
             window.cancelEdit = cancelEdit;
 
             async function saveEdit(logId) { var desc=document.getElementById('editDesc-'+logId).value.trim(); var h=parseInt(document.getElementById('editHours-'+logId).value)||0; var m=parseInt(document.getElementById('editMinutes-'+logId).value)||0; var p=parseFloat(document.getElementById('editPrice-'+logId).value)||0; if(!desc){alert('Descripcion obligatoria');return;} await supabase.from('work_log').update({description:desc,hours:h,minutes:m,price:p}).eq('id',logId); loadWorkLogs(); showSuccess(); }
@@ -294,21 +300,27 @@
                 var container = document.getElementById('partsContainer');
                 var result = await supabase.from('replaced_parts').select('*,work_log(description)').eq('booking_id',bookingId).order('created_at',{ascending:false});
                 if (!result.data || result.data.length===0) { container.innerHTML = '<div class="empty-state">Sin repuestos registrados</div>'; return; }
-                var html = '<div class="parts-grid">';
+                var html = '<div class="collapsible-grid">';
                 for (var i=0; i<result.data.length; i++) {
                     var part = result.data[i];
                     var workDesc = part.work_log ? part.work_log.description : null;
-                    html += '<div class="part-card">';
-                    html += '<div class="part-header"><strong>'+part.part_name+'</strong>';
-                    if (workDesc) { html += '<span class="part-link">Trabajo: '+workDesc+'</span>'; }
-                    html += '<button class="btn btn-danger btn-sm" onclick="deletePart('+part.id+')">Eliminar</button></div>';
-                    html += '<div class="part-photos">';
-                    html += '<div class="part-photo-item"><div class="photo-label">Repuesto Antiguo</div>';
-                    html += part.old_part_photo ? '<img src="'+part.old_part_photo+'" onerror="this.style.display=\'none\'" loading="lazy">' : '<div class="no-photo">Sin foto</div>';
+                    var detailHtml = '';
+                    detailHtml += '<div class="cl-date">'+new Date(part.created_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</div>';
+                    if (workDesc) { detailHtml += '<div class="cl-meta">Trabajo vinculado: ' + workDesc + '</div>'; }
+                    detailHtml += '<div class="part-photos" style="margin-top:0.5rem;">';
+                    detailHtml += '<div class="part-photo-item"><div class="photo-label">Repuesto Antiguo</div>';
+                    detailHtml += part.old_part_photo ? '<img src="'+part.old_part_photo+'" onerror="this.style.display=\'none\'" loading="lazy">' : '<div class="no-photo">Sin foto</div>';
+                    detailHtml += '</div>';
+                    detailHtml += '<div class="part-photo-item"><div class="photo-label">Repuesto Nuevo</div>';
+                    detailHtml += part.new_part_photo ? '<img src="'+part.new_part_photo+'" onerror="this.style.display=\'none\'" loading="lazy">' : '<div class="no-photo">Sin foto</div>';
+                    detailHtml += '</div></div>';
+                    html += '<div class="collapsible-item">';
+                    html += '<div class="collapsible-header" onclick="toggleItem(this.parentElement)">';
+                    html += '<span class="cl-title">'+part.part_name+'</span>';
+                    html += '<span class="cl-actions" onclick="event.stopPropagation()"><button class="btn btn-danger btn-sm" onclick="deletePart('+part.id+')">Eliminar</button></span>';
+                    html += '<span class="cl-arrow">&#9660;</span></div>';
+                    html += '<div class="collapsible-body">'+detailHtml+'</div>';
                     html += '</div>';
-                    html += '<div class="part-photo-item"><div class="photo-label">Repuesto Nuevo</div>';
-                    html += part.new_part_photo ? '<img src="'+part.new_part_photo+'" onerror="this.style.display=\'none\'" loading="lazy">' : '<div class="no-photo">Sin foto</div>';
-                    html += '</div></div></div>';
                 }
                 html += '</div>'; container.innerHTML = html;
                 populateWorklogSelect();
@@ -327,7 +339,6 @@
                 
                 await supabase.from('replaced_parts').insert([{booking_id: parseInt(bookingId), work_log_id: wlId ? parseInt(wlId) : null, part_name: name, old_part_photo: oldPhoto, new_part_photo: newPhoto}]);
                 
-                // Descontar del inventario si coincide
                 var invResult = await supabase.from('inventory').select('*').or('name.ilike.' + name + ',barcode.eq.' + name + ',numeric_code.eq.' + name).single();
                 if (invResult.data && invResult.data.stock > 0) {
                     await supabase.from('inventory').update({stock: invResult.data.stock - 1}).eq('id', invResult.data.id);
