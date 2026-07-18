@@ -141,12 +141,12 @@
         <div class="tracking-header">
             <a href="/home" class="back-link">Volver al taller</a>
             <div class="icon">&#9881;</div>
-            <h1>Estado del Vehiculo</h1>
-            <p>Ingrese el numero de placa de su vehiculo para consultar el estado actual de su servicio.</p>
+            <h1>Estado del Vehículo</h1>
+            <p>Ingrese el número de placa de su vehículo para consultar el estado actual de su servicio.</p>
         </div>
         <div class="search-card" id="searchCard">
             <form class="search-form" onsubmit="searchVehicle(event)">
-                <div class="form-group"><label>Numero de Placa</label><div class="input-with-icon"><span class="input-icon">&#128663;</span><input type="text" id="plateInput" placeholder="ABC-1234" maxlength="10" required autofocus></div></div>
+                <div class="form-group"><label>Número de Placa</label><div class="input-with-icon"><span class="input-icon">&#128663;</span><input type="text" id="plateInput" placeholder="ABC-1234" maxlength="10" required autofocus></div></div>
                 <div class="error-message" id="errorMessage"></div>
                 <button type="submit" class="btn-search" id="searchBtn">Consultar Estado</button>
             </form>
@@ -175,12 +175,12 @@
             var errorMsg = document.getElementById('errorMessage');
             var resultCard = document.getElementById('resultCard');
             var searchBtn = document.getElementById('searchBtn');
-            if (!plate) { errorMsg.style.display='block'; errorMsg.textContent='Ingrese un numero de placa valido.'; return; }
+            if (!plate) { errorMsg.style.display='block'; errorMsg.textContent='Ingrese un número de placa válido.'; return; }
             searchBtn.disabled=true; searchBtn.textContent='Buscando...'; errorMsg.style.display='none'; resultCard.style.display='none';
             var result = await supabase.from('bookings').select('*').eq('plate_number',plate).order('created_at',{ascending:false}).limit(1);
             searchBtn.disabled=false; searchBtn.textContent='Consultar Estado';
             if (result.error) { errorMsg.style.display='block'; errorMsg.textContent='Error al consultar.'; return; }
-            if (!result.data || result.data.length===0) { errorMsg.style.display='block'; errorMsg.textContent='No se encontro ningun vehiculo con esa placa.'; return; }
+            if (!result.data || result.data.length===0) { errorMsg.style.display='block'; errorMsg.textContent='No se encontró ningún vehículo con esa placa.'; return; }
             displayResult(result.data[0]);
         }
 
@@ -196,11 +196,11 @@
             var html = '';
 
             if (status === 'pending') {
-                html += '<div class="info-message info-pending">Su cita esta <strong>pendiente de confirmacion</strong>. El taller revisara su solicitud.</div>';
+                html += '<div class="info-message info-pending">Su cita está <strong>pendiente de confirmación</strong>. El taller revisará su solicitud.</div>';
                 html += '<div class="detail-grid"><div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">'+(booking.service_requested||'')+'</div></div><div class="detail-item"><div class="detail-label">Fecha</div><div class="detail-value">'+(booking.preferred_date?new Date(booking.preferred_date+'T00:00:00').toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'}):'')+'</div></div><div class="detail-item"><div class="detail-label">Hora</div><div class="detail-value">'+(booking.preferred_time||'')+'</div></div><div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">'+(booking.client_name||'')+'</div></div></div>';
             } else if (status === 'confirmed') {
                 var dateFormatted = booking.preferred_date ? new Date(booking.preferred_date+'T00:00:00').toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) : '';
-                html += '<div class="info-message info-confirmed">Su cita ha sido <strong>confirmada</strong>. Presentese al taller el <strong>'+dateFormatted+'</strong> a las <strong>'+(booking.preferred_time||'')+'</strong>.</div>';
+                html += '<div class="info-message info-confirmed">Su cita ha sido <strong>confirmada</strong>. Preséntese al taller el <strong>'+dateFormatted+'</strong> a las <strong>'+(booking.preferred_time||'')+'</strong>.</div>';
                 html += '<div class="detail-grid"><div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">'+(booking.service_requested||'')+'</div></div><div class="detail-item"><div class="detail-label">Fecha</div><div class="detail-value">'+dateFormatted+'</div></div><div class="detail-item"><div class="detail-label">Hora</div><div class="detail-value">'+(booking.preferred_time||'')+'</div></div><div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">'+(booking.client_name||'')+'</div></div></div>';
             } else if (status === 'en_taller' || status === 'en_progreso' || status === 'completado') {
                 var progressOrder = ['en_taller','en_progreso','completado','entregado'];
@@ -223,7 +223,7 @@
                 html += '<div class="detail-tab-content active" id="tab-worklog"><div id="worklogClient"></div></div>';
                 html += '<div class="detail-tab-content" id="tab-parts"><div id="partsClient"></div></div>';
             } else if (status === 'entregado') {
-                html += '<div class="info-message info-success">Vehiculo <strong>entregado</strong>. Gracias por confiar en Matts Motor Workshop.</div>';
+                html += '<div class="info-message info-success">Vehículo <strong>entregado</strong>. Gracias por confiar en Matts Motor Workshop.</div>';
             } else if (status === 'cancelled') {
                 html += '<div class="info-message info-cancelled">Esta cita ha sido <strong>cancelada</strong>.</div>';
             }
@@ -268,47 +268,93 @@
 
         async function loadWorkLogClient(bookingId) {
             var container = document.getElementById('worklogClient'); if (!container) return;
-            var result = await supabase.from('work_log').select('*').eq('booking_id',bookingId).order('created_at',{ascending:false});
-            if (!result.data || result.data.length===0) { container.innerHTML = '<p class="no-notes">Sin registros aun.</p>'; return; }
-            var html = '<div class="worklog-client-grid">';
-            for (var i=0; i<result.data.length; i++) { 
-                var log = result.data[i];
-                var badgesHtml = '';
-                if (log.hours > 0 || log.minutes > 0) { var ts=''; if(log.hours>0)ts+=log.hours+'h '; if(log.minutes>0)ts+=log.minutes+'min'; badgesHtml+='<span class="badge badge-time">'+ts.trim()+'</span>'; }
-                if (log.price > 0) { badgesHtml+='<span class="badge badge-price">'+parseFloat(log.price).toLocaleString('es-CR',{minimumFractionDigits:2,maximumFractionDigits:2})+' CRC</span>'; }
-                var detailHtml = '<div class="wl-date">'+new Date(log.created_at).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</div>';
-                if (log.hours>0||log.minutes>0) { var d='Este trabajo tuvo una duracion de: '; if(log.hours>0)d+=log.hours+' hora'+(log.hours>1?'s':'')+' '; if(log.minutes>0)d+=(log.hours>0?'con ':'')+log.minutes+' minuto'+(log.minutes>1?'s':''); detailHtml+='<div class="wl-meta"><span>'+d+'</span></div>'; }
-                if (log.price>0) { detailHtml+='<div class="wl-meta"><span>El costo total del trabajo realizado es de: <span class="wl-price">'+parseFloat(log.price).toLocaleString('es-CR',{minimumFractionDigits:2,maximumFractionDigits:2})+' CRC</span></span></div>'; }
-                if (log.photo_url) { detailHtml+='<img src="'+log.photo_url+'" onerror="this.style.display=\'none\'" loading="lazy">'; }
-                detailHtml+='<div style="margin-top:0.5rem;"><button class="btn-sm" onclick="switchToPartsTab()">Repuestos reemplazados</button></div>';
-                html += '<div class="worklog-client-item" onclick="toggleWorklog(this)">';
-                html += '<div class="worklog-header-bar"><span class="wl-title">'+log.description+'</span><span class="wl-badges">'+badgesHtml+'</span><span class="wl-arrow">&#9660;</span></div>';
-                html += '<div class="worklog-body">'+detailHtml+'</div></div>';
+            
+            var woResult = await supabase.from('work_orders').select('id').eq('booking_id', bookingId);
+            if (!woResult.data || woResult.data.length === 0) {
+                container.innerHTML = '<p class="no-notes">Sin registros aún.</p>';
+                return;
             }
-            html += '</div>'; container.innerHTML = html;
+            
+            var woIds = woResult.data.map(function(wo) { return wo.id; });
+            
+            var allLogs = [];
+            for (var i = 0; i < woIds.length; i++) {
+                var result = await supabase.from('work_log').select('*').eq('work_order_id', woIds[i]).order('created_at', {ascending: false});
+                if (result.data && result.data.length > 0) {
+                    allLogs = allLogs.concat(result.data);
+                }
+            }
+            
+            if (allLogs.length === 0) {
+                container.innerHTML = '<p class="no-notes">Sin registros aún.</p>';
+                return;
+            }
+            
+            allLogs.sort(function(a, b) { return new Date(b.created_at) - new Date(a.created_at); });
+            
+            var html = '<div class="worklog-client-grid">';
+            for (var i = 0; i < allLogs.length; i++) {
+                var log = allLogs[i];
+                var badgesHtml = '';
+                if (log.hours > 0 || log.minutes > 0) { var ts = ''; if (log.hours > 0) ts += log.hours + 'h '; if (log.minutes > 0) ts += log.minutes + 'min'; badgesHtml += '<span class="badge badge-time">' + ts.trim() + '</span>'; }
+                if (log.price > 0) { badgesHtml += '<span class="badge badge-price">' + parseFloat(log.price).toLocaleString('es-CR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' CRC</span>'; }
+                var detailHtml = '<div class="wl-date">' + new Date(log.created_at).toLocaleString('es-MX', {day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'}) + '</div>';
+                if (log.hours > 0 || log.minutes > 0) { var d = 'Este trabajo tuvo una duración de: '; if (log.hours > 0) d += log.hours + ' hora' + (log.hours > 1 ? 's' : '') + ' '; if (log.minutes > 0) d += (log.hours > 0 ? 'con ' : '') + log.minutes + ' minuto' + (log.minutes > 1 ? 's' : ''); detailHtml += '<div class="wl-meta"><span>' + d + '</span></div>'; }
+                if (log.price > 0) { detailHtml += '<div class="wl-meta"><span>El costo total del trabajo realizado es de: <span class="wl-price">' + parseFloat(log.price).toLocaleString('es-CR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' CRC</span></span></div>'; }
+                if (log.photo_url) { detailHtml += '<img src="' + log.photo_url + '" onerror="this.style.display=\'none\'" loading="lazy">'; }
+                detailHtml += '<div style="margin-top:0.5rem;"><button class="btn-sm" onclick="switchToPartsTab()">Repuestos reemplazados</button></div>';
+                html += '<div class="worklog-client-item" onclick="toggleWorklog(this)">';
+                html += '<div class="worklog-header-bar"><span class="wl-title">' + log.description + '</span><span class="wl-badges">' + badgesHtml + '</span><span class="wl-arrow">&#9660;</span></div>';
+                html += '<div class="worklog-body">' + detailHtml + '</div></div>';
+            }
+            html += '</div>';
+            container.innerHTML = html;
         }
 
         async function loadPartsClient(bookingId) {
             var container = document.getElementById('partsClient'); if (!container) return;
-            var result = await supabase.from('replaced_parts').select('*,work_log(description)').eq('booking_id',bookingId).order('created_at',{ascending:false});
-            if (!result.data || result.data.length===0) { container.innerHTML = '<p class="no-notes">Sin repuestos registrados.</p>'; return; }
+            
+            var woResult = await supabase.from('work_orders').select('id').eq('booking_id', bookingId);
+            if (!woResult.data || woResult.data.length === 0) {
+                container.innerHTML = '<p class="no-notes">Sin repuestos registrados.</p>';
+                return;
+            }
+            
+            var woIds = woResult.data.map(function(wo) { return wo.id; });
+            
+            var allParts = [];
+            for (var i = 0; i < woIds.length; i++) {
+                var result = await supabase.from('replaced_parts').select('*,work_log(description)').eq('work_order_id', woIds[i]).order('created_at', {ascending: false});
+                if (result.data && result.data.length > 0) {
+                    allParts = allParts.concat(result.data);
+                }
+            }
+            
+            if (allParts.length === 0) {
+                container.innerHTML = '<p class="no-notes">Sin repuestos registrados.</p>';
+                return;
+            }
+            
+            allParts.sort(function(a, b) { return new Date(b.created_at) - new Date(a.created_at); });
+            
             var html = '<div class="parts-client-grid">';
-            for (var i=0; i<result.data.length; i++) {
-                var part = result.data[i];
+            for (var i = 0; i < allParts.length; i++) {
+                var part = allParts[i];
                 var workDesc = part.work_log ? part.work_log.description : null;
                 html += '<div class="part-client-card">';
-                html += '<div class="part-header"><strong>'+part.part_name+'</strong>';
-                if (workDesc) { html += '<button class="btn-sm" onclick="switchToWorklogTab()">Trabajo realizado: '+workDesc+'</button>'; }
+                html += '<div class="part-header"><strong>' + part.part_name + '</strong>';
+                if (workDesc) { html += '<button class="btn-sm" onclick="switchToWorklogTab()">Trabajo realizado: ' + workDesc + '</button>'; }
                 html += '</div>';
                 html += '<div class="part-photos">';
                 html += '<div class="part-photo-item"><div class="photo-label">Repuesto Antiguo</div>';
-                html += part.old_part_photo ? '<img src="'+part.old_part_photo+'" onerror="this.style.display=\'none\'" loading="lazy">' : '<div class="no-photo">Sin foto</div>';
+                html += part.old_part_photo ? '<img src="' + part.old_part_photo + '" onerror="this.style.display=\'none\'" loading="lazy">' : '<div class="no-photo">Sin foto</div>';
                 html += '</div>';
                 html += '<div class="part-photo-item"><div class="photo-label">Repuesto Nuevo</div>';
-                html += part.new_part_photo ? '<img src="'+part.new_part_photo+'" onerror="this.style.display=\'none\'" loading="lazy">' : '<div class="no-photo">Sin foto</div>';
+                html += part.new_part_photo ? '<img src="' + part.new_part_photo + '" onerror="this.style.display=\'none\'" loading="lazy">' : '<div class="no-photo">Sin foto</div>';
                 html += '</div></div></div>';
             }
-            html += '</div>'; container.innerHTML = html;
+            html += '</div>';
+            container.innerHTML = html;
         }
 
         function toggleWorklog(item) { if(item.classList.contains('open')){item.classList.remove('open')}else{item.classList.add('open')} }
