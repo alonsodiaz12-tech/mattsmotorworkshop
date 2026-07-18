@@ -197,45 +197,11 @@
                     html += '<div><strong>Expediente #'+wo.id+'</strong> <span style="color:var(--text-muted);font-size:0.75rem;">'+new Date(wo.created_at).toLocaleDateString('es-MX')+'</span></div>';
                     html += '<div class="wo-actions">';
                     html += '<span class="status-badge '+st.cls+'">'+st.text+'</span>';
-                    html += '<button class="btn btn-primary btn-sm" onclick="startWorking('+wo.id+')">Trabajar ahora mismo</button>';
-                    html += '<a href="/work-detail?id='+wo.id+'" class="btn btn-sm" style="background:#4b5563;color:white;text-decoration:none;">Revisar</a>';
+                    html += '<a href="/work-detail?id='+wo.id+'" class="btn btn-success btn-sm" style="text-decoration:none;">Abrir expediente</a>';
                     html += '<button class="btn btn-danger btn-sm" onclick="deleteWorkOrder('+wo.id+')">Eliminar</button>';
                     html += '</div></div>';
                 }
                 html += '</div>'; container.innerHTML = html;
-            }
-
-            async function startWorking(woId) {
-                var result = await supabase.from('work_orders').select('*').eq('id', woId).single();
-                if (!result.data) return;
-                var wo = result.data;
-                
-                var modal = document.createElement('div');
-                modal.className = 'modal-overlay active';
-                modal.id = 'startWorkingModal';
-                modal.innerHTML = `
-                    <div class="modal-dialog">
-                        <button class="modal-close" onclick="closeModal('startWorkingModal')">X</button>
-                        <div class="modal-icon">🔧</div>
-                        <h3>Expediente #${wo.id}</h3>
-                        <p class="modal-text"><strong>${wo.vehicle}</strong> | Placa: ${wo.plate_number}</p>
-                        <p class="modal-text">¿Vas a comenzar a trabajar en este vehículo?</p>
-                        <p class="modal-warning">Esto actualizará el estado en el tracking del cliente.</p>
-                        <div class="modal-actions">
-                            <button class="btn-cancel" onclick="closeModal('startWorkingModal')">Cancelar</button>
-                            <button class="btn-confirm" id="confirmStartBtn">Sí, comenzar</button>
-                        </div>
-                    </div>
-                `;
-                document.body.appendChild(modal);
-                
-                document.getElementById('confirmStartBtn').onclick = async function() {
-                    closeModal('startWorkingModal');
-                    await supabase.from('work_orders').update({status: 'trabajando'}).eq('id', woId);
-                    await supabase.from('bookings').update({status: 'trabajando'}).eq('id', bookingId);
-                    showSuccess();
-                    loadWorkOrders();
-                };
             }
 
             async function createWorkOrder() {
@@ -286,14 +252,11 @@
                 });
             }
 
-            async function updateStatus(s) { await supabase.from('bookings').update({status:s}).eq('id',bookingId); booking.status = s; renderBooking(); showSuccess(); }
             async function updatePlate(p) { await supabase.from('bookings').update({plate_number:p.toUpperCase()}).eq('id',bookingId); booking.plate_number = p.toUpperCase(); showSuccess(); }
 
             window.addNote = addNote;
             window.createWorkOrder = createWorkOrder;
             window.deleteWorkOrder = deleteWorkOrder;
-            window.startWorking = startWorking;
-            window.updateStatus = updateStatus;
             window.updatePlate = updatePlate;
             window.closeModal = closeModal;
             init();
