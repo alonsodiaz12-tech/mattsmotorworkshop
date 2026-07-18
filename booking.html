@@ -111,6 +111,12 @@
             gap: 1.5rem;
         }
 
+        .form-row-three {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+
         .form-group {
             display: grid;
             gap: 0.4rem;
@@ -300,6 +306,9 @@
             .form-row {
                 grid-template-columns: 1fr;
             }
+            .form-row-three {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -338,6 +347,15 @@
                     <span style="font-size:0.7rem; color:var(--text-muted);">Necesario para consultar el estado de su vehículo</span>
                 </div>
 
+                <div class="form-group">
+                    <label>Vehículo <span class="required">*</span></label>
+                    <div class="form-row-three">
+                        <input type="text" id="bookingBrand" placeholder="Marca" required>
+                        <input type="text" id="bookingModel" placeholder="Modelo" required>
+                        <input type="text" id="bookingYear" placeholder="Año" required maxlength="4">
+                    </div>
+                </div>
+
                 <div class="form-row">
                     <div class="form-group">
                         <label>Fecha Deseada <span class="required">*</span></label>
@@ -358,11 +376,6 @@
                             <option value="5:00 PM">5:00 PM</option>
                         </select>
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Vehículo <span class="required">*</span></label>
-                    <input type="text" id="bookingVehicle" placeholder="Marca, Modelo y Año" required>
                 </div>
 
                 <div class="form-group">
@@ -396,12 +409,11 @@
         </div>
     </div>
 
-        <script>
+    <script>
         var SUPABASE_URL = 'https://pupfxetbnpgqikzhnjts.supabase.co';
         var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
         var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Verificar modo mantenimiento
         document.documentElement.style.display = 'none';
         (async function() {
             try {
@@ -430,7 +442,6 @@
             select.innerHTML = html;
         }
 
-        // Actualizar selector de hora según la fecha seleccionada
         document.getElementById('bookingDate').addEventListener('change', async function() {
             var dateValue = this.value;
             var timeSelect = document.getElementById('bookingTime');
@@ -450,7 +461,6 @@
                 return;
             }
 
-            // Cargar horarios disponibles
             var dayType = isSaturday ? 'saturday' : 'weekday';
             var slotsResult = await supabase.from('time_slots').select('*').eq('day_type', dayType).order('time_slot');
             
@@ -459,7 +469,6 @@
                 return;
             }
 
-            // Verificar cupos ocupados para esta fecha
             var bookedResult = await supabase.from('booking_slots').select('time_slot').eq('booking_date', dateValue);
             var bookedSlots = {};
             if (bookedResult.data) {
@@ -502,7 +511,6 @@
             submitBtn.textContent = 'Agendando...';
             errorMsg.style.display = 'none';
 
-            // Verificar disponibilidad una última vez antes de guardar
             var dayType = new Date(dateValue + 'T00:00:00').getDay() === 6 ? 'saturday' : 'weekday';
             var slotResult = await supabase.from('time_slots').select('max_bookings').eq('day_type', dayType).eq('time_slot', timeValue).single();
             var maxBookings = slotResult.data ? slotResult.data.max_bookings : 4;
@@ -518,12 +526,20 @@
                 return;
             }
 
+            var brand = document.getElementById('bookingBrand').value.trim();
+            var model = document.getElementById('bookingModel').value.trim();
+            var year = document.getElementById('bookingYear').value.trim();
+            var vehicleFull = brand + ' ' + model + ' ' + year;
+
             var booking = {
                 client_name: document.getElementById('bookingName').value.trim(),
                 phone: document.getElementById('bookingPhone').value.trim(),
                 email: document.getElementById('bookingEmail').value.trim() || null,
                 plate_number: document.getElementById('bookingPlate').value.trim().toUpperCase(),
-                vehicle: document.getElementById('bookingVehicle').value.trim(),
+                vehicle_brand: brand,
+                vehicle_model: model,
+                vehicle_year: year,
+                vehicle: vehicleFull,
                 service_requested: document.getElementById('bookingService').value,
                 problem_description: document.getElementById('bookingDesc').value.trim() || null,
                 preferred_date: dateValue,
@@ -543,14 +559,12 @@
 
             var newBooking = insertResult.data[0];
 
-            // Reservar el cupo
             await supabase.from('booking_slots').insert([{
                 booking_date: dateValue,
                 time_slot: timeValue,
                 booking_id: newBooking.id
             }]);
 
-            // Mostrar éxito con mensaje de espera de confirmación
             document.getElementById('bookingForm').style.display = 'none';
             document.getElementById('successScreen').style.display = 'block';
 
@@ -563,9 +577,9 @@
                 <p><strong>Teléfono:</strong> ${booking.phone}</p>
                 ${booking.email ? `<p><strong>Email:</strong> ${booking.email}</p>` : ''}
                 <p><strong>Placa:</strong> ${booking.plate_number}</p>
+                <p><strong>Vehículo:</strong> ${vehicleFull}</p>
                 <p><strong>Fecha:</strong> ${dateFormatted}</p>
                 <p><strong>Hora:</strong> ${booking.preferred_time}</p>
-                <p><strong>Vehículo:</strong> ${booking.vehicle}</p>
                 <p><strong>Servicio:</strong> ${booking.service_requested}</p>
                 <p style="margin-top:1rem;padding:1rem;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:8px;color:#fbbf24;font-size:0.9rem;">
                     ⚠️ Su fecha y hora han sido reservadas temporalmente. 
