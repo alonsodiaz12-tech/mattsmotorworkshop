@@ -53,7 +53,26 @@
         .wo-actions { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; }
         .success-toast { position: fixed; bottom: 2rem; right: 2rem; background: #166534; color: #bbf7d0; padding: 0.75rem 1.25rem; border-radius: var(--radius); font-weight: 500; font-size: 0.85rem; display: none; z-index: 9999; border: 1px solid #22c55e; }
 
-        @media (max-width: 768px) { body { padding: 1rem; } .info-grid { grid-template-columns: 1fr; } .wo-item { flex-direction: column; align-items: flex-start; } .wo-actions { width: 100%; justify-content: flex-end; } }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; align-items: center; justify-content: center; padding: 1.5rem; }
+        .modal-overlay.active { display: flex; }
+        .modal-dialog { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; max-width: 480px; width: 100%; text-align: center; animation: modalIn 0.3s ease-out; position: relative; }
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(-10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .modal-icon { width: 56px; height: 56px; background: rgba(245,158,11,0.12); border: 2px solid rgba(245,158,11,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.5rem; }
+        .modal-dialog h3 { font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .modal-dialog .modal-text { color: var(--text-secondary); font-size: 0.82rem; line-height: 1.5; margin-bottom: 0.75rem; }
+        .modal-dialog .modal-warning { color: var(--text-muted); font-size: 0.75rem; font-style: italic; margin-bottom: 1.25rem; padding: 0.75rem; background: var(--bg-input); border-radius: var(--radius-sm); border: 1px solid var(--border); }
+        .modal-dialog input { display: block; width: 100%; padding: 0.65rem 0.8rem; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.85rem; text-align: center; margin-bottom: 1rem; outline: none; font-family: inherit; }
+        .modal-dialog input:focus { border-color: var(--red); }
+        .modal-actions { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+        .btn-cancel { padding: 0.5rem 1.2rem; background: transparent; color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; font-size: 0.8rem; font-family: inherit; transition: var(--transition); }
+        .btn-cancel:hover { border-color: var(--border-light); color: var(--text-primary); }
+        .btn-confirm { padding: 0.5rem 1.2rem; background: #f59e0b; color: #000; border: none; border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; font-size: 0.8rem; font-family: inherit; transition: var(--transition); }
+        .btn-confirm:hover { background: #fbbf24; }
+        .modal-error { color: #ef4444; font-size: 0.7rem; display: none; margin-bottom: 0.5rem; }
+        .modal-close { position: absolute; top: 0.75rem; right: 0.75rem; background: none; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; transition: var(--transition); line-height: 1; }
+        .modal-close:hover { color: var(--text-primary); }
+
+        @media (max-width: 768px) { body { padding: 1rem; } .info-grid { grid-template-columns: 1fr; } .wo-item { flex-direction: column; align-items: flex-start; } .wo-actions { width: 100%; justify-content: flex-end; } .modal-dialog { padding: 1.5rem; margin: 1rem; } }
     </style>
 </head>
 <body>
@@ -85,6 +104,20 @@
 
             function showSuccess() { var msg = document.getElementById('successMsg'); msg.style.display = 'block'; setTimeout(function() { msg.style.display = 'none'; }, 2500); }
             function getBookingIdFromURL() { var params = new URLSearchParams(window.location.search); return params.get('id'); }
+
+            function closeModal(id) { var modal = document.getElementById(id); if (modal) document.body.removeChild(modal); }
+            function showAlert(msg, type) {
+                type = type || 'warning';
+                var bg = type === 'error' ? 'rgba(239,68,68,0.12)' : 'rgba(245,158,11,0.12)';
+                var border = type === 'error' ? 'rgba(239,68,68,0.3)' : 'rgba(245,158,11,0.3)';
+                var color = type === 'error' ? '#f87171' : '#fbbf24';
+                var modal = document.createElement('div');
+                modal.className = 'modal-overlay active';
+                modal.id = 'alertModal';
+                modal.onclick = function(e) { if (e.target === modal) closeModal('alertModal'); };
+                modal.innerHTML = '<div class="modal-dialog"><button class="modal-close" onclick="closeModal(\'alertModal\')">X</button><div class="modal-icon" style="background:'+bg+';border-color:'+border+';color:'+color+';">!</div><h3 style="color:'+color+';">Atencion</h3><p class="modal-text">'+msg+'</p><div class="modal-actions"><button class="btn-cancel" onclick="closeModal(\'alertModal\')">Entendido</button></div></div>';
+                document.body.appendChild(modal);
+            }
 
             async function init() {
                 bookingId = getBookingIdFromURL();
@@ -133,11 +166,23 @@
             }
 
             async function addNote() {
-                var note = prompt('Agregar nota:'); if (!note || !note.trim()) return;
-                var notes = booking.notes || []; if (typeof notes === 'string') notes = JSON.parse(notes);
-                notes.push({text:note.trim(),time:new Date().toISOString()});
-                await supabase.from('bookings').update({notes:notes}).eq('id',bookingId);
-                booking.notes = notes; loadNotes(); showSuccess();
+                var modal = document.createElement('div');
+                modal.className = 'modal-overlay active';
+                modal.id = 'noteModal';
+                modal.innerHTML = '<div class="modal-dialog"><button class="modal-close" onclick="closeModal(\'noteModal\')">X</button><div class="modal-icon">📝</div><h3>Agregar Nota</h3><input type="text" id="noteInput" placeholder="Escriba la nota..." style="display:block;width:100%;padding:0.65rem 0.8rem;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:0.85rem;text-align:left;margin-bottom:1rem;outline:none;font-family:inherit;"><div class="modal-actions"><button class="btn-cancel" onclick="closeModal(\'noteModal\')">Cancelar</button><button class="btn-confirm" id="saveNoteBtn">Guardar</button></div></div>';
+                document.body.appendChild(modal);
+                document.getElementById('noteInput').focus();
+                document.getElementById('saveNoteBtn').onclick = async function() {
+                    var note = document.getElementById('noteInput').value.trim();
+                    if (!note) { closeModal('noteModal'); return; }
+                    var notes = booking.notes || []; if (typeof notes === 'string') notes = JSON.parse(notes);
+                    notes.push({text: note, time: new Date().toISOString()});
+                    await supabase.from('bookings').update({notes: notes}).eq('id', bookingId);
+                    booking.notes = notes; loadNotes(); showSuccess(); closeModal('noteModal');
+                };
+                document.getElementById('noteInput').addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') document.getElementById('saveNoteBtn').click();
+                });
             }
 
             async function loadWorkOrders() {
@@ -161,28 +206,51 @@
             }
 
             async function createWorkOrder() {
-                if (!booking.plate_number) { alert('Asigne una placa primero'); return; }
+                if (!booking.plate_number) { showAlert('Asigne una placa primero', 'error'); return; }
                 var existingResult = await supabase.from('work_orders').select('*').eq('booking_id', parseInt(bookingId)).eq('status', 'en_progreso');
                 if (existingResult.data && existingResult.data.length > 0) {
                     var woList = '';
                     for (var i = 0; i < existingResult.data.length; i++) {
-                        woList += 'Expediente #' + existingResult.data[i].id + ' (' + new Date(existingResult.data[i].created_at).toLocaleDateString('es-MX') + ')\n';
+                        woList += '<div style="padding:0.5rem;background:var(--bg-input);border-radius:4px;margin-bottom:0.3rem;">Expediente #' + existingResult.data[i].id + ' (' + new Date(existingResult.data[i].created_at).toLocaleDateString('es-MX') + ')</div>';
                     }
-                    var createNew = confirm('Ya existen expedientes en progreso para esta cita:\n\n' + woList + '\nDesea crear un nuevo expediente de todas formas?');
-                    if (!createNew) return;
+                    var modal = document.createElement('div');
+                    modal.className = 'modal-overlay active';
+                    modal.id = 'existingWOModal';
+                    modal.innerHTML = '<div class="modal-dialog"><button class="modal-close" onclick="closeModal(\'existingWOModal\')">X</button><div class="modal-icon">⚠️</div><h3>Expedientes Existentes</h3><p class="modal-text">Ya existen expedientes en progreso para esta cita:</p><div style="text-align:left;margin-bottom:1rem;">'+woList+'</div><p class="modal-warning">Desea crear un nuevo expediente de todas formas?</p><div class="modal-actions"><button class="btn-cancel" onclick="closeModal(\'existingWOModal\')">Cancelar</button><button class="btn-confirm" onclick="closeModal(\'existingWOModal\');proceedCreateWO()">Crear nuevo</button></div></div>';
+                    document.body.appendChild(modal);
+                    return;
                 }
+                proceedCreateWO();
+            }
+
+            async function proceedCreateWO() {
                 var result = await supabase.from('work_orders').insert([{booking_id: parseInt(bookingId), plate_number: booking.plate_number, vehicle: booking.vehicle, client_name: booking.client_name, phone: booking.phone, status: 'en_progreso'}]).select();
-                if (result.error) { alert('Error al crear expediente'); return; }
+                if (result.error) { showAlert('Error al crear expediente', 'error'); return; }
                 await supabase.from('bookings').update({status: 'en_taller'}).eq('id', bookingId);
                 window.location.href = '/work-detail?id=' + result.data[0].id;
             }
 
             function deleteWorkOrder(woId) {
-                var password = prompt('Ingrese la contrasena de administrador para eliminar este expediente:');
-                if (!password) return;
-                if (password !== 'mant1215') { alert('Contrasena incorrecta'); return; }
-                if (!confirm('Esta seguro de eliminar este expediente? Esta accion no se puede deshacer.')) return;
-                supabase.from('work_orders').delete().eq('id', woId).then(function() { loadWorkOrders(); showSuccess(); });
+                var modal = document.createElement('div');
+                modal.className = 'modal-overlay active';
+                modal.id = 'deleteWOModal';
+                modal.innerHTML = '<div class="modal-dialog"><button class="modal-close" onclick="closeModal(\'deleteWOModal\')">X</button><div class="modal-icon" style="background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.3);">⚠️</div><h3 style="color:#f87171;">Eliminar Expediente</h3><p class="modal-text">Esta accion no se puede deshacer. Ingrese la contrasena de administrador para confirmar.</p><input type="password" id="deleteWOPassword" placeholder="Contrasena de seguridad"><p class="modal-error" id="deleteWOError">Contrasena incorrecta</p><div class="modal-actions"><button class="btn-cancel" onclick="closeModal(\'deleteWOModal\')">Cancelar</button><button class="btn-confirm" id="confirmDeleteWOBtn">Eliminar</button></div></div>';
+                document.body.appendChild(modal);
+                document.getElementById('deleteWOPassword').focus();
+                document.getElementById('confirmDeleteWOBtn').onclick = function() {
+                    var password = document.getElementById('deleteWOPassword').value;
+                    if (password !== 'mant1215') {
+                        document.getElementById('deleteWOError').style.display = 'block';
+                        document.getElementById('deleteWOPassword').value = '';
+                        document.getElementById('deleteWOPassword').focus();
+                        return;
+                    }
+                    closeModal('deleteWOModal');
+                    supabase.from('work_orders').delete().eq('id', woId).then(function() { loadWorkOrders(); showSuccess(); });
+                };
+                document.getElementById('deleteWOPassword').addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') document.getElementById('confirmDeleteWOBtn').click();
+                });
             }
 
             async function updateStatus(s) { await supabase.from('bookings').update({status:s}).eq('id',bookingId); booking.status = s; renderBooking(); showSuccess(); }
@@ -193,6 +261,7 @@
             window.deleteWorkOrder = deleteWorkOrder;
             window.updateStatus = updateStatus;
             window.updatePlate = updatePlate;
+            window.closeModal = closeModal;
             init();
         })();
     </script>
