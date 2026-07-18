@@ -46,7 +46,7 @@
             border-bottom: 1px solid var(--border);
             padding: 1rem 2rem;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             flex-wrap: wrap;
             gap: 1rem;
@@ -54,21 +54,12 @@
             top: 0;
             z-index: 100;
         }
-        .top-bar .back-link {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: var(--transition);
-        }
-        .top-bar .back-link:hover { color: var(--text-secondary); }
         .top-bar .brand {
             font-family: 'Montserrat', sans-serif;
             font-weight: 700;
             font-size: 1rem;
             letter-spacing: -0.3px;
+            text-align: center;
         }
         .top-bar .brand span { color: var(--red); }
 
@@ -199,8 +190,10 @@
         .btn-danger:hover { background: #b91c1c; }
         .btn-edit { background: #4b5563; color: white; }
         .btn-edit:hover { background: #6b7280; }
-        .btn-terminar { background: #f59e0b; color: #000; }
-        .btn-terminar:hover { background: #fbbf24; }
+        .btn-success { background: #16a34a; color: white; }
+        .btn-success:hover { background: #15803d; }
+        .btn-warning { background: #f59e0b; color: #000; }
+        .btn-warning:hover { background: #fbbf24; }
 
         .empty-state {
             text-align: center;
@@ -391,11 +384,7 @@
 <body>
 
     <div class="top-bar">
-        <a href="/admin" class="back-link">
-            <span>&#8592;</span> Panel de Administracion
-        </a>
         <div class="brand">MATTS <span>MOTOR</span> WORKSHOP</div>
-        <div style="width:100px;"></div>
     </div>
 
     <div class="vehicle-hero">
@@ -404,11 +393,15 @@
         <div class="vehicle-info" id="heroClient"></div>
         <div class="status-row">
             <span class="status-badge" id="heroStatus">En Progreso</span>
-            <button class="btn btn-sm btn-terminar" id="btnTerminar" onclick="terminarTrabajo()">Terminar</button>
+            <button class="btn btn-sm btn-success" id="btnComenzar" onclick="comenzarTrabajo()">Comenzar a trabajar</button>
+            <button class="btn btn-sm btn-warning" id="btnTerminar" onclick="terminarTrabajo()">Terminar trabajo</button>
         </div>
         <div class="info-pills">
             <div class="info-pill">Expediente <strong id="heroWO">#--</strong></div>
             <div class="info-pill">Ingreso <strong id="heroDate">--</strong></div>
+        </div>
+        <div style="margin-top:1.5rem;">
+            <a id="btnVolver" href="/admin" class="btn btn-danger" style="text-decoration:none;">Volver</a>
         </div>
     </div>
 
@@ -531,7 +524,18 @@
                 var badge = document.getElementById('heroStatus');
                 badge.textContent = st.text;
                 badge.className = 'status-badge ' + st.cls;
+
+                // Actualizar botón Volver
+                document.getElementById('btnVolver').href = '/booking-detail?id=' + workOrder.booking_id;
             }
+
+            async function comenzarTrabajo() {
+                await supabase.from('work_orders').update({status: 'trabajando'}).eq('id', workOrderId);
+                await supabase.from('bookings').update({status: 'trabajando'}).eq('id', workOrder.booking_id);
+                showSuccess();
+                loadWorkOrder();
+            }
+            window.comenzarTrabajo = comenzarTrabajo;
 
             async function terminarTrabajo() {
                 await supabase.from('work_orders').update({status: 'en_progreso'}).eq('id', workOrderId);
