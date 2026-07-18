@@ -204,6 +204,10 @@
             <div class="success-toast" id="successMsg">Cambios guardados</div>
             
             <div class="tab-panel active" id="tab-bookings">
+                <div class="section-header-row">
+                    <h3>Citas</h3>
+                    <button class="btn-primary" onclick="showAddVehicleForm()">Agregar vehículo</button>
+                </div>
                 <div class="filter-bar">
                     <button class="filter-chip active" data-filter="all">Todas</button>
                     <button class="filter-chip" data-filter="pending">Pendientes</button>
@@ -329,6 +333,72 @@
         <div class="modal-dialog"><button class="modal-close" onclick="closeBlockedModal()">X</button><div class="modal-icon" style="background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.3);">!</div><h3 style="color:#f87171;">Desactivacion Bloqueada</h3><p class="modal-text">Debe esperar 1 hora desde su activacion.</p><p class="modal-warning" id="blockedTimeRemaining"></p><div class="modal-actions"><button class="btn-cancel" onclick="closeBlockedModal()">Entendido</button></div></div>
     </div>
 
+    <div class="modal-overlay" id="addVehicleModal">
+        <div class="modal-dialog" style="max-width:600px;text-align:left;">
+            <button class="modal-close" onclick="closeAddVehicleModal()">X</button>
+            <h3 style="font-family:'Montserrat',sans-serif;margin-bottom:1.25rem;text-align:center;">Agregar Vehículo al Taller</h3>
+            <div style="display:grid;gap:0.85rem;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.85rem;">
+                    <div>
+                        <label style="font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:0.3rem;">Nombre Completo *</label>
+                        <input type="text" id="avName" placeholder="Nombre del cliente" style="width:100%;padding:0.6rem;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:0.85rem;font-family:inherit;outline:none;">
+                    </div>
+                    <div>
+                        <label style="font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:0.3rem;">Teléfono *</label>
+                        <input type="tel" id="avPhone" placeholder="(506) 4444-4444" style="width:100%;padding:0.6rem;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:0.85rem;font-family:inherit;outline:none;">
+                    </div>
+                </div>
+                <div>
+                    <label style="font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:0.3rem;">Correo Electrónico</label>
+                    <input type="email" id="avEmail" placeholder="correo@ejemplo.com" style="width:100%;padding:0.6rem;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:0.85rem;font-family:inherit;outline:none;">
+                </div>
+                <div>
+                    <label style="font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:0.3rem;">Número de Placa *</label>
+                    <input type="text" id="avPlate" placeholder="ABC-1234" maxlength="10" style="width:100%;padding:0.6rem;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:0.85rem;font-family:monospace;text-transform:uppercase;letter-spacing:1px;outline:none;">
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;">
+                    <div>
+                        <label style="font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:0.3rem;">Marca *</label>
+                        <input type="text" id="avBrand" placeholder="Marca" style="width:100%;padding:0.6rem;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:0.85rem;font-family:inherit;outline:none;">
+                    </div>
+                    <div>
+                        <label style="font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:0.3rem;">Modelo *</label>
+                        <input type="text" id="avModel" placeholder="Modelo" style="width:100%;padding:0.6rem;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:0.85rem;font-family:inherit;outline:none;">
+                    </div>
+                    <div>
+                        <label style="font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:0.3rem;">Año *</label>
+                        <input type="text" id="avYear" placeholder="Año" maxlength="4" style="width:100%;padding:0.6rem;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:0.85rem;font-family:inherit;outline:none;">
+                    </div>
+                </div>
+                <div>
+                    <label style="font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:0.3rem;">Servicio Requerido</label>
+                    <select id="avService" style="width:100%;padding:0.6rem;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:0.85rem;font-family:inherit;outline:none;">
+                        <option value="">Cargando servicios...</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:0.3rem;">Descripción del Problema</label>
+                    <textarea id="avDesc" placeholder="Describa brevemente el problema..." style="width:100%;padding:0.6rem;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:0.85rem;font-family:inherit;outline:none;resize:vertical;min-height:60px;"></textarea>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.85rem;">
+                    <div>
+                        <label style="font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:0.3rem;">Fecha de Ingreso</label>
+                        <input type="date" id="avDate" style="width:100%;padding:0.6rem;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:0.85rem;font-family:inherit;outline:none;color-scheme:dark;">
+                    </div>
+                    <div>
+                        <label style="font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:0.3rem;">Hora de Ingreso</label>
+                        <input type="time" id="avTime" style="width:100%;padding:0.6rem;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:0.85rem;font-family:inherit;outline:none;color-scheme:dark;">
+                    </div>
+                </div>
+                <p class="modal-error" id="avError" style="text-align:center;"></p>
+                <div class="modal-actions" style="margin-top:0.5rem;">
+                    <button class="btn-cancel" onclick="closeAddVehicleModal()">Cancelar</button>
+                    <button class="btn-primary" id="saveVehicleBtn" onclick="saveVehicle()">Guardar Vehículo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         (function() {
             var SUPABASE_URL = 'https://pupfxetbnpgqikzhnjts.supabase.co';
@@ -395,6 +465,7 @@
                 document.getElementById('maintenanceModal').addEventListener('click', function(e){if(e.target===this)closeMaintenanceModal();});
                 document.getElementById('blockedModal').addEventListener('click', function(e){if(e.target===this)closeBlockedModal();});
                 document.getElementById('scannedProductModal').addEventListener('click', function(e){if(e.target===this)closeScannedModal();});
+                document.getElementById('addVehicleModal').addEventListener('click', function(e){if(e.target===this)closeAddVehicleModal();});
                 checkSession();
             });
 
@@ -458,6 +529,92 @@
                 if (result.error) { showAlert('Error al crear expediente', 'error'); return; }
                 await supabase.from('bookings').update({status: 'en_taller'}).eq('id', parseInt(bookingId));
                 window.location.href = '/work-detail?id=' + result.data[0].id;
+            }
+
+            // ============ AGREGAR VEHÍCULO ============
+            function showAddVehicleForm() {
+                var modal = document.getElementById('addVehicleModal');
+                modal.classList.add('active');
+                
+                var now = new Date();
+                document.getElementById('avDate').value = now.toISOString().split('T')[0];
+                document.getElementById('avTime').value = now.toTimeString().split(':').slice(0,2).join(':');
+                
+                loadServices().then(function(services) {
+                    var select = document.getElementById('avService');
+                    var html = '<option value="">Seleccione el servicio</option>';
+                    for (var i = 0; i < services.length; i++) {
+                        html += '<option value="' + services[i].title + '">' + (services[i].icon || '') + ' ' + services[i].title + '</option>';
+                    }
+                    select.innerHTML = html;
+                });
+                
+                document.getElementById('avError').style.display = 'none';
+                document.getElementById('avName').focus();
+            }
+
+            function closeAddVehicleModal() {
+                document.getElementById('addVehicleModal').classList.remove('active');
+            }
+
+            async function saveVehicle() {
+                var name = document.getElementById('avName').value.trim();
+                var phone = document.getElementById('avPhone').value.trim();
+                var email = document.getElementById('avEmail').value.trim() || null;
+                var plate = document.getElementById('avPlate').value.trim().toUpperCase();
+                var brand = document.getElementById('avBrand').value.trim();
+                var model = document.getElementById('avModel').value.trim();
+                var year = document.getElementById('avYear').value.trim();
+                var service = document.getElementById('avService').value;
+                var desc = document.getElementById('avDesc').value.trim() || null;
+                var date = document.getElementById('avDate').value;
+                var time = document.getElementById('avTime').value;
+                var errorEl = document.getElementById('avError');
+                
+                if (!name || !phone || !plate || !brand || !model || !year) {
+                    errorEl.textContent = 'Complete todos los campos obligatorios (*)';
+                    errorEl.style.display = 'block';
+                    return;
+                }
+                
+                var vehicleFull = brand + ' ' + model + ' ' + year;
+                
+                var booking = {
+                    client_name: name,
+                    phone: phone,
+                    email: email,
+                    plate_number: plate,
+                    vehicle_brand: brand,
+                    vehicle_model: model,
+                    vehicle_year: year,
+                    vehicle: vehicleFull,
+                    service_requested: service || null,
+                    problem_description: desc,
+                    preferred_date: date,
+                    preferred_time: time || null,
+                    status: 'en_taller'
+                };
+                
+                var result = await supabase.from('bookings').insert([booking]).select();
+                
+                if (result.error) {
+                    errorEl.textContent = 'Error al guardar el vehículo.';
+                    errorEl.style.display = 'block';
+                    return;
+                }
+                
+                closeAddVehicleModal();
+                showSuccess();
+                renderBookings();
+                
+                document.getElementById('avName').value = '';
+                document.getElementById('avPhone').value = '';
+                document.getElementById('avEmail').value = '';
+                document.getElementById('avPlate').value = '';
+                document.getElementById('avBrand').value = '';
+                document.getElementById('avModel').value = '';
+                document.getElementById('avYear').value = '';
+                document.getElementById('avDesc').value = '';
             }
 
             function showServiceForm() { document.getElementById('serviceForm').style.display = 'grid'; document.getElementById('serviceEditId').value = ''; document.getElementById('serviceTitle').value = ''; document.getElementById('serviceDesc').value = ''; document.getElementById('serviceOrder').value = '1'; }
@@ -556,6 +713,9 @@
             function viewLabel(id) { supabase.from('inventory').select('*').eq('id', id).single().then(function(result) { if (!result.data) return; var product = result.data; var code = product.barcode || product.numeric_code || ('MMW-' + String(product.id).padStart(3, '0')); var modal = document.createElement('div'); modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:10001;display:flex;align-items:center;justify-content:center;padding:2rem;'; modal.onclick = function(e) { if(e.target===modal) document.body.removeChild(modal); }; var content = document.createElement('div'); content.style.cssText = 'background:#111;border:1px solid #333;border-radius:16px;padding:2rem;text-align:center;max-width:400px;width:100%;position:relative;'; var closeBtn = document.createElement('button'); closeBtn.textContent = 'X'; closeBtn.style.cssText = 'position:absolute;top:1rem;right:1rem;background:none;border:none;color:#fff;font-size:1.5rem;cursor:pointer;'; closeBtn.onclick = function() { document.body.removeChild(modal); }; content.appendChild(closeBtn); var titleEl = document.createElement('h2'); titleEl.textContent = product.name; titleEl.style.cssText = 'font-family:Montserrat,sans-serif;font-size:1.2rem;margin-bottom:0.5rem;color:#fff;'; content.appendChild(titleEl); var subtitleEl = document.createElement('p'); subtitleEl.textContent = (product.brand||'') + ' | ' + (product.category||''); subtitleEl.style.cssText = 'font-size:0.85rem;color:#a3a3a3;margin-bottom:1.5rem;'; content.appendChild(subtitleEl); var canvas = document.createElement('canvas'); try { JsBarcode(canvas, code, { format: "CODE128", width: 2, height: 60, displayValue: true, fontSize: 14, margin: 10, background: '#ffffff', lineColor: '#000000' }); canvas.style.maxWidth = '100%'; content.appendChild(canvas); } catch(e) {} var codeTextEl = document.createElement('p'); codeTextEl.textContent = code; codeTextEl.style.cssText = 'font-size:1rem;font-weight:bold;color:#fff;margin-top:1rem;font-family:monospace;'; content.appendChild(codeTextEl); var printBtn = document.createElement('button'); printBtn.textContent = 'Imprimir etiqueta'; printBtn.style.cssText = 'margin-top:1.5rem;padding:0.6rem 1.5rem;background:#dc2626;color:white;border:none;border-radius:6px;cursor:pointer;font-family:inherit;font-size:0.85rem;'; printBtn.onclick = function() { printLabel(id); }; content.appendChild(printBtn); modal.appendChild(content); document.body.appendChild(modal); }); }
             function printLabel(id) { supabase.from('inventory').select('*').eq('id', id).single().then(function(result) { if (!result.data) return; var product = result.data; var code = product.barcode || product.numeric_code || ('MMW-' + String(product.id).padStart(3, '0')); var printWindow = window.open('', '_blank', 'width=400,height=400'); var canvas = document.createElement('canvas'); var barcodeImg = ''; try { JsBarcode(canvas, code, { format: "CODE128", width: 2, height: 60, displayValue: true, fontSize: 14, margin: 10 }); barcodeImg = canvas.toDataURL('image/png'); } catch(e) {} printWindow.document.write('<!DOCTYPE html><html><head><title>Etiqueta - ' + product.name + '</title><style>body{font-family:Arial,sans-serif;text-align:center;padding:20px;}h2{font-size:16px;margin-bottom:5px;}p{font-size:12px;color:#666;margin-bottom:15px;}img{max-width:100%;}@media print{body{margin:0;padding:10px;}}<' + '/style></head><body>'); printWindow.document.write('<h2>' + product.name + '</h2><p>' + (product.brand||'') + ' | ' + (product.category||'') + '</p>'); if (barcodeImg) printWindow.document.write('<img src="' + barcodeImg + '" alt="Codigo de barras">'); printWindow.document.write('<p style="font-size:14px;font-weight:bold;margin-top:10px;">' + code + '</p>'); printWindow.document.write('<script>setTimeout(function(){window.print();},500);<' + '/script></body></html>'); printWindow.document.close(); }); }
 
+            window.showAddVehicleForm = showAddVehicleForm;
+            window.closeAddVehicleModal = closeAddVehicleModal;
+            window.saveVehicle = saveVehicle;
             window.showAddInventoryForm = showAddInventoryForm;
             window.startScanner = startScanner;
             window.stopScanner = stopScanner;
