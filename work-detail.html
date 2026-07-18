@@ -41,7 +41,6 @@
                 radial-gradient(ellipse at 80% 80%, rgba(220,38,38,0.03) 0%, transparent 50%);
         }
 
-        /* Top bar */
         .top-bar {
             background: var(--bg-card);
             border-bottom: 1px solid var(--border);
@@ -73,7 +72,6 @@
         }
         .top-bar .brand span { color: var(--red); }
 
-        /* Hero del vehículo */
         .vehicle-hero {
             background: var(--bg-card);
             border-bottom: 1px solid var(--border);
@@ -106,6 +104,7 @@
         .vehicle-hero .status-row {
             display: flex;
             justify-content: center;
+            align-items: center;
             gap: 0.75rem;
             margin-top: 1rem;
             flex-wrap: wrap;
@@ -119,6 +118,7 @@
             letter-spacing: 0.5px;
         }
         .status-en_progreso { background: rgba(139,92,246,0.12); color: #a78bfa; }
+        .status-trabajando { background: rgba(59,130,246,0.12); color: #60a5fa; }
         .status-completado { background: rgba(34,197,94,0.12); color: #4ade80; }
         .status-entregado { background: rgba(100,116,139,0.12); color: #94a3b8; }
 
@@ -142,14 +142,12 @@
         }
         .info-pill strong { color: var(--text-primary); }
 
-        /* Contenido */
         .main-content {
             max-width: 1000px;
             margin: 0 auto;
             padding: 2rem;
         }
 
-        /* Cards */
         .section-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -201,6 +199,8 @@
         .btn-danger:hover { background: #b91c1c; }
         .btn-edit { background: #4b5563; color: white; }
         .btn-edit:hover { background: #6b7280; }
+        .btn-terminar { background: #f59e0b; color: #000; }
+        .btn-terminar:hover { background: #fbbf24; }
 
         .empty-state {
             text-align: center;
@@ -212,15 +212,9 @@
             margin-bottom: 0.75rem;
             opacity: 0.3;
         }
-        .empty-state p {
-            font-size: 0.9rem;
-        }
+        .empty-state p { font-size: 0.9rem; }
 
-        .loading-state {
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-muted);
-        }
+        .loading-state { text-align: center; padding: 2rem; color: var(--text-muted); }
 
         .success-toast {
             position: fixed;
@@ -238,7 +232,6 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        /* Colapsables */
         .collapsible-grid { display: grid; gap: 0.4rem; }
         .collapsible-item {
             background: var(--bg-input);
@@ -263,18 +256,8 @@
             flex: 1;
             margin-right: 0.5rem;
         }
-        .collapsible-header .cl-badges {
-            display: flex;
-            gap: 0.3rem;
-            flex-shrink: 0;
-            margin-right: 0.5rem;
-        }
-        .collapsible-header .cl-actions {
-            display: flex;
-            gap: 0.25rem;
-            flex-shrink: 0;
-            margin-right: 0.5rem;
-        }
+        .collapsible-header .cl-badges { display: flex; gap: 0.3rem; flex-shrink: 0; margin-right: 0.5rem; }
+        .collapsible-header .cl-actions { display: flex; gap: 0.25rem; flex-shrink: 0; margin-right: 0.5rem; }
         .collapsible-header .cl-arrow {
             color: var(--text-muted);
             font-size: 0.65rem;
@@ -303,7 +286,6 @@
             display: block;
         }
 
-        /* Forms */
         .edit-form { display: none; padding: 0 1rem 1rem 1rem; }
         .edit-form textarea {
             width: 100%;
@@ -319,13 +301,7 @@
             min-height: 50px;
             margin-bottom: 0.5rem;
         }
-        .edit-form .form-row {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
+        .edit-form .form-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.5rem; }
         .edit-form .form-row input {
             padding: 0.4rem 0.5rem;
             background: var(--bg-dark);
@@ -338,12 +314,7 @@
             width: 65px;
             text-align: center;
         }
-        .edit-form .form-row label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-        }
+        .edit-form .form-row label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
         .edit-form .form-actions { display: flex; gap: 0.5rem; }
 
         .add-form {
@@ -369,62 +340,19 @@
             min-height: 40px;
             margin-bottom: 0.75rem;
         }
-        .add-form .form-row {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            align-items: center;
-            margin-bottom: 0.75rem;
-        }
-        .add-form .form-row label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            white-space: nowrap;
-        }
-        .add-form .form-row input[type="file"] {
-            flex: 1;
-            padding: 0.4rem;
-            background: var(--bg-dark);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            color: var(--text-primary);
-            font-size: 0.8rem;
-        }
+        .add-form .form-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.75rem; }
+        .add-form .form-row label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); white-space: nowrap; }
+        .add-form .form-row input[type="file"] { flex: 1; padding: 0.4rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.8rem; }
         .add-form .form-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
         .add-form .input-group { display: flex; align-items: center; gap: 0.25rem; }
         .add-form .input-group input { width: 60px; text-align: center; }
 
-        /* Parts */
-        .part-photos {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.75rem;
-        }
+        .part-photos { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
         .part-photo-item { text-align: center; }
-        .part-photo-item .photo-label {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            margin-bottom: 0.3rem;
-        }
-        .part-photo-item img {
-            width: 100%;
-            max-width: 100%;
-            border-radius: var(--radius-sm);
-            display: block;
-        }
-        .part-photo-item .no-photo {
-            padding: 2rem;
-            background: var(--bg-dark);
-            border-radius: var(--radius-sm);
-            color: var(--text-muted);
-            font-size: 0.75rem;
-        }
+        .part-photo-item .photo-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 0.3rem; }
+        .part-photo-item img { width: 100%; max-width: 100%; border-radius: var(--radius-sm); display: block; }
+        .part-photo-item .no-photo { padding: 2rem; background: var(--bg-dark); border-radius: var(--radius-sm); color: var(--text-muted); font-size: 0.75rem; }
 
-        /* Resumen */
         .summary-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -445,12 +373,7 @@
             line-height: 1;
             margin-bottom: 0.25rem;
         }
-        .summary-card .summary-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-        }
+        .summary-card .summary-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
         .summary-card .summary-number.red { color: var(--red); }
         .summary-card .summary-number.green { color: #4ade80; }
         .summary-card .summary-number.blue { color: #60a5fa; }
@@ -481,6 +404,7 @@
         <div class="vehicle-info" id="heroClient"></div>
         <div class="status-row">
             <span class="status-badge" id="heroStatus">En Progreso</span>
+            <button class="btn btn-sm btn-terminar" id="btnTerminar" onclick="terminarTrabajo()">Terminar</button>
         </div>
         <div class="info-pills">
             <div class="info-pill">Expediente <strong id="heroWO">#--</strong></div>
@@ -489,7 +413,6 @@
     </div>
 
     <div class="main-content">
-        <!-- Resumen -->
         <div class="summary-row">
             <div class="summary-card">
                 <div class="summary-number blue" id="summaryWorks">0</div>
@@ -509,7 +432,6 @@
             </div>
         </div>
 
-        <!-- Trabajos -->
         <div class="section-card">
             <div class="section-header">
                 <div>
@@ -534,7 +456,6 @@
             </div>
         </div>
 
-        <!-- Repuestos -->
         <div class="section-card">
             <div class="section-header">
                 <div>
@@ -595,6 +516,7 @@
             function renderHero() {
                 var statusMap = {
                     en_progreso: { text: 'En Progreso', cls: 'status-en_progreso' },
+                    trabajando: { text: 'Trabajando', cls: 'status-trabajando' },
                     completado: { text: 'Completado', cls: 'status-completado' },
                     entregado: { text: 'Entregado', cls: 'status-entregado' }
                 };
@@ -610,6 +532,14 @@
                 badge.textContent = st.text;
                 badge.className = 'status-badge ' + st.cls;
             }
+
+            async function terminarTrabajo() {
+                await supabase.from('work_orders').update({status: 'en_progreso'}).eq('id', workOrderId);
+                await supabase.from('bookings').update({status: 'en_taller'}).eq('id', workOrder.booking_id);
+                showSuccess();
+                loadWorkOrder();
+            }
+            window.terminarTrabajo = terminarTrabajo;
 
             function updateSummaries(worklogs, parts) {
                 var totalWorks = worklogs ? worklogs.length : 0;
@@ -637,7 +567,6 @@
                 document.getElementById('summaryHours').textContent = timeStr.trim();
             }
 
-            // ============ WORK LOGS ============
             async function loadWorkLogs() {
                 var container = document.getElementById('worklogContainer');
                 var result = await supabase.from('work_log').select('*').eq('work_order_id', workOrderId).order('created_at', { ascending: false });
@@ -667,7 +596,6 @@
                     html += '</div>';
                     container.innerHTML = html;
                 }
-                // Cargar parts para el summary
                 var partsResult = await supabase.from('replaced_parts').select('*').eq('work_order_id', workOrderId);
                 updateSummaries(worklogs, partsResult.data || []);
             }
@@ -676,8 +604,7 @@
             window.toggleItem = toggleItem;
 
             function showEditForm(logId) {
-                var item = document.getElementById('worklog-' + logId);
-                if (!item) return;
+                var item = document.getElementById('editForm-' + logId).parentElement;
                 item.querySelector('.collapsible-body').style.display = 'none';
                 document.getElementById('editForm-' + logId).style.display = 'block';
                 if (!item.classList.contains('open')) item.classList.add('open');
@@ -686,8 +613,7 @@
             window.showEditForm = showEditForm;
 
             function cancelEdit(logId) {
-                var item = document.getElementById('worklog-' + logId);
-                if (!item) return;
+                var item = document.getElementById('editForm-' + logId).parentElement;
                 document.getElementById('editForm-' + logId).style.display = 'none';
                 item.querySelector('.collapsible-body').style.display = 'block';
                 if (item.getAttribute('data-opened-by-edit') === 'true') { item.classList.remove('open'); item.removeAttribute('data-opened-by-edit'); }
@@ -744,7 +670,6 @@
             }
             window.saveWorklog = saveWorklog;
 
-            // ============ PARTS ============
             async function loadParts() {
                 var container = document.getElementById('partsContainer');
                 var result = await supabase.from('replaced_parts').select('*,work_log(description)').eq('work_order_id', workOrderId).order('created_at', { ascending: false });
