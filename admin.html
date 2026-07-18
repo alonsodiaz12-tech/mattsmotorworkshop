@@ -420,7 +420,7 @@
                 var html = '';
                 for (var i=0; i<bookings.length; i++) {
                     var b = bookings[i];
-                    var statusMap = { pending:{text:'Pendiente',cls:'status-pending'}, confirmed:{text:'Confirmada',cls:'status-confirmed'}, en_taller:{text:'En Taller',cls:'status-in_progress'}, cancelled:{text:'Cancelada',cls:'status-cancelled'} };
+                    var statusMap = { pending:{text:'Pendiente',cls:'status-pending'}, confirmed:{text:'Confirmada',cls:'status-confirmed'}, en_taller:{text:'En Taller',cls:'status-in_progress'}, trabajando:{text:'Trabajando',cls:'status-in_progress'}, cancelled:{text:'Cancelada',cls:'status-cancelled'} };
                     var st = statusMap[b.status] || statusMap.pending;
                     var dateStr = b.preferred_date ? new Date(b.preferred_date+'T00:00:00').toLocaleDateString('es-MX',{weekday:'short',year:'numeric',month:'short',day:'numeric'}) : 'Sin fecha';
                     html += '<div class="booking-card">';
@@ -430,12 +430,7 @@
                     if (b.status === 'confirmed' || b.status === 'en_taller') {
                         html += '<button class="btn-sm btn-success" onclick="window._createWorkOrder(\''+b.id+'\',\''+(b.plate_number||'')+'\',\''+(b.vehicle||'')+'\',\''+(b.client_name||'')+'\',\''+(b.phone||'')+'\')">Iniciar Trabajo</button>';
                     }
-                    html += '<select onchange="window._updateStatus('+b.id+',this.value)">';
-                    html += '<option value="pending"'+(b.status==='pending'?' selected':'')+'>Pendiente</option>';
-                    html += '<option value="confirmed"'+(b.status==='confirmed'?' selected':'')+'>Confirmar</option>';
-                    html += '<option value="en_taller"'+(b.status==='en_taller'?' selected':'')+'>En Taller</option>';
-                    html += '<option value="cancelled"'+(b.status==='cancelled'?' selected':'')+'>Cancelar</option>';
-                    html += '</select><button class="btn-sm btn-delete" onclick="window._deleteBooking('+b.id+')">Eliminar</button></div></div>';
+                    html += '<button class="btn-sm btn-delete" onclick="window._deleteBooking('+b.id+')">Eliminar</button></div></div>';
                 }
                 container.innerHTML = html;
             }
@@ -451,7 +446,7 @@
                     var modal = document.createElement('div');
                     modal.className = 'modal-overlay active';
                     modal.id = 'existingWOModal';
-                    modal.innerHTML = '<div class="modal-dialog"><button class="modal-close" onclick="closeAdminModal(\'existingWOModal\')">X</button><div class="modal-icon">!</div><h3>Expedientes Existentes</h3><p class="modal-text">Ya existen expedientes en progreso para esta cita:</p><div style="text-align:left;margin-bottom:1rem;">'+woList+'</div><p class="modal-warning">¿Desea crear un nuevo expediente de todas formas?</p><div class="modal-actions"><button class="btn-cancel" onclick="closeAdminModal(\'existingWOModal\')">Cancelar</button><button class="btn-confirm" onclick="closeAdminModal(\'existingWOModal\');proceedCreateWOAdmin('+bookingId+',\''+plate.replace(/'/g,"\\'")+'\',\''+vehicle.replace(/'/g,"\\'")+'\',\''+client.replace(/'/g,"\\'")+'\',\''+phone.replace(/'/g,"\\'")+'\')">Crear nuevo</button></div></div>';
+                    modal.innerHTML = '<div class="modal-dialog"><button class="modal-close" onclick="closeAdminModal(\'existingWOModal\')">X</button><div class="modal-icon">!</div><h3>Expedientes Existentes</h3><p class="modal-text">Ya existen expedientes en progreso para esta cita:</p><div style="text-align:left;margin-bottom:1rem;">'+woList+'</div><p class="modal-warning">Ya existen expedientes en progreso para esta cita. ¿Desea crear uno nuevo de todas formas?</p><div class="modal-actions"><button class="btn-cancel" onclick="closeAdminModal(\'existingWOModal\')">Cancelar</button><button class="btn-confirm" onclick="closeAdminModal(\'existingWOModal\');proceedCreateWOAdmin('+bookingId+',\''+plate.replace(/'/g,"\\'")+'\',\''+vehicle.replace(/'/g,"\\'")+'\',\''+client.replace(/'/g,"\\'")+'\',\''+phone.replace(/'/g,"\\'")+'\')">Crear nuevo</button></div></div>';
                     document.body.appendChild(modal);
                     return;
                 }
