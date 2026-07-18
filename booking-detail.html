@@ -216,7 +216,7 @@
                     var modal = document.createElement('div');
                     modal.className = 'modal-overlay active';
                     modal.id = 'existingWOModal';
-                    modal.innerHTML = '<div class="modal-dialog"><button class="modal-close" onclick="closeModal(\'existingWOModal\')">X</button><div class="modal-icon">⚠️</div><h3>Expedientes Existentes</h3><p class="modal-text">Ya existen expedientes en progreso para esta cita:</p><div style="text-align:left;margin-bottom:1rem;">'+woList+'</div><p class="modal-warning">Desea crear un nuevo expediente de todas formas?</p><div class="modal-actions"><button class="btn-cancel" onclick="closeModal(\'existingWOModal\')">Cancelar</button><button class="btn-confirm" onclick="closeModal(\'existingWOModal\');proceedCreateWO()">Crear nuevo</button></div></div>';
+                    modal.innerHTML = '<div class="modal-dialog"><button class="modal-close" onclick="closeModal(\'existingWOModal\')">X</button><div class="modal-icon">⚠️</div><h3>Expedientes Existentes</h3><p class="modal-text">Ya existen expedientes en progreso para esta cita:</p><div style="text-align:left;margin-bottom:1rem;">'+woList+'</div><p class="modal-warning">¿Desea crear un nuevo expediente de todas formas?</p><div class="modal-actions"><button class="btn-cancel" onclick="closeModal(\'existingWOModal\')">Cancelar</button><button class="btn-confirm" onclick="closeModal(\'existingWOModal\');proceedCreateWO()">Crear nuevo</button></div></div>';
                     document.body.appendChild(modal);
                     return;
                 }
