@@ -137,7 +137,7 @@
             }
 
             function renderBooking() {
-                var statusMap = { pending:{text:'Pendiente',cls:'status-pending'}, confirmed:{text:'Confirmada',cls:'status-confirmed'}, en_taller:{text:'En Taller',cls:'status-in_progress'}, cancelled:{text:'Cancelada',cls:'status-cancelled'} };
+                var statusMap = { pending:{text:'Pendiente',cls:'status-pending'}, confirmed:{text:'Confirmada',cls:'status-confirmed'}, en_taller:{text:'En Taller',cls:'status-in_progress'}, trabajando:{text:'Trabajando',cls:'status-in_progress'}, cancelled:{text:'Cancelada',cls:'status-cancelled'} };
                 var st = statusMap[booking.status] || statusMap.pending;
                 document.getElementById('pageTitle').textContent = 'Cita #' + booking.id + ' - ' + (booking.plate_number || 'Sin placa');
                 document.getElementById('pageStatus').textContent = st.text; document.getElementById('pageStatus').className = 'status-badge ' + st.cls;
@@ -151,7 +151,6 @@
                 html += '<div class="info-item"><div class="label">Servicio</div><div class="value">'+booking.service_requested+'</div></div>';
                 html += '<div class="info-item"><div class="label">Fecha</div><div class="value">'+dateStr+'</div></div>';
                 html += '<div class="info-item"><div class="label">Hora</div><div class="value">'+(booking.preferred_time||'No especificada')+'</div></div>';
-                html += '<div class="info-item"><div class="label">Cambiar Estado</div><div class="value"><select onchange="updateStatus(this.value)"><option value="pending"'+(booking.status==='pending'?' selected':'')+'>Pendiente</option><option value="confirmed"'+(booking.status==='confirmed'?' selected':'')+'>Confirmar</option><option value="cancelled"'+(booking.status==='cancelled'?' selected':'')+'>Cancelar</option></select></div></div>';
                 html += '<div class="info-item"><div class="label">Editar Placa</div><div class="value"><input type="text" value="'+(booking.plate_number||'')+'" onchange="updatePlate(this.value)" style="font-family:monospace;text-transform:uppercase;"></div></div>';
                 document.getElementById('infoGrid').innerHTML = html;
             }
@@ -192,17 +191,51 @@
                 var html = '<div class="wo-list">';
                 for (var i=0; i<result.data.length; i++) {
                     var wo = result.data[i];
-                    var statusMap = { en_progreso:{text:'En Progreso',cls:'status-in_progress'}, completado:{text:'Completado',cls:'status-completed'}, entregado:{text:'Entregado',cls:'status-completed'} };
+                    var statusMap = { en_progreso:{text:'En Progreso',cls:'status-in_progress'}, trabajando:{text:'Trabajando',cls:'status-in_progress'}, completado:{text:'Completado',cls:'status-completed'}, entregado:{text:'Entregado',cls:'status-completed'} };
                     var st = statusMap[wo.status] || statusMap.en_progreso;
                     html += '<div class="wo-item">';
                     html += '<div><strong>Expediente #'+wo.id+'</strong> <span style="color:var(--text-muted);font-size:0.75rem;">'+new Date(wo.created_at).toLocaleDateString('es-MX')+'</span></div>';
                     html += '<div class="wo-actions">';
                     html += '<span class="status-badge '+st.cls+'">'+st.text+'</span>';
-                    html += '<a href="/work-detail?id='+wo.id+'" class="btn btn-primary btn-sm" style="text-decoration:none;">Abrir</a>';
+                    html += '<button class="btn btn-primary btn-sm" onclick="startWorking('+wo.id+')">Trabajar ahora mismo</button>';
+                    html += '<a href="/work-detail?id='+wo.id+'" class="btn btn-sm" style="background:#4b5563;color:white;text-decoration:none;">Revisar</a>';
                     html += '<button class="btn btn-danger btn-sm" onclick="deleteWorkOrder('+wo.id+')">Eliminar</button>';
                     html += '</div></div>';
                 }
                 html += '</div>'; container.innerHTML = html;
+            }
+
+            async function startWorking(woId) {
+                var result = await supabase.from('work_orders').select('*').eq('id', woId).single();
+                if (!result.data) return;
+                var wo = result.data;
+                
+                var modal = document.createElement('div');
+                modal.className = 'modal-overlay active';
+                modal.id = 'startWorkingModal';
+                modal.innerHTML = `
+                    <div class="modal-dialog">
+                        <button class="modal-close" onclick="closeModal('startWorkingModal')">X</button>
+                        <div class="modal-icon">🔧</div>
+                        <h3>Expediente #${wo.id}</h3>
+                        <p class="modal-text"><strong>${wo.vehicle}</strong> | Placa: ${wo.plate_number}</p>
+                        <p class="modal-text">¿Vas a comenzar a trabajar en este vehículo?</p>
+                        <p class="modal-warning">Esto actualizará el estado en el tracking del cliente.</p>
+                        <div class="modal-actions">
+                            <button class="btn-cancel" onclick="closeModal('startWorkingModal')">Cancelar</button>
+                            <button class="btn-confirm" id="confirmStartBtn">Sí, comenzar</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                
+                document.getElementById('confirmStartBtn').onclick = async function() {
+                    closeModal('startWorkingModal');
+                    await supabase.from('work_orders').update({status: 'trabajando'}).eq('id', woId);
+                    await supabase.from('bookings').update({status: 'trabajando'}).eq('id', bookingId);
+                    showSuccess();
+                    loadWorkOrders();
+                };
             }
 
             async function createWorkOrder() {
@@ -216,7 +249,7 @@
                     var modal = document.createElement('div');
                     modal.className = 'modal-overlay active';
                     modal.id = 'existingWOModal';
-                    modal.innerHTML = '<div class="modal-dialog"><button class="modal-close" onclick="closeModal(\'existingWOModal\')">X</button><div class="modal-icon">⚠️</div><h3>Expedientes Existentes</h3><p class="modal-text">Ya existen expedientes en progreso para esta cita:</p><div style="text-align:left;margin-bottom:1rem;">'+woList+'</div><p class="modal-warning">¿Desea crear un nuevo expediente de todas formas?</p><div class="modal-actions"><button class="btn-cancel" onclick="closeModal(\'existingWOModal\')">Cancelar</button><button class="btn-confirm" onclick="closeModal(\'existingWOModal\');proceedCreateWO()">Crear nuevo</button></div></div>';
+                    modal.innerHTML = '<div class="modal-dialog"><button class="modal-close" onclick="closeModal(\'existingWOModal\')">X</button><div class="modal-icon">⚠️</div><h3>Expedientes Existentes</h3><p class="modal-text">Ya existen expedientes en progreso para esta cita:</p><div style="text-align:left;margin-bottom:1rem;">'+woList+'</div><p class="modal-warning">Ya existen expedientes en progreso para esta cita. ¿Desea crear uno nuevo de todas formas?</p><div class="modal-actions"><button class="btn-cancel" onclick="closeModal(\'existingWOModal\')">Cancelar</button><button class="btn-confirm" onclick="closeModal(\'existingWOModal\');proceedCreateWO()">Crear nuevo</button></div></div>';
                     document.body.appendChild(modal);
                     return;
                 }
@@ -259,6 +292,7 @@
             window.addNote = addNote;
             window.createWorkOrder = createWorkOrder;
             window.deleteWorkOrder = deleteWorkOrder;
+            window.startWorking = startWorking;
             window.updateStatus = updateStatus;
             window.updatePlate = updatePlate;
             window.closeModal = closeModal;
