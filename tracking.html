@@ -49,6 +49,8 @@
         .btn-search:hover { background: var(--red-light); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(220,38,38,0.45); }
         .btn-search:disabled { opacity: 0.5; cursor: not-allowed; }
         .error-message { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; padding: 1rem; border-radius: var(--radius); text-align: center; font-size: 0.9rem; display: none; }
+
+        /* Resultado - Modo Cita */
         .result-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 2.5rem; margin-top: 1.5rem; display: none; animation: fadeIn 0.5s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .result-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
@@ -65,6 +67,19 @@
         .info-confirmed { background: rgba(59,130,246,0.08); color: #60a5fa; border: 1px solid rgba(59,130,246,0.2); }
         .info-success { background: rgba(34,197,94,0.08); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
         .info-cancelled { background: rgba(239,68,68,0.08); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+        .detail-item { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; }
+        .detail-item .detail-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 0.25rem; }
+        .detail-item .detail-value { font-weight: 600; font-size: 0.95rem; }
+        .new-search-btn { display: inline-flex; align-items: center; gap: 0.5rem; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-light); padding: 0.7rem 1.5rem; border-radius: 50px; text-decoration: none; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: var(--transition); margin-top: 1rem; }
+        .new-search-btn:hover { border-color: var(--text-secondary); color: var(--text-primary); }
+
+        /* Resultado - Modo Taller */
+        .workshop-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 2rem; margin-top: 1.5rem; display: none; animation: fadeIn 0.5s ease-out; }
+        .workshop-hero { text-align: center; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+        .workshop-hero .big-plate { display: inline-block; background: var(--bg-elevated); border: 2px solid var(--border-light); padding: 0.4rem 1.2rem; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.5rem; letter-spacing: 3px; color: var(--text-primary); margin-bottom: 0.75rem; }
+        .workshop-hero h2 { font-family: 'Montserrat', sans-serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .workshop-hero .vehicle-sub { color: var(--text-muted); font-size: 0.85rem; }
         .progress-tracker { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 2rem; }
         .progress-step { text-align: center; }
         .progress-step .step-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem; font-weight: 700; font-size: 0.9rem; background: var(--bg-elevated); border: 2px solid var(--border-light); color: var(--text-muted); transition: var(--transition); }
@@ -73,18 +88,6 @@
         @keyframes pulse-step { 0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,0.4)} 50%{box-shadow:0 0 0 12px rgba(59,130,246,0)} }
         .progress-step .step-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
         .progress-step.completed .step-label, .progress-step.active .step-label { color: var(--text-secondary); }
-        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
-        .detail-item { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; }
-        .detail-item .detail-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 0.25rem; }
-        .detail-item .detail-value { font-weight: 600; font-size: 0.95rem; }
-        .notes-section { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem; margin-top: 1rem; text-align: left; }
-        .notes-section h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 0.75rem; }
-        .notes-list { list-style: none; display: grid; gap: 0.75rem; }
-        .notes-list li { display: flex; gap: 0.75rem; padding: 0.75rem; background: var(--bg-dark); border-radius: 8px; font-size: 0.9rem; color: var(--text-secondary); }
-        .notes-list li .note-time { color: var(--text-muted); font-size: 0.75rem; white-space: nowrap; min-width: 50px; }
-        .no-notes { color: var(--text-muted); font-style: italic; font-size: 0.9rem; }
-        .new-search-btn { display: inline-flex; align-items: center; gap: 0.5rem; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-light); padding: 0.7rem 1.5rem; border-radius: 50px; text-decoration: none; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: var(--transition); margin-top: 1rem; }
-        .new-search-btn:hover { border-color: var(--text-secondary); color: var(--text-primary); }
 
         /* Tabs */
         .detail-tabs { display: flex; gap: 0; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
@@ -96,7 +99,7 @@
 
         /* Worklog */
         .worklog-client-grid { display: grid; gap: 0.5rem; text-align: left; }
-        .worklog-client-item { background: var(--bg-dark); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        .worklog-client-item { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
         .worklog-header-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem; cursor: pointer; transition: var(--transition); user-select: none; }
         .worklog-header-bar:hover { background: rgba(255,255,255,0.02); }
         .worklog-header-bar .wl-title { font-weight: 600; font-size: 0.95rem; color: var(--text-primary); flex: 1; margin-right: 0.75rem; }
@@ -114,21 +117,22 @@
         .worklog-body img { width: 100%; max-width: 100%; border-radius: 6px; margin-top: 0.5rem; display: block; }
         .btn-sm { padding: 0.3rem 0.6rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: 500; font-family: inherit; background: #4b5563; color: white; transition: var(--transition); }
         .btn-sm:hover { background: #6b7280; }
+        .no-notes { color: var(--text-muted); font-style: italic; font-size: 0.9rem; text-align: center; padding: 1rem; }
 
         /* Parts */
         .parts-client-grid { display: grid; gap: 0.75rem; text-align: left; }
-        .part-client-card { background: var(--bg-dark); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
+        .part-client-card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
         .part-client-card .part-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem; }
         .part-client-card .part-header strong { font-size: 0.95rem; }
         .part-client-card .part-photos { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
         .part-client-card .part-photo-item { text-align: center; }
         .part-client-card .part-photo-item .photo-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 0.3rem; }
         .part-client-card .part-photo-item img { width: 100%; max-width: 100%; border-radius: 6px; display: block; }
-        .part-client-card .part-photo-item .no-photo { padding: 1.5rem; background: var(--bg-elevated); border-radius: 6px; color: var(--text-muted); font-size: 0.75rem; }
+        .part-client-card .part-photo-item .no-photo { padding: 1.5rem; background: var(--bg-dark); border-radius: 6px; color: var(--text-muted); font-size: 0.75rem; }
 
         @media (max-width: 600px) {
             body { padding: 1rem; align-items: flex-start; padding-top: 2rem; }
-            .search-card, .result-card { padding: 1.5rem; }
+            .search-card, .result-card, .workshop-card { padding: 1.5rem; }
             .detail-grid { grid-template-columns: 1fr; }
             .progress-tracker { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
             .result-header { flex-direction: column; }
@@ -151,9 +155,28 @@
                 <button type="submit" class="btn-search" id="searchBtn">Consultar Estado</button>
             </form>
         </div>
+        
+        <!-- Modo Cita (pendiente/confirmado/cancelado) -->
         <div class="result-card" id="resultCard">
             <div class="result-header"><div class="result-vehicle"><h2 id="resultVehicle"></h2><span class="plate" id="resultPlate"></span></div><span class="status-badge" id="resultStatus"></span></div>
             <div id="dynamicContent"></div>
+            <button class="new-search-btn" onclick="newSearch()">Nueva consulta</button>
+        </div>
+
+        <!-- Modo Taller (en_taller/en_progreso/completado/entregado) -->
+        <div class="workshop-card" id="workshopCard">
+            <div class="workshop-hero">
+                <div class="big-plate" id="wsPlate"></div>
+                <h2 id="wsVehicle"></h2>
+                <div class="vehicle-sub" id="wsClient"></div>
+            </div>
+            <div class="progress-tracker" id="progressTracker"></div>
+            <div class="detail-tabs">
+                <button class="detail-tab active" onclick="switchTab('worklog')">Trabajos Realizados</button>
+                <button class="detail-tab" onclick="switchTab('parts')">Repuestos Reemplazados</button>
+            </div>
+            <div class="detail-tab-content active" id="tab-worklog"><div id="worklogClient"></div></div>
+            <div class="detail-tab-content" id="tab-parts"><div id="partsClient"></div></div>
             <button class="new-search-btn" onclick="newSearch()">Nueva consulta</button>
         </div>
     </div>
@@ -162,6 +185,7 @@
         var SUPABASE_URL = 'https://pupfxetbnpgqikzhnjts.supabase.co';
         var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cGZ4ZXRibnBncWlremhuanRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNTAwNzIsImV4cCI6MjA5OTcyNjA3Mn0.FVhkHQflNJRQbheadgL6RmzYuNbCezB3vIeaJHGS88M';
         var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        var currentBooking = null;
 
         document.documentElement.style.display = 'none';
         (async function() {
@@ -174,69 +198,132 @@
             var plate = document.getElementById('plateInput').value.trim().toUpperCase();
             var errorMsg = document.getElementById('errorMessage');
             var resultCard = document.getElementById('resultCard');
+            var workshopCard = document.getElementById('workshopCard');
             var searchBtn = document.getElementById('searchBtn');
+            
             if (!plate) { errorMsg.style.display='block'; errorMsg.textContent='Ingrese un número de placa válido.'; return; }
-            searchBtn.disabled=true; searchBtn.textContent='Buscando...'; errorMsg.style.display='none'; resultCard.style.display='none';
-            var result = await supabase.from('bookings').select('*').eq('plate_number',plate).order('created_at',{ascending:false}).limit(1);
-            searchBtn.disabled=false; searchBtn.textContent='Consultar Estado';
+            
+            searchBtn.disabled = true;
+            searchBtn.textContent = 'Buscando...';
+            errorMsg.style.display = 'none';
+            resultCard.style.display = 'none';
+            workshopCard.style.display = 'none';
+            
+            var result = await supabase.from('bookings').select('*').eq('plate_number', plate).order('created_at', {ascending: false}).limit(1);
+            
+            searchBtn.disabled = false;
+            searchBtn.textContent = 'Consultar Estado';
+            
             if (result.error) { errorMsg.style.display='block'; errorMsg.textContent='Error al consultar.'; return; }
-            if (!result.data || result.data.length===0) { errorMsg.style.display='block'; errorMsg.textContent='No se encontró ningún vehículo con esa placa.'; return; }
-            displayResult(result.data[0]);
+            if (!result.data || result.data.length === 0) { errorMsg.style.display='block'; errorMsg.textContent='No se encontró ningún vehículo con esa placa.'; return; }
+            
+            currentBooking = result.data[0];
+            var status = currentBooking.status;
+            
+            if (status === 'pending' || status === 'confirmed' || status === 'cancelled') {
+                displayCitaMode();
+            } else {
+                displayTallerMode();
+            }
         }
 
-        function displayResult(booking) {
-            var resultCard = document.getElementById('resultCard');
+        // ============ MODO CITA ============
+        function displayCitaMode() {
+            var booking = currentBooking;
             var status = booking.status;
-            var dynamicContent = document.getElementById('dynamicContent');
+            var resultCard = document.getElementById('resultCard');
+            var workshopCard = document.getElementById('workshopCard');
+            
+            workshopCard.style.display = 'none';
+            
             document.getElementById('resultVehicle').textContent = booking.vehicle || 'No especificado';
             document.getElementById('resultPlate').textContent = booking.plate_number || 'N/A';
-            var statusMap = {'pending':{text:'Pendiente',class:'status-pending'},'confirmed':{text:'Confirmada',class:'status-confirmed'},'en_taller':{text:'En Taller',class:'status-in_progress'},'en_progreso':{text:'En Progreso',class:'status-in_progress'},'completado':{text:'Completado',class:'status-completed'},'entregado':{text:'Entregado',class:'status-completed'},'cancelled':{text:'Cancelado',class:'status-cancelled'}};
+            
+            var statusMap = {
+                'pending': {text:'Pendiente', class:'status-pending'},
+                'confirmed': {text:'Confirmada', class:'status-confirmed'},
+                'cancelled': {text:'Cancelado', class:'status-cancelled'}
+            };
             var st = statusMap[status] || statusMap.pending;
-            document.getElementById('resultStatus').textContent = st.text; document.getElementById('resultStatus').className = 'status-badge ' + st.class;
+            document.getElementById('resultStatus').textContent = st.text;
+            document.getElementById('resultStatus').className = 'status-badge ' + st.class;
+            
             var html = '';
-
             if (status === 'pending') {
                 html += '<div class="info-message info-pending">Su cita está <strong>pendiente de confirmación</strong>. El taller revisará su solicitud.</div>';
-                html += '<div class="detail-grid"><div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">'+(booking.service_requested||'')+'</div></div><div class="detail-item"><div class="detail-label">Fecha</div><div class="detail-value">'+(booking.preferred_date?new Date(booking.preferred_date+'T00:00:00').toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'}):'')+'</div></div><div class="detail-item"><div class="detail-label">Hora</div><div class="detail-value">'+(booking.preferred_time||'')+'</div></div><div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">'+(booking.client_name||'')+'</div></div></div>';
+                html += buildDetailGrid(booking);
             } else if (status === 'confirmed') {
                 var dateFormatted = booking.preferred_date ? new Date(booking.preferred_date+'T00:00:00').toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) : '';
                 html += '<div class="info-message info-confirmed">Su cita ha sido <strong>confirmada</strong>. Preséntese al taller el <strong>'+dateFormatted+'</strong> a las <strong>'+(booking.preferred_time||'')+'</strong>.</div>';
-                html += '<div class="detail-grid"><div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">'+(booking.service_requested||'')+'</div></div><div class="detail-item"><div class="detail-label">Fecha</div><div class="detail-value">'+dateFormatted+'</div></div><div class="detail-item"><div class="detail-label">Hora</div><div class="detail-value">'+(booking.preferred_time||'')+'</div></div><div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">'+(booking.client_name||'')+'</div></div></div>';
-            } else if (status === 'en_taller' || status === 'en_progreso' || status === 'completado') {
-                var progressOrder = ['en_taller','en_progreso','completado','entregado'];
-                var currentIndex = progressOrder.indexOf(status); if (currentIndex < 0) currentIndex = 0;
-                var steps = [{label:'En Taller',icon:'1'},{label:'En Progreso',icon:'2'},{label:'Completado',icon:'3'},{label:'Entregado',icon:'4'}];
-                html += '<div class="progress-tracker">';
-                for (var i=0; i<steps.length; i++) { var cls = i<currentIndex?'completed':(i===currentIndex?'active':''); html += '<div class="progress-step '+cls+'"><div class="step-circle">'+(cls==='completed'?'\u2713':steps[i].icon)+'</div><div class="step-label">'+steps[i].label+'</div></div>'; }
-                html += '</div>';
-                html += '<div class="detail-grid"><div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">'+(booking.service_requested||'')+'</div></div><div class="detail-item"><div class="detail-label">Ingreso</div><div class="detail-value">'+new Date(booking.created_at).toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})+'</div></div><div class="detail-item"><div class="detail-label">Entrega Est.</div><div class="detail-value">'+(booking.estimated_delivery?new Date(booking.estimated_delivery+'T00:00:00').toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'}):'Por definir')+'</div></div><div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">'+(booking.client_name||'')+'</div></div></div>';
-                html += '<div class="notes-section"><h3>Notas del Taller</h3>';
-                var notes = booking.notes || []; if (typeof notes==='string') notes = JSON.parse(notes);
-                if (!notes || notes.length===0) { html += '<p class="no-notes">Sin notas.</p>'; } else { html += '<ul class="notes-list">'; for (var n=0; n<notes.length; n++) { html += '<li><span class="note-time">'+new Date(notes[n].time).toLocaleString('es-MX',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'})+'</span><span>'+notes[n].text+'</span></li>'; } html += '</ul>'; }
-                html += '</div>';
-
-                // Tabs
-                html += '<div class="detail-tabs">';
-                html += '<button class="detail-tab active" onclick="switchTab(\'worklog\')">Trabajos Realizados</button>';
-                html += '<button class="detail-tab" onclick="switchTab(\'parts\')">Repuestos Reemplazados</button>';
-                html += '</div>';
-                html += '<div class="detail-tab-content active" id="tab-worklog"><div id="worklogClient"></div></div>';
-                html += '<div class="detail-tab-content" id="tab-parts"><div id="partsClient"></div></div>';
-            } else if (status === 'entregado') {
-                html += '<div class="info-message info-success">Vehículo <strong>entregado</strong>. Gracias por confiar en Matts Motor Workshop.</div>';
+                html += buildDetailGrid(booking);
             } else if (status === 'cancelled') {
                 html += '<div class="info-message info-cancelled">Esta cita ha sido <strong>cancelada</strong>.</div>';
             }
-
-            dynamicContent.innerHTML = html;
+            
+            document.getElementById('dynamicContent').innerHTML = html;
             resultCard.style.display = 'block';
             resultCard.scrollIntoView({ behavior:'smooth', block:'center' });
-
-            if (status === 'en_taller' || status === 'en_progreso' || status === 'completado') {
-                setTimeout(function() { loadWorkLogClient(booking.id); loadPartsClient(booking.id); }, 300);
-            }
         }
 
+        function buildDetailGrid(booking) {
+            var dateFormatted = booking.preferred_date ? new Date(booking.preferred_date+'T00:00:00').toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) : '';
+            return '<div class="detail-grid">' +
+                '<div class="detail-item"><div class="detail-label">Servicio</div><div class="detail-value">'+(booking.service_requested||'')+'</div></div>' +
+                '<div class="detail-item"><div class="detail-label">Fecha</div><div class="detail-value">'+dateFormatted+'</div></div>' +
+                '<div class="detail-item"><div class="detail-label">Hora</div><div class="detail-value">'+(booking.preferred_time||'')+'</div></div>' +
+                '<div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">'+(booking.client_name||'')+'</div></div>' +
+                '</div>';
+        }
+
+        // ============ MODO TALLER ============
+        function displayTallerMode() {
+            var booking = currentBooking;
+            var status = booking.status;
+            var resultCard = document.getElementById('resultCard');
+            var workshopCard = document.getElementById('workshopCard');
+            
+            resultCard.style.display = 'none';
+            
+            document.getElementById('wsPlate').textContent = booking.plate_number || '---';
+            document.getElementById('wsVehicle').textContent = booking.vehicle || 'Vehículo';
+            document.getElementById('wsClient').textContent = (booking.client_name || '') + ' | ' + (booking.phone || '');
+            
+            // Barra de progreso
+            var progressOrder = ['en_taller', 'en_progreso', 'completado', 'entregado'];
+            var currentIndex = progressOrder.indexOf(status);
+            if (currentIndex < 0) currentIndex = 0;
+            
+            var steps = [
+                {label:'En Taller', icon:'1'},
+                {label:'En Progreso', icon:'2'},
+                {label:'Completado', icon:'3'},
+                {label:'Entregado', icon:'4'}
+            ];
+            
+            var progressHtml = '';
+            for (var i = 0; i < steps.length; i++) {
+                var cls = i < currentIndex ? 'completed' : (i === currentIndex ? 'active' : '');
+                progressHtml += '<div class="progress-step '+cls+'">';
+                progressHtml += '<div class="step-circle">'+(cls === 'completed' ? '\u2713' : steps[i].icon)+'</div>';
+                progressHtml += '<div class="step-label">'+steps[i].label+'</div>';
+                progressHtml += '</div>';
+            }
+            document.getElementById('progressTracker').innerHTML = progressHtml;
+            
+            // Reset tabs
+            document.querySelectorAll('.detail-tab').forEach(function(t){t.classList.remove('active')});
+            document.querySelector('.detail-tab:nth-child(1)').classList.add('active');
+            document.querySelectorAll('.detail-tab-content').forEach(function(c){c.classList.remove('active')});
+            document.getElementById('tab-worklog').classList.add('active');
+            
+            workshopCard.style.display = 'block';
+            workshopCard.scrollIntoView({ behavior:'smooth', block:'center' });
+            
+            loadWorkLogClient(booking.id);
+            loadPartsClient(booking.id);
+        }
+
+        // ============ TABS ============
         function switchTab(tab) {
             document.querySelectorAll('.detail-tab').forEach(function(t){t.classList.remove('active')});
             document.querySelectorAll('.detail-tab-content').forEach(function(c){c.classList.remove('active')});
@@ -255,7 +342,6 @@
             document.querySelectorAll('.detail-tab-content').forEach(function(c){c.classList.remove('active')});
             document.querySelector('.detail-tab:nth-child(2)').classList.add('active');
             document.getElementById('tab-parts').classList.add('active');
-            document.getElementById('tab-parts').scrollIntoView({behavior:'smooth'});
         }
 
         function switchToWorklogTab() {
@@ -263,11 +349,12 @@
             document.querySelectorAll('.detail-tab-content').forEach(function(c){c.classList.remove('active')});
             document.querySelector('.detail-tab:nth-child(1)').classList.add('active');
             document.getElementById('tab-worklog').classList.add('active');
-            document.getElementById('tab-worklog').scrollIntoView({behavior:'smooth'});
         }
 
+        // ============ CARGAR DATOS DEL TALLER ============
         async function loadWorkLogClient(bookingId) {
-            var container = document.getElementById('worklogClient'); if (!container) return;
+            var container = document.getElementById('worklogClient');
+            if (!container) return;
             
             var woResult = await supabase.from('work_orders').select('id').eq('booking_id', bookingId);
             if (!woResult.data || woResult.data.length === 0) {
@@ -276,8 +363,8 @@
             }
             
             var woIds = woResult.data.map(function(wo) { return wo.id; });
-            
             var allLogs = [];
+            
             for (var i = 0; i < woIds.length; i++) {
                 var result = await supabase.from('work_log').select('*').eq('work_order_id', woIds[i]).order('created_at', {ascending: false});
                 if (result.data && result.data.length > 0) {
@@ -296,13 +383,35 @@
             for (var i = 0; i < allLogs.length; i++) {
                 var log = allLogs[i];
                 var badgesHtml = '';
-                if (log.hours > 0 || log.minutes > 0) { var ts = ''; if (log.hours > 0) ts += log.hours + 'h '; if (log.minutes > 0) ts += log.minutes + 'min'; badgesHtml += '<span class="badge badge-time">' + ts.trim() + '</span>'; }
-                if (log.price > 0) { badgesHtml += '<span class="badge badge-price">' + parseFloat(log.price).toLocaleString('es-CR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' CRC</span>'; }
+                if (log.hours > 0 || log.minutes > 0) {
+                    var ts = '';
+                    if (log.hours > 0) ts += log.hours + 'h ';
+                    if (log.minutes > 0) ts += log.minutes + 'min';
+                    badgesHtml += '<span class="badge badge-time">' + ts.trim() + '</span>';
+                }
+                if (log.price > 0) {
+                    badgesHtml += '<span class="badge badge-price">' + parseFloat(log.price).toLocaleString('es-CR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' CRC</span>';
+                }
+                
                 var detailHtml = '<div class="wl-date">' + new Date(log.created_at).toLocaleString('es-MX', {day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'}) + '</div>';
-                if (log.hours > 0 || log.minutes > 0) { var d = 'Este trabajo tuvo una duración de: '; if (log.hours > 0) d += log.hours + ' hora' + (log.hours > 1 ? 's' : '') + ' '; if (log.minutes > 0) d += (log.hours > 0 ? 'con ' : '') + log.minutes + ' minuto' + (log.minutes > 1 ? 's' : ''); detailHtml += '<div class="wl-meta"><span>' + d + '</span></div>'; }
-                if (log.price > 0) { detailHtml += '<div class="wl-meta"><span>El costo total del trabajo realizado es de: <span class="wl-price">' + parseFloat(log.price).toLocaleString('es-CR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' CRC</span></span></div>'; }
-                if (log.photo_url) { detailHtml += '<img src="' + log.photo_url + '" onerror="this.style.display=\'none\'" loading="lazy">'; }
-                detailHtml += '<div style="margin-top:0.5rem;"><button class="btn-sm" onclick="switchToPartsTab()">Repuestos reemplazados</button></div>';
+                
+                if (log.hours > 0 || log.minutes > 0) {
+                    var d = 'Duración: ';
+                    if (log.hours > 0) d += log.hours + ' hora' + (log.hours > 1 ? 's' : '') + ' ';
+                    if (log.minutes > 0) d += (log.hours > 0 ? 'con ' : '') + log.minutes + ' minuto' + (log.minutes > 1 ? 's' : '');
+                    detailHtml += '<div class="wl-meta"><span>' + d + '</span></div>';
+                }
+                
+                if (log.price > 0) {
+                    detailHtml += '<div class="wl-meta"><span>Costo: <span class="wl-price">' + parseFloat(log.price).toLocaleString('es-CR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' CRC</span></span></div>';
+                }
+                
+                if (log.photo_url) {
+                    detailHtml += '<img src="' + log.photo_url + '" onerror="this.style.display=\'none\'" loading="lazy">';
+                }
+                
+                detailHtml += '<div style="margin-top:0.5rem;"><button class="btn-sm" onclick="switchToPartsTab()">Ver repuestos</button></div>';
+                
                 html += '<div class="worklog-client-item" onclick="toggleWorklog(this)">';
                 html += '<div class="worklog-header-bar"><span class="wl-title">' + log.description + '</span><span class="wl-badges">' + badgesHtml + '</span><span class="wl-arrow">&#9660;</span></div>';
                 html += '<div class="worklog-body">' + detailHtml + '</div></div>';
@@ -312,7 +421,8 @@
         }
 
         async function loadPartsClient(bookingId) {
-            var container = document.getElementById('partsClient'); if (!container) return;
+            var container = document.getElementById('partsClient');
+            if (!container) return;
             
             var woResult = await supabase.from('work_orders').select('id').eq('booking_id', bookingId);
             if (!woResult.data || woResult.data.length === 0) {
@@ -321,8 +431,8 @@
             }
             
             var woIds = woResult.data.map(function(wo) { return wo.id; });
-            
             var allParts = [];
+            
             for (var i = 0; i < woIds.length; i++) {
                 var result = await supabase.from('replaced_parts').select('*,work_log(description)').eq('work_order_id', woIds[i]).order('created_at', {ascending: false});
                 if (result.data && result.data.length > 0) {
@@ -343,7 +453,9 @@
                 var workDesc = part.work_log ? part.work_log.description : null;
                 html += '<div class="part-client-card">';
                 html += '<div class="part-header"><strong>' + part.part_name + '</strong>';
-                if (workDesc) { html += '<button class="btn-sm" onclick="switchToWorklogTab()">Trabajo realizado: ' + workDesc + '</button>'; }
+                if (workDesc) {
+                    html += '<button class="btn-sm" onclick="switchToWorklogTab()">' + workDesc + '</button>';
+                }
                 html += '</div>';
                 html += '<div class="part-photos">';
                 html += '<div class="part-photo-item"><div class="photo-label">Repuesto Antiguo</div>';
@@ -357,14 +469,23 @@
             container.innerHTML = html;
         }
 
-        function toggleWorklog(item) { if(item.classList.contains('open')){item.classList.remove('open')}else{item.classList.add('open')} }
+        function toggleWorklog(item) {
+            if (item.classList.contains('open')) {
+                item.classList.remove('open');
+            } else {
+                item.classList.add('open');
+            }
+        }
         window.toggleWorklog = toggleWorklog;
 
         function newSearch() {
             document.getElementById('resultCard').style.display = 'none';
-            document.getElementById('plateInput').value = ''; document.getElementById('plateInput').focus();
+            document.getElementById('workshopCard').style.display = 'none';
+            document.getElementById('plateInput').value = '';
+            document.getElementById('plateInput').focus();
             document.getElementById('errorMessage').style.display = 'none';
             document.getElementById('searchCard').scrollIntoView({ behavior:'smooth' });
+            currentBooking = null;
         }
     </script>
 </body>
