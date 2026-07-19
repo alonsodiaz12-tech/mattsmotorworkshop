@@ -186,15 +186,16 @@
 
             async function loadWorkOrders() {
                 var container = document.getElementById('workOrdersContainer');
-                var result = await supabase.from('work_orders').select('*').eq('booking_id',bookingId).order('created_at',{ascending:false});
+                var result = await supabase.from('work_orders').select('*').eq('booking_id',bookingId).order('created_at',{ascending:true});
                 if (!result.data || result.data.length===0) { container.innerHTML = '<div class="empty-state">Sin expedientes de trabajo</div>'; return; }
                 var html = '<div class="wo-list">';
                 for (var i=0; i<result.data.length; i++) {
                     var wo = result.data[i];
+                    var localNumber = i + 1;
                     var statusMap = { en_progreso:{text:'En Progreso',cls:'status-in_progress'}, trabajando:{text:'Trabajando',cls:'status-in_progress'}, completado:{text:'Completado',cls:'status-completed'}, entregado:{text:'Entregado',cls:'status-completed'} };
                     var st = statusMap[wo.status] || statusMap.en_progreso;
                     html += '<div class="wo-item">';
-                    html += '<div><strong>Expediente #'+wo.id+'</strong> <span style="color:var(--text-muted);font-size:0.75rem;">'+new Date(wo.created_at).toLocaleDateString('es-MX')+'</span></div>';
+                    html += '<div><strong>Expediente #'+localNumber+'</strong> <span style="color:var(--text-muted);font-size:0.75rem;">'+new Date(wo.created_at).toLocaleDateString('es-MX')+'</span></div>';
                     html += '<div class="wo-actions">';
                     html += '<span class="status-badge '+st.cls+'">'+st.text+'</span>';
                     html += '<a href="/work-detail?id='+wo.id+'" class="btn btn-success btn-sm" style="text-decoration:none;">Abrir expediente</a>';
@@ -210,7 +211,7 @@
                 if (existingResult.data && existingResult.data.length > 0) {
                     var woList = '';
                     for (var i = 0; i < existingResult.data.length; i++) {
-                        woList += '<div style="padding:0.5rem;background:var(--bg-input);border-radius:4px;margin-bottom:0.3rem;">Expediente #' + existingResult.data[i].id + ' (' + new Date(existingResult.data[i].created_at).toLocaleDateString('es-MX') + ')</div>';
+                        woList += '<div style="padding:0.5rem;background:var(--bg-input);border-radius:4px;margin-bottom:0.3rem;">Expediente del ' + new Date(existingResult.data[i].created_at).toLocaleDateString('es-MX') + '</div>';
                     }
                     var modal = document.createElement('div');
                     modal.className = 'modal-overlay active';
