@@ -512,7 +512,7 @@
                 if (existingResult.data && existingResult.data.length > 0) {
                     var woList = '';
                     for (var i = 0; i < existingResult.data.length; i++) {
-                        woList += '<div style="padding:0.5rem;background:var(--bg-input);border-radius:4px;margin-bottom:0.3rem;">Expediente #' + existingResult.data[i].id + ' (' + new Date(existingResult.data[i].created_at).toLocaleDateString('es-MX') + ')</div>';
+                        woList += '<div style="padding:0.5rem;background:var(--bg-input);border-radius:4px;margin-bottom:0.3rem;">Expediente del ' + new Date(existingResult.data[i].created_at).toLocaleDateString('es-MX') + '</div>';
                     }
                     var modal = document.createElement('div');
                     modal.className = 'modal-overlay active';
@@ -531,7 +531,6 @@
                 window.location.href = '/work-detail?id=' + result.data[0].id;
             }
 
-            // ============ AGREGAR VEHÍCULO ============
             function showAddVehicleForm() {
                 var modal = document.getElementById('addVehicleModal');
                 modal.classList.add('active');
