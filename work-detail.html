@@ -397,7 +397,7 @@
             <button class="btn btn-sm btn-warning" id="btnTerminar" onclick="terminarTrabajo()">Terminar trabajo</button>
         </div>
         <div class="info-pills">
-            <div class="info-pill">Expediente <strong id="heroWO">#--</strong></div>
+            <div class="info-pill">Expediente <strong id="heroWO">Expediente</strong></div>
             <div class="info-pill">Ingreso <strong id="heroDate">--</strong></div>
         </div>
         <div style="margin-top:1.5rem;">
@@ -518,14 +518,12 @@
                 document.getElementById('heroPlate').textContent = workOrder.plate_number || '---';
                 document.getElementById('heroVehicle').textContent = workOrder.vehicle || 'Vehiculo';
                 document.getElementById('heroClient').textContent = (workOrder.client_name || '') + ' | ' + (workOrder.phone || '');
-                document.getElementById('heroWO').textContent = '#' + workOrder.id;
                 document.getElementById('heroDate').textContent = new Date(workOrder.created_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' });
 
                 var badge = document.getElementById('heroStatus');
                 badge.textContent = st.text;
                 badge.className = 'status-badge ' + st.cls;
 
-                // Actualizar botón Volver
                 document.getElementById('btnVolver').href = '/booking-detail?id=' + workOrder.booking_id;
             }
 
