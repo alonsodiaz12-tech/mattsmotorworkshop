@@ -47,10 +47,6 @@
         .note-item .note-time { color: var(--text-muted); font-size: 0.7rem; white-space: nowrap; }
         .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.85rem; }
         .loading-state { text-align: center; padding: 2rem; color: var(--text-muted); }
-        .wo-list { display: grid; gap: 0.5rem; }
-        .wo-item { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem 1.1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
-        .wo-item:hover { border-color: var(--border-light); }
-        .wo-actions { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; }
         .success-toast { position: fixed; bottom: 2rem; right: 2rem; background: #166534; color: #bbf7d0; padding: 0.75rem 1.25rem; border-radius: var(--radius); font-weight: 500; font-size: 0.85rem; display: none; z-index: 9999; border: 1px solid #22c55e; }
 
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; align-items: center; justify-content: center; padding: 1.5rem; }
@@ -72,24 +68,17 @@
         .modal-close { position: absolute; top: 0.75rem; right: 0.75rem; background: none; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; transition: var(--transition); line-height: 1; }
         .modal-close:hover { color: var(--text-primary); }
 
-        @media (max-width: 768px) { body { padding: 1rem; } .info-grid { grid-template-columns: 1fr; } .wo-item { flex-direction: column; align-items: flex-start; } .wo-actions { width: 100%; justify-content: flex-end; } .modal-dialog { padding: 1.5rem; margin: 1rem; } }
+        @media (max-width: 768px) { body { padding: 1rem; } .info-grid { grid-template-columns: 1fr; } .modal-dialog { padding: 1.5rem; margin: 1rem; } }
     </style>
 </head>
 <body>
     <div class="container">
         <a href="/admin" class="back-link">Volver al panel</a>
         <div class="page-header"><h1 id="pageTitle">Cargando cita...</h1><span class="status-badge" id="pageStatus"></span></div>
-        
         <div class="info-card"><div class="info-grid" id="infoGrid"><div class="loading-state">Cargando informacion...</div></div></div>
-        
         <div class="section-card">
             <div class="section-header"><h2>Notas de la Cita</h2><button class="btn btn-primary btn-sm" onclick="addNote()">Agregar nota</button></div>
             <div id="notesContainer"><div class="loading-state">Cargando notas...</div></div>
-        </div>
-        
-        <div class="section-card">
-            <div class="section-header"><h2>Expedientes de Trabajo</h2><button class="btn btn-success btn-sm" onclick="createWorkOrder()">Iniciar Trabajo</button></div>
-            <div id="workOrdersContainer"><div class="loading-state">Cargando expedientes...</div></div>
         </div>
     </div>
     <div class="success-toast" id="successMsg">Cambios guardados</div>
@@ -104,7 +93,6 @@
 
             function showSuccess() { var msg = document.getElementById('successMsg'); msg.style.display = 'block'; setTimeout(function() { msg.style.display = 'none'; }, 2500); }
             function getBookingIdFromURL() { var params = new URLSearchParams(window.location.search); return params.get('id'); }
-
             function closeModal(id) { var modal = document.getElementById(id); if (modal) document.body.removeChild(modal); }
             function showAlert(msg, type) {
                 type = type || 'warning';
@@ -133,11 +121,10 @@
                 booking = result.data;
                 renderBooking();
                 loadNotes();
-                loadWorkOrders();
             }
 
             function renderBooking() {
-                var statusMap = { pending:{text:'Pendiente',cls:'status-pending'}, confirmed:{text:'Confirmada',cls:'status-confirmed'}, en_taller:{text:'En Taller',cls:'status-in_progress'}, trabajando:{text:'Trabajando',cls:'status-in_progress'}, cancelled:{text:'Cancelada',cls:'status-cancelled'} };
+                var statusMap = { pending:{text:'Pendiente',cls:'status-pending'}, confirmed:{text:'Confirmada',cls:'status-confirmed'}, terminada:{text:'Terminada',cls:'status-completed'}, cancelled:{text:'Cancelada',cls:'status-cancelled'} };
                 var st = statusMap[booking.status] || statusMap.pending;
                 document.getElementById('pageTitle').textContent = 'Cita #' + booking.id + ' - ' + (booking.plate_number || 'Sin placa');
                 document.getElementById('pageStatus').textContent = st.text; document.getElementById('pageStatus').className = 'status-badge ' + st.cls;
@@ -151,7 +138,19 @@
                 html += '<div class="info-item"><div class="label">Servicio</div><div class="value">'+booking.service_requested+'</div></div>';
                 html += '<div class="info-item"><div class="label">Fecha</div><div class="value">'+dateStr+'</div></div>';
                 html += '<div class="info-item"><div class="label">Hora</div><div class="value">'+(booking.preferred_time||'No especificada')+'</div></div>';
+                html += '<div class="info-item"><div class="label">Cambiar Estado</div><div class="value"><select onchange="updateStatus(this.value)">';
+                html += '<option value="pending"'+(booking.status==='pending'?' selected':'')+'>Pendiente</option>';
+                html += '<option value="confirmed"'+(booking.status==='confirmed'?' selected':'')+'>Confirmar</option>';
+                html += '<option value="terminada"'+(booking.status==='terminada'?' selected':'')+'>Terminar</option>';
+                html += '<option value="cancelled"'+(booking.status==='cancelled'?' selected':'')+'>Cancelar</option>';
+                html += '</select></div></div>';
                 html += '<div class="info-item"><div class="label">Editar Placa</div><div class="value"><input type="text" value="'+(booking.plate_number||'')+'" onchange="updatePlate(this.value)" style="font-family:monospace;text-transform:uppercase;"></div></div>';
+                if (booking.status === 'terminada') {
+                    html += '<div class="info-item" style="grid-column:1/-1;"><div class="value" style="display:flex;gap:0.5rem;flex-wrap:wrap;">';
+                    html += '<button class="btn btn-success" onclick="ingresarAlTaller()">Ingresar al taller</button>';
+                    html += '<button class="btn btn-danger" onclick="cerrarCitaDefinitiva()">Cerrar cita definitiva</button>';
+                    html += '</div></div>';
+                }
                 document.getElementById('infoGrid').innerHTML = html;
             }
 
@@ -184,81 +183,55 @@
                 });
             }
 
-            async function loadWorkOrders() {
-                var container = document.getElementById('workOrdersContainer');
-                var result = await supabase.from('work_orders').select('*').eq('booking_id',bookingId).order('created_at',{ascending:true});
-                if (!result.data || result.data.length===0) { container.innerHTML = '<div class="empty-state">Sin expedientes de trabajo</div>'; return; }
-                var html = '<div class="wo-list">';
-                for (var i=0; i<result.data.length; i++) {
-                    var wo = result.data[i];
-                    var localNumber = i + 1;
-                    var statusMap = { en_progreso:{text:'En Progreso',cls:'status-in_progress'}, trabajando:{text:'Trabajando',cls:'status-in_progress'}, completado:{text:'Completado',cls:'status-completed'}, entregado:{text:'Entregado',cls:'status-completed'} };
-                    var st = statusMap[wo.status] || statusMap.en_progreso;
-                    html += '<div class="wo-item">';
-                    html += '<div><strong>Expediente #'+localNumber+'</strong> <span style="color:var(--text-muted);font-size:0.75rem;">'+new Date(wo.created_at).toLocaleDateString('es-MX')+'</span></div>';
-                    html += '<div class="wo-actions">';
-                    html += '<span class="status-badge '+st.cls+'">'+st.text+'</span>';
-                    html += '<a href="/work-detail?id='+wo.id+'" class="btn btn-success btn-sm" style="text-decoration:none;">Abrir expediente</a>';
-                    html += '<button class="btn btn-danger btn-sm" onclick="deleteWorkOrder('+wo.id+')">Eliminar</button>';
-                    html += '</div></div>';
-                }
-                html += '</div>'; container.innerHTML = html;
-            }
-
-            async function createWorkOrder() {
-                if (!booking.plate_number) { showAlert('Asigne una placa primero', 'error'); return; }
-                var existingResult = await supabase.from('work_orders').select('*').eq('booking_id', parseInt(bookingId)).eq('status', 'en_progreso');
-                if (existingResult.data && existingResult.data.length > 0) {
-                    var woList = '';
-                    for (var i = 0; i < existingResult.data.length; i++) {
-                        woList += '<div style="padding:0.5rem;background:var(--bg-input);border-radius:4px;margin-bottom:0.3rem;">Expediente del ' + new Date(existingResult.data[i].created_at).toLocaleDateString('es-MX') + '</div>';
-                    }
-                    var modal = document.createElement('div');
-                    modal.className = 'modal-overlay active';
-                    modal.id = 'existingWOModal';
-                    modal.innerHTML = '<div class="modal-dialog"><button class="modal-close" onclick="closeModal(\'existingWOModal\')">X</button><div class="modal-icon">⚠️</div><h3>Expedientes Existentes</h3><p class="modal-text">Ya existen expedientes en progreso para esta cita:</p><div style="text-align:left;margin-bottom:1rem;">'+woList+'</div><p class="modal-warning">Ya existen expedientes en progreso para esta cita. ¿Desea crear uno nuevo de todas formas?</p><div class="modal-actions"><button class="btn-cancel" onclick="closeModal(\'existingWOModal\')">Cancelar</button><button class="btn-confirm" onclick="closeModal(\'existingWOModal\');proceedCreateWO()">Crear nuevo</button></div></div>';
-                    document.body.appendChild(modal);
-                    return;
-                }
-                proceedCreateWO();
-            }
-
-            async function proceedCreateWO() {
-                var result = await supabase.from('work_orders').insert([{booking_id: parseInt(bookingId), plate_number: booking.plate_number, vehicle: booking.vehicle, client_name: booking.client_name, phone: booking.phone, status: 'en_progreso'}]).select();
-                if (result.error) { showAlert('Error al crear expediente', 'error'); return; }
-                await supabase.from('bookings').update({status: 'en_taller'}).eq('id', bookingId);
-                window.location.href = '/work-detail?id=' + result.data[0].id;
-            }
-
-            function deleteWorkOrder(woId) {
-                var modal = document.createElement('div');
-                modal.className = 'modal-overlay active';
-                modal.id = 'deleteWOModal';
-                modal.innerHTML = '<div class="modal-dialog"><button class="modal-close" onclick="closeModal(\'deleteWOModal\')">X</button><div class="modal-icon" style="background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.3);">⚠️</div><h3 style="color:#f87171;">Eliminar Expediente</h3><p class="modal-text">Esta accion no se puede deshacer. Ingrese la contrasena de administrador para confirmar.</p><input type="password" id="deleteWOPassword" placeholder="Contrasena de seguridad"><p class="modal-error" id="deleteWOError">Contrasena incorrecta</p><div class="modal-actions"><button class="btn-cancel" onclick="closeModal(\'deleteWOModal\')">Cancelar</button><button class="btn-confirm" id="confirmDeleteWOBtn">Eliminar</button></div></div>';
-                document.body.appendChild(modal);
-                document.getElementById('deleteWOPassword').focus();
-                document.getElementById('confirmDeleteWOBtn').onclick = function() {
-                    var password = document.getElementById('deleteWOPassword').value;
-                    if (password !== 'mant1215') {
-                        document.getElementById('deleteWOError').style.display = 'block';
-                        document.getElementById('deleteWOPassword').value = '';
-                        document.getElementById('deleteWOPassword').focus();
-                        return;
-                    }
-                    closeModal('deleteWOModal');
-                    supabase.from('work_orders').delete().eq('id', woId).then(function() { loadWorkOrders(); showSuccess(); });
-                };
-                document.getElementById('deleteWOPassword').addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') document.getElementById('confirmDeleteWOBtn').click();
-                });
+            async function updateStatus(s) {
+                await supabase.from('bookings').update({status:s}).eq('id',bookingId);
+                booking.status = s;
+                renderBooking();
+                showSuccess();
             }
 
             async function updatePlate(p) { await supabase.from('bookings').update({plate_number:p.toUpperCase()}).eq('id',bookingId); booking.plate_number = p.toUpperCase(); showSuccess(); }
 
+            async function ingresarAlTaller() {
+                var modal = document.createElement('div');
+                modal.className = 'modal-overlay active';
+                modal.id = 'ingresarModal';
+                modal.innerHTML = '<div class="modal-dialog"><button class="modal-close" onclick="closeModal(\'ingresarModal\')">X</button><div class="modal-icon">🚗</div><h3>Ingresar al Taller</h3><p class="modal-text">Si lleva a cabo esta acción es porque el cliente decidió ingresar el vehículo al taller.</p><p class="modal-warning">La cita desaparecerá del sistema y se creará un nuevo ingreso en Vehículos.</p><div class="modal-actions"><button class="btn-cancel" onclick="closeModal(\'ingresarModal\')">Cancelar</button><button class="btn-confirm" id="confirmIngresarBtn">Confirmar ingreso</button></div></div>';
+                document.body.appendChild(modal);
+                document.getElementById('confirmIngresarBtn').onclick = async function() {
+                    closeModal('ingresarModal');
+                    await supabase.from('vehicles').insert([{
+                        booking_id: parseInt(bookingId),
+                        plate_number: booking.plate_number,
+                        vehicle: booking.vehicle,
+                        client_name: booking.client_name,
+                        phone: booking.phone,
+                        service_requested: booking.service_requested,
+                        status: 'en_taller'
+                    }]);
+                    await supabase.from('bookings').delete().eq('id', bookingId);
+                    window.location.href = '/admin';
+                };
+            }
+
+            async function cerrarCitaDefinitiva() {
+                var modal = document.createElement('div');
+                modal.className = 'modal-overlay active';
+                modal.id = 'cerrarModal';
+                modal.innerHTML = '<div class="modal-dialog"><button class="modal-close" onclick="closeModal(\'cerrarModal\')">X</button><div class="modal-icon" style="background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.3);">⚠️</div><h3 style="color:#f87171;">Cerrar Cita Definitiva</h3><p class="modal-text">Llevar a cabo esta acción indica que el cliente decidió no ingresar el vehículo al taller.</p><p class="modal-warning">La cita se eliminará permanentemente del sistema.</p><div class="modal-actions"><button class="btn-cancel" onclick="closeModal(\'cerrarModal\')">Cancelar</button><button class="btn-confirm" id="confirmCerrarBtn">Cerrar cita</button></div></div>';
+                document.body.appendChild(modal);
+                document.getElementById('confirmCerrarBtn').onclick = async function() {
+                    closeModal('cerrarModal');
+                    await supabase.from('bookings').delete().eq('id', bookingId);
+                    window.location.href = '/admin';
+                };
+            }
+
             window.addNote = addNote;
-            window.createWorkOrder = createWorkOrder;
-            window.deleteWorkOrder = deleteWorkOrder;
+            window.updateStatus = updateStatus;
             window.updatePlate = updatePlate;
+            window.ingresarAlTaller = ingresarAlTaller;
+            window.cerrarCitaDefinitiva = cerrarCitaDefinitiva;
             window.closeModal = closeModal;
             init();
         })();
