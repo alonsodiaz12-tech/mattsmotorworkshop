@@ -213,7 +213,7 @@
             currentBooking = result.data[0];
             var status = currentBooking.status;
             
-            if (status === 'pending' || status === 'confirmed' || status === 'cancelled') {
+            if (status === 'pending' || status === 'confirmed' || status === 'terminada' || status === 'cancelled') {
                 displayCitaMode();
             } else {
                 displayTallerMode();
@@ -234,6 +234,7 @@
             var statusMap = {
                 'pending': {text:'Pendiente', class:'status-pending'},
                 'confirmed': {text:'Confirmada', class:'status-confirmed'},
+                'terminada': {text:'Terminada', class:'status-completed'},
                 'cancelled': {text:'Cancelado', class:'status-cancelled'}
             };
             var st = statusMap[status] || statusMap.pending;
@@ -247,6 +248,9 @@
             } else if (status === 'confirmed') {
                 var dateFormatted = booking.preferred_date ? new Date(booking.preferred_date+'T00:00:00').toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) : '';
                 html += '<div class="info-message info-confirmed">Su cita ha sido <strong>confirmada</strong>. Preséntese al taller el <strong>'+dateFormatted+'</strong> a las <strong>'+(booking.preferred_time||'')+'</strong>.</div>';
+                html += buildDetailGrid(booking);
+            } else if (status === 'terminada') {
+                html += '<div class="info-message info-success">Su cita ha sido <strong>completada</strong>. Gracias por su visita.</div>';
                 html += buildDetailGrid(booking);
             } else if (status === 'cancelled') {
                 html += '<div class="info-message info-cancelled">Esta cita ha sido <strong>cancelada</strong>.</div>';
@@ -267,26 +271,37 @@
                 '</div>';
         }
 
-        function displayTallerMode() {
-            var booking = currentBooking;
-            var status = booking.status;
-            var resultCard = document.getElementById('resultCard');
+        async function displayTallerMode() {
             var workshopCard = document.getElementById('workshopCard');
-            
+            var resultCard = document.getElementById('resultCard');
             resultCard.style.display = 'none';
             
-            document.getElementById('wsPlate').textContent = booking.plate_number || '---';
-            document.getElementById('wsVehicle').textContent = booking.vehicle || 'Vehículo';
-            document.getElementById('wsClient').textContent = (booking.client_name || '') + ' | ' + (booking.phone || '');
+            var vResult = await supabase.from('vehicles').select('*').eq('plate_number', currentBooking.plate_number).order('created_at',{ascending:false}).limit(1);
+            var vehicle = vResult.data && vResult.data.length > 0 ? vResult.data[0] : null;
+            
+            if (!vehicle) {
+                workshopCard.style.display = 'none';
+                resultCard.style.display = 'block';
+                document.getElementById('resultVehicle').textContent = currentBooking.vehicle || 'No especificado';
+                document.getElementById('resultPlate').textContent = currentBooking.plate_number || 'N/A';
+                document.getElementById('resultStatus').textContent = 'No encontrado';
+                document.getElementById('resultStatus').className = 'status-badge status-cancelled';
+                document.getElementById('dynamicContent').innerHTML = '<div class="info-message info-cancelled">Este vehículo no se encuentra actualmente en el taller.</div>';
+                resultCard.scrollIntoView({ behavior:'smooth', block:'center' });
+                return;
+            }
+            
+            document.getElementById('wsPlate').textContent = vehicle.plate_number || '---';
+            document.getElementById('wsVehicle').textContent = vehicle.vehicle || 'Vehículo';
+            document.getElementById('wsClient').textContent = (vehicle.client_name || '') + ' | ' + (vehicle.phone || '');
             
             var progressHtml = '';
-            
             progressHtml += '<div class="progress-step completed">';
             progressHtml += '<div class="step-circle">✓</div>';
             progressHtml += '<div class="step-label">Ingresado</div>';
             progressHtml += '</div>';
             
-            if (status === 'trabajando') {
+            if (vehicle.status === 'trabajando') {
                 progressHtml += '<div class="progress-step active">';
                 progressHtml += '<div class="step-circle">🔧</div>';
                 progressHtml += '<div class="step-label">Trabajando ahora</div>';
@@ -308,8 +323,8 @@
             workshopCard.style.display = 'block';
             workshopCard.scrollIntoView({ behavior:'smooth', block:'center' });
             
-            loadWorkLogClient(booking.id);
-            loadPartsClient(booking.id);
+            loadWorkLogClient(vehicle.booking_id);
+            loadPartsClient(vehicle.booking_id);
         }
 
         function switchTab(tab) {
