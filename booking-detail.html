@@ -198,9 +198,13 @@
                 modal.id = 'ingresarModal';
                 modal.innerHTML = '<div class="modal-dialog"><button class="modal-close" onclick="closeModal(\'ingresarModal\')">X</button><div class="modal-icon">🚗</div><h3>Ingresar al Taller</h3><p class="modal-text">Si lleva a cabo esta acción es porque el cliente decidió ingresar el vehículo al taller.</p><p class="modal-warning">La cita desaparecerá del sistema y se creará un nuevo ingreso en Vehículos.</p><div class="modal-actions"><button class="btn-cancel" onclick="closeModal(\'ingresarModal\')">Cancelar</button><button class="btn-confirm" id="confirmIngresarBtn">Confirmar ingreso</button></div></div>';
                 document.body.appendChild(modal);
+                
                 document.getElementById('confirmIngresarBtn').onclick = async function() {
-                    closeModal('ingresarModal');
-                    await supabase.from('vehicles').insert([{
+                    var btn = document.getElementById('confirmIngresarBtn');
+                    btn.disabled = true;
+                    btn.textContent = 'Ingresando...';
+                    
+                    var insertResult = await supabase.from('vehicles').insert([{
                         booking_id: parseInt(bookingId),
                         plate_number: booking.plate_number,
                         vehicle: booking.vehicle,
@@ -208,8 +212,23 @@
                         phone: booking.phone,
                         service_requested: booking.service_requested,
                         status: 'en_taller'
-                    }]);
-                    await supabase.from('bookings').delete().eq('id', bookingId);
+                    }]).select();
+                    
+                    if (insertResult.error) {
+                        alert('Error al crear vehículo: ' + insertResult.error.message);
+                        btn.disabled = false;
+                        btn.textContent = 'Confirmar ingreso';
+                        return;
+                    }
+                    
+                    var deleteResult = await supabase.from('bookings').delete().eq('id', bookingId);
+                    
+                    if (deleteResult.error) {
+                        alert('Error al eliminar cita: ' + deleteResult.error.message);
+                        return;
+                    }
+                    
+                    closeModal('ingresarModal');
                     window.location.href = '/admin';
                 };
             }
