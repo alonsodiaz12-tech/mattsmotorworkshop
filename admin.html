@@ -195,12 +195,12 @@
             </div>
         </div>
         <div class="tab-nav">
-    <button class="tab-btn active" data-tab="bookings">Citas</button>
-    <button class="tab-btn" data-tab="inventory">Inventario</button>
-    <button class="tab-btn" data-tab="vehicles">Vehículos</button>
-    <button class="tab-btn" data-tab="services">Servicios</button>
-    <button class="tab-btn" data-tab="gallery">Galeria</button>
-</div>
+            <button class="tab-btn active" data-tab="bookings">Citas</button>
+            <button class="tab-btn" data-tab="inventory">Inventario</button>
+            <button class="tab-btn" data-tab="vehicles">Vehículos</button>
+            <button class="tab-btn" data-tab="services">Servicios</button>
+            <button class="tab-btn" data-tab="gallery">Galeria</button>
+        </div>
         <div class="panel-content">
             <div class="success-toast" id="successMsg">Cambios guardados</div>
             
@@ -537,7 +537,7 @@
                     html += '<div class="booking-card">';
                     html += '<div class="booking-header-row"><div class="booking-meta"><strong>'+dateStr+'</strong><span class="plate-badge">'+v.plate_number+'</span></div><span class="status-badge '+st.cls+'">'+st.text+'</span></div>';
                     html += '<div class="booking-detail-grid"><div><strong>Cliente:</strong> '+v.client_name+'</div><div><strong>Telefono:</strong> '+v.phone+'</div><div><strong>Vehiculo:</strong> '+v.vehicle+'</div><div><strong>Servicio:</strong> '+(v.service_requested||'')+'</div></div>';
-                    html += '<div class="booking-actions"><a href="/booking-detail?id='+v.booking_id+'" class="btn-open">Abrir</a>';
+                    html += '<div class="booking-actions"><a href="/vehicle-detail?id='+v.id+'" class="btn-open">Abrir</a>';
                     html += '<button class="btn-sm btn-delete" onclick="window._deleteVehicle('+v.id+')">Eliminar</button></div></div>';
                 }
                 container.innerHTML = html;
