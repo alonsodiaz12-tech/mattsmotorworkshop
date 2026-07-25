@@ -8,5 +8,6 @@
     { "source": "/dev-reset", "destination": "/dev-reset.html" },
     { "source": "/booking-detail", "destination": "/booking-detail.html" },
     { "source": "/work-detail", "destination": "/work-detail.html" }
+    { "source": "/vehicle-detail", "destination": "/vehicle-detail.html" }
   ]
 }
