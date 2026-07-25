@@ -524,12 +524,17 @@
                 badge.textContent = st.text;
                 badge.className = 'status-badge ' + st.cls;
 
-                document.getElementById('btnVolver').href = '/booking-detail?id=' + workOrder.booking_id;
+                // Buscar el vehicle_id por booking_id y redirigir al vehicle-detail
+                supabase.from('vehicles').select('id').eq('booking_id', workOrder.booking_id).single().then(function(vResult) {
+                    if (vResult.data) {
+                        document.getElementById('btnVolver').href = '/vehicle-detail?id=' + vResult.data.id;
+                    }
+                });
             }
 
             async function comenzarTrabajo() {
                 await supabase.from('work_orders').update({status: 'trabajando'}).eq('id', workOrderId);
-                await supabase.from('bookings').update({status: 'trabajando'}).eq('id', workOrder.booking_id);
+                await supabase.from('vehicles').update({status: 'trabajando'}).eq('booking_id', workOrder.booking_id);
                 showSuccess();
                 loadWorkOrder();
             }
@@ -537,7 +542,7 @@
 
             async function terminarTrabajo() {
                 await supabase.from('work_orders').update({status: 'en_progreso'}).eq('id', workOrderId);
-                await supabase.from('bookings').update({status: 'en_taller'}).eq('id', workOrder.booking_id);
+                await supabase.from('vehicles').update({status: 'en_taller'}).eq('booking_id', workOrder.booking_id);
                 showSuccess();
                 loadWorkOrder();
             }
