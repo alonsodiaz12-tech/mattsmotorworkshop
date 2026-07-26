@@ -149,6 +149,30 @@
 
             async function createWorkOrder() {
                 if (!vehicle.plate_number) { alert('El vehículo no tiene placa asignada'); return; }
+                
+                var existingResult = await supabase.from('work_orders').select('*').eq('booking_id', vehicle.booking_id).eq('status', 'en_progreso');
+                
+                if (existingResult.data && existingResult.data.length > 0) {
+                    var woList = '';
+                    for (var i = 0; i < existingResult.data.length; i++) {
+                        woList += '<div style="padding:0.5rem;background:var(--bg-input);border-radius:4px;margin-bottom:0.3rem;">Expediente del ' + new Date(existingResult.data[i].created_at).toLocaleDateString('es-MX') + '</div>';
+                    }
+                    var modal = document.createElement('div');
+                    modal.className = 'modal-overlay active';
+                    modal.id = 'existingWOModal';
+                    modal.innerHTML = '<div class="modal-dialog"><button class="modal-close" onclick="closeModal(\'existingWOModal\')">X</button><div class="modal-icon">⚠️</div><h3>Expedientes Existentes</h3><p class="modal-text">Ya existen expedientes en progreso para este vehículo:</p><div style="text-align:left;margin-bottom:1rem;">'+woList+'</div><p class="modal-warning">¿Desea crear un nuevo expediente de todas formas?</p><div class="modal-actions"><button class="btn-cancel" onclick="closeModal(\'existingWOModal\')">Cancelar</button><button class="btn-confirm" id="confirmExistingBtn">Crear nuevo</button></div></div>';
+                    document.body.appendChild(modal);
+                    document.getElementById('confirmExistingBtn').onclick = function() {
+                        closeModal('existingWOModal');
+                        proceedCreateWO();
+                    };
+                    return;
+                }
+                
+                proceedCreateWO();
+            }
+
+            async function proceedCreateWO() {
                 var result = await supabase.from('work_orders').insert([{
                     booking_id: vehicle.booking_id,
                     plate_number: vehicle.plate_number,
@@ -162,6 +186,7 @@
             }
 
             window.createWorkOrder = createWorkOrder;
+            window.closeModal = closeModal;
             init();
         })();
     </script>
