@@ -202,6 +202,19 @@
             resultCard.style.display = 'none';
             workshopCard.style.display = 'none';
             
+            // Primero buscar en vehicles (ya ingresados al taller)
+            var vResult = await supabase.from('vehicles').select('*').eq('plate_number', plate).order('created_at', {ascending: false}).limit(1);
+            
+            if (vResult.data && vResult.data.length > 0) {
+                var vehicle = vResult.data[0];
+                currentBooking = { plate_number: plate, vehicle: vehicle.vehicle, client_name: vehicle.client_name, phone: vehicle.phone, status: vehicle.status, booking_id: vehicle.booking_id };
+                searchBtn.disabled = false;
+                searchBtn.textContent = 'Consultar Estado';
+                displayTallerMode();
+                return;
+            }
+            
+            // Si no está en vehicles, buscar en bookings (citas)
             var result = await supabase.from('bookings').select('*').eq('plate_number', plate).order('created_at', {ascending: false}).limit(1);
             
             searchBtn.disabled = false;
